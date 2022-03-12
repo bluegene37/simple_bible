@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:simple_bible/page/bible_page.dart';
 
 Widget buildOTHeader(BuildContext context) => Container(
   color: Colors.teal.shade200,
@@ -28,12 +29,15 @@ Widget buildOTBooks(BuildContext context) => Container(
           title: const Text('Genesis'),
           onTap: () {
             Navigator.of(context).pop();
+            // BooksLocalPage('Genesis');
           },
         ),
         // const Divider(color: Colors.black54),
         ListTile(
           title: const Text('Exodus'),
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).pop();
+          },
         ),
         ListTile(
           title: const Text('Leviticus'),

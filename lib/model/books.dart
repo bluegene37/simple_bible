@@ -5,8 +5,8 @@ class Book {
   final String translation;
   final String id;
   final String book;
-  final String chapter;
-  final String verse;
+  final int chapter;
+  final int verse;
   final String text;
 
   const Book({
@@ -28,3 +28,21 @@ class Book {
   );
 
 }
+
+
+class BookTitle {
+  final String key;
+  final String val;
+
+  const BookTitle({
+    required this.key,
+    required this.val,
+  });
+
+  static BookTitle fromJson(json) => BookTitle(
+      key: json['key'],
+      val: json['val']
+  );
+
+}
+

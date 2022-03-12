@@ -1,10 +1,22 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'dart:convert';
 import 'dart:developer';
+import 'package:flutter/material.dart';
+import 'package:simple_bible/page/search_page.dart';
+import 'package:simple_bible/page/settings_page.dart';
+import 'package:simple_bible/page/books_page.dart';
+import 'package:simple_bible/page/chapter_page.dart';
 import 'package:simple_bible/page/bible_page.dart';
-import 'package:simple_bible/menu/books_title.dart';
+
+var pages = [];
+var mainBooks;
+var mainBooksMenu;
+var bibleVersions = 'kjv';
+var barTitle = 'Books';
+var bookSelected = 'Genesis';
+int selectedChapter = 1;
 
 void main() {
+  pages = [BooksSelectionPage()];
   runApp(const MyApp());
 }
 
@@ -18,7 +30,7 @@ class MyApp extends StatelessWidget {
       // title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.teal,
+        primarySwatch:  Colors.teal,
       ),
       home: const MyHomePage(
         title:'Simple Bible',
@@ -41,29 +53,32 @@ class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
 
   final GlobalKey<ScaffoldState> _key = GlobalKey();
+
+  @override
+  void initState(){
+    super.initState();
+    init();
+  }
+
+  Future init() async {
+    final assetBundle = DefaultAssetBundle.of(context);
+    mainBooksMenu = await assetBundle.loadString('assets/booktitle.json');
+    mainBooks = await assetBundle.loadString('assets/'+bibleVersions+'.json');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   leading: Container(),
-      //   centerTitle: true,
-      //   title: Text(widget.title),
-      // ),
-      key: _key,
-      drawer: Drawer(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              buildOTHeader(context),
-              buildOTBooks(context),
-              buildNTHeader(context),
-              buildNTBooks(context),
-            ],
-          ),
-        ),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(35.0), // here the desired height
+        child:  AppBar(
+            leading: Container(),
+            centerTitle: true,
+            title: Text(barTitle),
+          )
       ),
-      body: buildPages(),
+      key: _key,
+      body: pages[0],
       bottomNavigationBar: NavigationBarTheme(
         data: NavigationBarThemeData(
           // indicatorColor: Colors.blue.shade100,
@@ -73,23 +88,45 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         child: NavigationBar(
           height: 60,
-          // backgroundColor: Color(0xFFf1f5fb),
           selectedIndex: _currentIndex,
           onDestinationSelected: (_currentIndex) =>
-            setState(() => {
-              this._currentIndex = _currentIndex,
-              if(this._currentIndex == 0){
-                _key.currentState!.openDrawer(),
-              },
-          }),
+            {
+              setState(() => {
+                  this._currentIndex = _currentIndex,
+                }
+              ),
+              if (this._currentIndex == 0) {
+                barTitle = "Books",
+                // preferences.setString('bookSelected',bookSelected),
+                pages[0] = BooksSelectionPage()
+              } else if (this._currentIndex == 1) {
+                barTitle = "Chapters",
+                pages[0] = ChapterSelectionPage()
+              } else if (this._currentIndex == 2) {
+                pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter),
+                barTitle = bookSelected +' '+selectedChapter.toString()
+              } else if (this._currentIndex == 3) {
+                barTitle = "Search",
+                pages[0] = SearchLocalPage()
+              } else if (this._currentIndex == 4) {
+                barTitle = "Settings",
+                pages[0] = SettingsLocalPage()
+              } else {
+                pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter),
+              }
+          },
           destinations: [
             NavigationDestination(
                 icon: Icon(Icons.book_outlined),
                 label: 'Books'
             ),
             NavigationDestination(
-                icon: Icon(Icons.menu_book_outlined),
+                icon: Icon(Icons.menu_outlined),
                 label: 'Chapters'
+            ),
+            NavigationDestination(
+                icon: Icon(Icons.menu_book_outlined),
+                label: 'Bible'
             ),
             NavigationDestination(
                 icon: Icon(Icons.search),
@@ -104,10 +141,5 @@ class _MyHomePageState extends State<MyHomePage> {
       )
     );
   }
-
-  Widget buildPages() {
-    return BooksLocalPage();
-  }
-
 }
 

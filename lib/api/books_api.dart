@@ -1,15 +1,33 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:simple_bible/model/books.dart';
+import 'package:simple_bible/main.dart';
 
 class BooksApi {
-  static Future<List<Book>> getBooksLocally(BuildContext context) async{
-    final assetBundle = DefaultAssetBundle.of(context);
-    // final data = await assetBundle.loadString('assets/books.json');
-    final data = await assetBundle.loadString('assets/smallBook.json');
-    final body = json.decode(data);
-    log(body.toString());
-    return body.map<Book>(Book.fromJson).toList();
+  static Future<List<Book>> getBooksLocally(BuildContext context, jsonName, bookTitle, bookChapter) async{
+    final body = json.decode(mainBooks);
+    final bookList = body.map<Book>(Book.fromJson).toList();
+    final resultText = bookList.where((val) => val.book == bookTitle && val.chapter == bookChapter).toList();
+    return resultText;
+  }
+}
+
+class BooksTitleApi {
+  static Future<List<BookTitle>> getBooksLocally(BuildContext context, jsonName) async{
+    final body = json.decode(mainBooksMenu);
+    final bookNames = body.map<BookTitle>(BookTitle.fromJson).toList();
+    return bookNames;
+
+  }
+}
+
+class BooksChapterApi {
+  static Future<List<Book>> getBooksLocally(BuildContext context, jsonName,bookTitle) async{
+    final body = json.decode(mainBooks);
+    final AllChapter = body.map<Book>((json) => Book.fromJson(json)).toList();
+    final bookChapter = AllChapter.where((x) => x.book == bookTitle).toList();
+    final unique = Set<String>();
+    final uniquelist = bookChapter.where((x) => unique.add(x.chapter.toString())).toList();
+    return uniquelist;
   }
 }
