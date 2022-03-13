@@ -8,6 +8,12 @@ class BooksApi {
     final body = json.decode(mainBooks);
     final bookList = body.map<Book>(Book.fromJson).toList();
     final resultText = bookList.where((val) => val.book == bookTitle && val.chapter == bookChapter).toList();
+
+    final chapters = bookList.where((x) => x.book == bookTitle).toList();
+    final unique = Set<String>();
+    final uniquelist = chapters.where((x) => unique.add(x.chapter.toString())).toList();
+    lastChapter = uniquelist.length;
+
     return resultText;
   }
 }
@@ -28,6 +34,7 @@ class BooksChapterApi {
     final bookChapter = AllChapter.where((x) => x.book == bookTitle).toList();
     final unique = Set<String>();
     final uniquelist = bookChapter.where((x) => unique.add(x.chapter.toString())).toList();
+
     return uniquelist;
   }
 }

@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:simple_bible/api/books_api.dart';
 import 'package:simple_bible/model/books.dart';
 import 'package:simple_bible/main.dart';
-import 'dart:developer';
-
 
 class BooksLocalPage extends StatelessWidget {
   final String jsonName;
@@ -19,6 +17,16 @@ class BooksLocalPage extends StatelessWidget {
       builder: (context, snapshot) {
         final book = snapshot.data;
 
+        shouldShowRight = true;
+        shouldShowLeft = true;
+        if(selectedChapter == lastChapter){
+          shouldShowRight = false;
+        }else if(selectedChapter == 1){
+          shouldShowLeft = false;
+        }else{
+
+        }
+
         switch (snapshot.connectionState) {
           case ConnectionState.waiting:
             return Center(child: CircularProgressIndicator());
@@ -31,8 +39,20 @@ class BooksLocalPage extends StatelessWidget {
         }
       },
     ),
+    floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    floatingActionButton: Stack(
+      children: <Widget>[
+        Align(
+          alignment: Alignment.bottomLeft,
+          child: shouldShowLeft ? buildNavigationButtonLeft() : null,
+        ),
+        Align(
+          alignment: Alignment.bottomRight,
+          child: shouldShowRight ? buildNavigationButton() : null,
+        ),
+      ],
+    ),
   );
-
 
   Widget buildBooks(List<Book> books) => ListView.builder(
 
@@ -52,4 +72,31 @@ class BooksLocalPage extends StatelessWidget {
       );
     },
   );
+
+  Widget buildNavigationButton() => FloatingActionButton.small(
+    backgroundColor: Color(0xFFB2D6D3),
+    child: Icon(Icons.arrow_forward_ios_rounded),
+    onPressed: () {
+      if(selectedChapter < lastChapter){
+        selectedChapter++;
+      }else{
+        shouldShowRight = false;
+      }
+      BooksLocalPage(jsonName,bookTitle, selectedChapter);
+    },
+  );
+
+  Widget buildNavigationButtonLeft() => FloatingActionButton.small(
+    backgroundColor: Color(0xFFB2D6D3),
+    child: Icon(Icons.arrow_back_ios_rounded),
+    onPressed: () {
+      if(selectedChapter > 1){
+        selectedChapter--;
+      }else{
+        shouldShowLeft = false;
+      }
+      BooksLocalPage(jsonName,bookTitle, selectedChapter);
+    },
+  );
+
 }

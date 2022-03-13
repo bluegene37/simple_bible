@@ -68,6 +68,7 @@ class BooksSelectionPage extends StatelessWidget {
             bookSelected = bookTitle.key,
             selectedChapter = 1,
             pages[0] = BooksLocalPage(bibleVersions, bookTitle.key, selectedChapter),
+
           },
         ),
       );

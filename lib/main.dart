@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:simple_bible/page/search_page.dart';
 import 'package:simple_bible/page/settings_page.dart';
@@ -14,6 +12,9 @@ var bibleVersions = 'kjv';
 var barTitle = 'Books';
 var bookSelected = 'Genesis';
 int selectedChapter = 1;
+int lastChapter = 1;
+var shouldShowLeft = true;
+var shouldShowRight = true;
 
 void main() {
   pages = [BooksSelectionPage()];
