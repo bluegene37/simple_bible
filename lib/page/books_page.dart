@@ -42,7 +42,7 @@ class BooksSelectionPage extends StatelessWidget {
       return GridTile(
         child: InkWell(
           child: Container(
-              padding: EdgeInsets.all(10.0),
+              padding: EdgeInsets.only(top: 20.0,left: 10.0, right: 10.0),
               alignment: Alignment.center,
                 child: Column(
                   children: [
@@ -68,7 +68,6 @@ class BooksSelectionPage extends StatelessWidget {
             bookSelected = bookTitle.key,
             selectedChapter = 1,
             pages[0] = BooksLocalPage(bibleVersions, bookTitle.key, selectedChapter),
-
           },
         ),
       );

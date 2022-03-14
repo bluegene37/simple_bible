@@ -39,36 +39,42 @@ class BooksLocalPage extends StatelessWidget {
         }
       },
     ),
-    floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-    floatingActionButton: Stack(
-      children: <Widget>[
-        Align(
-          alignment: Alignment.bottomLeft,
-          child: shouldShowLeft ? buildNavigationButtonLeft() : null,
-        ),
-        Align(
-          alignment: Alignment.bottomRight,
-          child: shouldShowRight ? buildNavigationButton() : null,
-        ),
-      ],
-    ),
+    // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    // floatingActionButton: Stack(
+    //   children: <Widget>[
+    //     Align(
+    //       alignment: Alignment.bottomLeft,
+    //       child: shouldShowLeft ? buildNavigationButtonLeft() : null,
+    //     ),
+    //     Align(
+    //       alignment: Alignment.bottomRight,
+    //       child: shouldShowRight ? buildNavigationButton() : null,
+    //     ),
+    //   ],
+    // ),
   );
 
   Widget buildBooks(List<Book> books) => ListView.builder(
-
     physics: BouncingScrollPhysics(),
     itemCount: books.length,
+    padding: EdgeInsets.only(top: 10.0),
     itemBuilder: (context, index) {
-
       final book = books[index];
 
       return ListTile(
-        title: Text(
-          book.verse.toString() +' '+ book.text,
-          style: TextStyle(fontSize: 16),
+        title: RichText(
+          text: TextSpan(
+            // text: book.verse.toString()+' ',
+            // style: DefaultTextStyle.of(context).style,
+            children: <TextSpan>[
+              TextSpan(text: book.verse.toString()+' ' , style: TextStyle( fontSize: 14, color: Colors.black),  ),
+              TextSpan(text: book.text , style: TextStyle( fontSize: 16, color: Colors.black54)),
+            ],
+          ),
         ),
-        // trailing: new Icon(icon),
-        // subtitle: Text(book.text),
+        onTap: (){
+
+        },
       );
     },
   );

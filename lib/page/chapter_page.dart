@@ -32,9 +32,6 @@ class ChapterSelectionPage extends StatelessWidget {
     shrinkWrap: true,
     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
       crossAxisCount: 6,
-      // crossAxisSpacing: 8,
-      // mainAxisSpacing: 4,
-      // childAspectRatio: (100 / 30),
     ),
     itemCount: chapters.length,
     itemBuilder: (context, index) {
@@ -42,7 +39,7 @@ class ChapterSelectionPage extends StatelessWidget {
       return GridTile(
         child: InkWell(
           child: Container(
-            padding: EdgeInsets.all(10.0),
+            padding: EdgeInsets.only(top: 30.0,left: 10.0, right: 10.0, ),
             alignment: Alignment.center,
             child: Column(
               children: [

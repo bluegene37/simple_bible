@@ -17,14 +17,13 @@ var shouldShowLeft = true;
 var shouldShowRight = true;
 
 void main() {
-  pages = [BooksSelectionPage()];
+  pages = [BooksLocalPage(bibleVersions, bookSelected, selectedChapter)];
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -51,9 +50,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _currentIndex = 0;
+  int _currentIndex = 2;
 
   final GlobalKey<ScaffoldState> _key = GlobalKey();
+
 
   @override
   void initState(){
@@ -65,6 +65,12 @@ class _MyHomePageState extends State<MyHomePage> {
     final assetBundle = DefaultAssetBundle.of(context);
     mainBooksMenu = await assetBundle.loadString('assets/booktitle.json');
     mainBooks = await assetBundle.loadString('assets/'+bibleVersions+'.json');
+  }
+
+  void onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
   }
 
   @override
@@ -79,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
           )
       ),
       key: _key,
-      body: pages[0],
+      body: SafeArea(child: pages[0] ),
       bottomNavigationBar: NavigationBarTheme(
         data: NavigationBarThemeData(
           // indicatorColor: Colors.blue.shade100,
@@ -90,12 +96,9 @@ class _MyHomePageState extends State<MyHomePage> {
         child: NavigationBar(
           height: 60,
           selectedIndex: _currentIndex,
-          onDestinationSelected: (_currentIndex) =>
-            {
-              setState(() => {
-                  this._currentIndex = _currentIndex,
-                }
-              ),
+          onDestinationSelected: (_currentIndex) => {
+              onTabTapped(_currentIndex),
+
               if (this._currentIndex == 0) {
                 barTitle = "Books",
                 // preferences.setString('bookSelected',bookSelected),
