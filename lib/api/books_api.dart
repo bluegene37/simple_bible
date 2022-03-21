@@ -5,10 +5,13 @@ import 'package:simple_bible/main.dart';
 
 class BooksApi {
   static Future<List<Book>> getBooksLocally(BuildContext context, jsonName, bookTitle, bookChapter) async{
+    if(mainBooks == '') {
+      final assetBundle = DefaultAssetBundle.of(context);
+      mainBooks = await assetBundle.loadString('assets/'+bibleVersions+'.json');
+    }
     final body = json.decode(mainBooks);
     final bookList = body.map<Book>(Book.fromJson).toList();
     final resultText = bookList.where((val) => val.book == bookTitle && val.chapter == bookChapter).toList();
-
     final chapters = bookList.where((x) => x.book == bookTitle).toList();
     final unique = Set<String>();
     final uniquelist = chapters.where((x) => unique.add(x.chapter.toString())).toList();
@@ -20,15 +23,23 @@ class BooksApi {
 
 class BooksTitleApi {
   static Future<List<BookTitle>> getBooksLocally(BuildContext context, jsonName) async{
+    if(mainBooksMenu == '') {
+      final assetBundle = DefaultAssetBundle.of(context);
+      mainBooksMenu = await assetBundle.loadString('assets/booktitle.json');
+    }
     final body = json.decode(mainBooksMenu);
     final bookNames = body.map<BookTitle>(BookTitle.fromJson).toList();
-    return bookNames;
 
+    return bookNames;
   }
 }
 
 class BooksChapterApi {
   static Future<List<Book>> getBooksLocally(BuildContext context, jsonName,bookTitle) async{
+    if(mainBooks == null) {
+      final assetBundle = DefaultAssetBundle.of(context);
+      mainBooks = await assetBundle.loadString('assets/'+bibleVersions+'.json');
+    }
     final body = json.decode(mainBooks);
     final AllChapter = body.map<Book>((json) => Book.fromJson(json)).toList();
     final bookChapter = AllChapter.where((x) => x.book == bookTitle).toList();
@@ -36,5 +47,19 @@ class BooksChapterApi {
     final uniquelist = bookChapter.where((x) => unique.add(x.chapter.toString())).toList();
 
     return uniquelist;
+  }
+}
+
+class SearchApi {
+  static Future<List<Book>> getBooksLocally(BuildContext context, jsonName, SearchQuery) async{
+    if(mainBooks == '') {
+      final assetBundle = DefaultAssetBundle.of(context);
+      mainBooks = await assetBundle.loadString('assets/'+bibleVersions+'.json');
+    }
+    final body = json.decode(mainBooks);
+    final bookList = body.map<Book>(Book.fromJson).toList();
+    final resultText = bookList.where((val) => val.text == SearchQuery).toList();
+    print(resultText);
+    return resultText;
   }
 }

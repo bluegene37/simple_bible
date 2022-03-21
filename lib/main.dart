@@ -1,4 +1,6 @@
+// import 'dart:js';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:simple_bible/page/search_page.dart';
 import 'package:simple_bible/page/settings_page.dart';
 import 'package:simple_bible/page/books_page.dart';
@@ -6,15 +8,16 @@ import 'package:simple_bible/page/chapter_page.dart';
 import 'package:simple_bible/page/bible_page.dart';
 
 var pages = [];
-var mainBooks;
-var mainBooksMenu;
+var mainBooks = '';
+var mainBooksMenu = '';
 var bibleVersions = 'kjv';
-var barTitle = 'Books';
+var barTitle = 'Simple Bible';
 var bookSelected = 'Genesis';
 int selectedChapter = 1;
 int lastChapter = 1;
 var shouldShowLeft = true;
 var shouldShowRight = true;
+var globalIndex = 2.obs;
 
 void main() {
   pages = [BooksLocalPage(bibleVersions, bookSelected, selectedChapter)];
@@ -26,12 +29,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      // title: 'Flutter Demo',
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch:  Colors.teal,
-      ),
+        fontFamily: 'Roboto',
+        ),
       home: const MyHomePage(
         title:'Simple Bible',
       ),
@@ -50,42 +53,43 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _currentIndex = 2;
-
+  // int _currentIndex = 2;
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
+  // @override
+  // void initState(){
+  //   super.initState();
+  //   init();
+  // }
+  //
+  // Future init() async {
+  //
+  // }
 
-  @override
-  void initState(){
-    super.initState();
-    init();
-  }
-
-  Future init() async {
-    final assetBundle = DefaultAssetBundle.of(context);
-    mainBooksMenu = await assetBundle.loadString('assets/booktitle.json');
-    mainBooks = await assetBundle.loadString('assets/'+bibleVersions+'.json');
-  }
-
-  void onTabTapped(int index) {
+  void onTabTapped(index) {
     setState(() {
-      _currentIndex = index;
+      globalIndex.value = index;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Obx(() => Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(35.0), // here the desired height
         child:  AppBar(
             leading: Container(),
             centerTitle: true,
-            title: Text(barTitle),
+            title: Text(barTitle ,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w300,
+              ),
+            ),
           )
       ),
       key: _key,
-      body: SafeArea(child: pages[0] ),
+      body: SafeArea(child: pages[0]),
       bottomNavigationBar: NavigationBarTheme(
         data: NavigationBarThemeData(
           // indicatorColor: Colors.blue.shade100,
@@ -95,24 +99,22 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         child: NavigationBar(
           height: 60,
-          selectedIndex: _currentIndex,
-          onDestinationSelected: (_currentIndex) => {
-              onTabTapped(_currentIndex),
-
-              if (this._currentIndex == 0) {
+          selectedIndex: globalIndex.value,
+          onDestinationSelected: (globalIndex) => {
+              onTabTapped(globalIndex),
+              if (globalIndex == 0) {
                 barTitle = "Books",
-                // preferences.setString('bookSelected',bookSelected),
                 pages[0] = BooksSelectionPage()
-              } else if (this._currentIndex == 1) {
+              } else if (globalIndex == 1) {
                 barTitle = "Chapters",
                 pages[0] = ChapterSelectionPage()
-              } else if (this._currentIndex == 2) {
+              } else if (globalIndex == 2) {
                 pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter),
                 barTitle = bookSelected +' '+selectedChapter.toString()
-              } else if (this._currentIndex == 3) {
-                barTitle = "Search",
+              } else if (globalIndex == 3) {
+                barTitle = "Search in the Bible",
                 pages[0] = SearchLocalPage()
-              } else if (this._currentIndex == 4) {
+              } else if (globalIndex == 4) {
                 barTitle = "Settings",
                 pages[0] = SettingsLocalPage()
               } else {
@@ -143,6 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       )
+    )
     );
   }
 }

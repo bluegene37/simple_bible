@@ -45,9 +45,9 @@ class ChapterSelectionPage extends StatelessWidget {
               children: [
                 Text(chapterList.chapter.toString(),
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 16,
                     // color: Colors.black54,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w300,
                   ),
                 ),
               ],
@@ -55,7 +55,9 @@ class ChapterSelectionPage extends StatelessWidget {
           ),
           onTap: () => {
             selectedChapter = chapterList.chapter,
+            globalIndex.value = 2,
             pages[0] = BooksLocalPage(bibleVersions, bookSelected, chapterList.chapter),
+            barTitle = bookSelected +' '+selectedChapter.toString()
           },
         ),
       );

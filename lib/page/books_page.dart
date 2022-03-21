@@ -48,16 +48,16 @@ class BooksSelectionPage extends StatelessWidget {
                   children: [
                     Text(bookTitle.key,
                         style: TextStyle(
-                          fontSize: 15,
-                          // color: Colors.black54,
-                          fontWeight: FontWeight.w500,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w300,
                         ),
                     ),
                     Text(bookTitle.val,
                       style: TextStyle(
                         fontSize: 13,
                         color: Colors.black54,
-                        // fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w400,
+                        fontStyle: FontStyle.italic
                       ),
                     )
                   ],
@@ -67,7 +67,9 @@ class BooksSelectionPage extends StatelessWidget {
             barTitle = bookTitle.key,
             bookSelected = bookTitle.key,
             selectedChapter = 1,
+            globalIndex.value = 2,
             pages[0] = BooksLocalPage(bibleVersions, bookTitle.key, selectedChapter),
+            barTitle = bookSelected +' '+selectedChapter.toString()
           },
         ),
       );

@@ -16,7 +16,7 @@ class BooksLocalPage extends StatelessWidget {
       future: BooksApi.getBooksLocally(context, jsonName, bookTitle, bookChapter),
       builder: (context, snapshot) {
         final book = snapshot.data;
-
+        barTitle = bookSelected +' '+selectedChapter.toString();
         shouldShowRight = true;
         shouldShowLeft = true;
         if(selectedChapter == lastChapter){
@@ -67,8 +67,9 @@ class BooksLocalPage extends StatelessWidget {
             // text: book.verse.toString()+' ',
             // style: DefaultTextStyle.of(context).style,
             children: <TextSpan>[
-              TextSpan(text: book.verse.toString()+' ' , style: TextStyle( fontSize: 14, color: Colors.black),  ),
-              TextSpan(text: book.text , style: TextStyle( fontSize: 16, color: Colors.black54)),
+              TextSpan(text: book.verse.toString()+' ' ,
+                  style: TextStyle( fontSize: 13, color: Colors.black,fontFamily: 'Roboto',fontWeight: FontWeight.w400, fontStyle: FontStyle.italic)),
+              TextSpan(text: book.text , style: TextStyle( fontSize: 17, color: Colors.black87, fontFamily: 'Roboto', fontWeight: FontWeight.w300)),
             ],
           ),
         ),
@@ -79,30 +80,30 @@ class BooksLocalPage extends StatelessWidget {
     },
   );
 
-  Widget buildNavigationButton() => FloatingActionButton.small(
-    backgroundColor: Color(0xFFB2D6D3),
-    child: Icon(Icons.arrow_forward_ios_rounded),
-    onPressed: () {
-      if(selectedChapter < lastChapter){
-        selectedChapter++;
-      }else{
-        shouldShowRight = false;
-      }
-      BooksLocalPage(jsonName,bookTitle, selectedChapter);
-    },
-  );
+  // Widget buildNavigationButton() => FloatingActionButton.small(
+  //   backgroundColor: Color(0xFFB2D6D3),
+  //   child: Icon(Icons.arrow_forward_ios_rounded),
+  //   onPressed: () {
+  //     if(selectedChapter < lastChapter){
+  //       selectedChapter++;
+  //     }else{
+  //       shouldShowRight = false;
+  //     }
+  //     BooksLocalPage(jsonName,bookTitle, selectedChapter);
+  //   },
+  // );
 
-  Widget buildNavigationButtonLeft() => FloatingActionButton.small(
-    backgroundColor: Color(0xFFB2D6D3),
-    child: Icon(Icons.arrow_back_ios_rounded),
-    onPressed: () {
-      if(selectedChapter > 1){
-        selectedChapter--;
-      }else{
-        shouldShowLeft = false;
-      }
-      BooksLocalPage(jsonName,bookTitle, selectedChapter);
-    },
-  );
+  // Widget buildNavigationButtonLeft() => FloatingActionButton.small(
+  //   backgroundColor: Color(0xFFB2D6D3),
+  //   child: Icon(Icons.arrow_back_ios_rounded),
+  //   onPressed: () {
+  //     if(selectedChapter > 1){
+  //       selectedChapter--;
+  //     }else{
+  //       shouldShowLeft = false;
+  //     }
+  //     BooksLocalPage(jsonName,bookTitle, selectedChapter);
+  //   },
+  // );
 
 }
