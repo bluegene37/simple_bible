@@ -58,8 +58,7 @@ class SearchApi {
     }
     final body = json.decode(mainBooks);
     final bookList = body.map<Book>(Book.fromJson).toList();
-    final resultText = bookList.where((val) => val.text == SearchQuery).toList();
-    print(resultText);
+    final resultText =  bookList.where((val) => val.text.toLowerCase().contains(SearchQuery.toLowerCase()) == true).toList();
     return resultText;
   }
 }

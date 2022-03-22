@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:simple_bible/main.dart';
 import 'package:simple_bible/api/books_api.dart';
 import 'package:simple_bible/model/books.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
+import 'package:simple_bible/page/bible_page.dart';
 
+var searchResultBody = searchHome();
 
 class SearchLocalPage extends StatelessWidget {
   @override
@@ -11,17 +14,15 @@ class SearchLocalPage extends StatelessWidget {
     return Scaffold(
       // This is handled by the search bar itself.
       resizeToAvoidBottomInset: false,
-      body: Stack(
+      body:
+      Stack(
         fit: StackFit.expand,
         children: [
           buildFloatingSearchBar(context),
-          // SearchResultPage('Adam'),
-
         ],
       ),
     );
   }
-
 }
 
 Widget buildFloatingSearchBar(context) {
@@ -39,11 +40,11 @@ Widget buildFloatingSearchBar(context) {
     debounceDelay: const Duration(milliseconds: 500),
     onQueryChanged: (query) {
       // Call your model, bloc, controller here.
-      SearchResultPage(query);
+      // SearchResultPage(query);
     },
-    // onSubmitted: (query) {
-    //     SearchResultPage(query);
-    //   },
+    onSubmitted: (query) {
+      searchResultBody = SearchResultPage(query);
+      },
     // Specify a custom transition to be used for
     // animating between opened and closed stated.
     transition: CircularFloatingSearchBarTransition(),
@@ -55,9 +56,9 @@ Widget buildFloatingSearchBar(context) {
           onPressed: () {},
         ),
       ),
-      // FloatingSearchBarAction.searchToClear(
-      //   showIfClosed: false,
-      // ),
+      FloatingSearchBarAction.searchToClear(
+        showIfClosed: false,
+      ),
     ],
     builder: (context, transition) {
       return ClipRRect(
@@ -75,10 +76,9 @@ Widget buildFloatingSearchBar(context) {
         ),
       );
     },
+    body: searchResultBody,
   );
 }
-
-
 
 class SearchResultPage extends StatelessWidget {
   final String searchQuery;
@@ -90,7 +90,8 @@ class SearchResultPage extends StatelessWidget {
     body: FutureBuilder<List<Book>>(
       future: SearchApi.getBooksLocally(context, bibleVersions, searchQuery),
       builder: (context, snapshot) {
-        final book = snapshot.data;
+        final book = snapshot.data!;
+
         barTitle = bookSelected +' '+selectedChapter.toString();
         shouldShowRight = true;
         shouldShowLeft = true;
@@ -101,7 +102,7 @@ class SearchResultPage extends StatelessWidget {
         }else{
 
         }
-
+        barTitle = 'Search result : ' + book.length.toString();
         switch (snapshot.connectionState) {
           case ConnectionState.waiting:
             return Center(child: CircularProgressIndicator());
@@ -109,38 +110,57 @@ class SearchResultPage extends StatelessWidget {
             if(snapshot.hasError) {
               return Center(child: Text('Some error occurred!'));
             } else {
-              return buildBooks(book!);
+              return buildBooks(book);
             }
         }
       },
     ),
+);
 
-  );
 
-  Widget buildBooks(List<Book> books) => ListView.builder(
+  Widget buildBooks(List<Book> books) => Container(
+    margin: EdgeInsets.only(top:50),
+    child: ListView.builder(
     physics: BouncingScrollPhysics(),
     itemCount: books.length,
     padding: EdgeInsets.only(top: 10.0),
     itemBuilder: (context, index) {
       final book = books[index];
+      final numbering = index+1;
 
-      return ListTile(
+      return
+        Card (
+        child: ListTile(
         title: RichText(
           text: TextSpan(
-            // text: book.verse.toString()+' ',
+            // text: index.toString(),
             // style: DefaultTextStyle.of(context).style,
             children: <TextSpan>[
-              TextSpan(text: book.verse.toString()+' ' ,
-                  style: TextStyle( fontSize: 13, color: Colors.black,fontFamily: 'Roboto',fontWeight: FontWeight.w400, fontStyle: FontStyle.italic)),
+              TextSpan(text: book.book+' ', style: TextStyle( fontSize: 15, color: Colors.black,fontFamily: 'Roboto',fontWeight: FontWeight.w400, fontStyle: FontStyle.italic)),
+              TextSpan(text: book.chapter.toString()+':' , style: TextStyle( fontSize: 14, color: Colors.black,fontFamily: 'Roboto',fontWeight: FontWeight.w400, fontStyle: FontStyle.italic)),
+              TextSpan(text: book.verse.toString()+'\n' , style: TextStyle( fontSize: 14, color: Colors.black,fontFamily: 'Roboto',fontWeight: FontWeight.w400, fontStyle: FontStyle.italic)),
               TextSpan(text: book.text , style: TextStyle( fontSize: 17, color: Colors.black87, fontFamily: 'Roboto', fontWeight: FontWeight.w300)),
             ],
           ),
         ),
         onTap: (){
-
+          bookSelected = book.book;
+          selectedChapter = book.chapter;
+          globalIndex.value = 2;
+          pages[0] = BooksLocalPage(bibleVersions, book.book, book.chapter);
+          barTitle = book.book +' '+book.chapter.toString();
         },
+      )
       );
     },
+  )
   );
-
 }
+
+Widget searchHome() => ListTile(
+    leading: Icon(Icons.add),
+    title: Text('GFG title',textScaleFactor: 1.5,),
+    trailing: Icon(Icons.done),
+    subtitle: Text('This is subtitle'),
+    selected: true,
+  );

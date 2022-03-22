@@ -112,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter),
                 barTitle = bookSelected +' '+selectedChapter.toString()
               } else if (globalIndex == 3) {
-                barTitle = "Search in the Bible",
+                barTitle = "Search",
                 pages[0] = SearchLocalPage()
               } else if (globalIndex == 4) {
                 barTitle = "Settings",
