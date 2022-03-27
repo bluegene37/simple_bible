@@ -1,4 +1,3 @@
-// import 'dart:js';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simple_bible/page/search_page.dart';
@@ -11,13 +10,14 @@ var pages = [];
 var mainBooks = '';
 var mainBooksMenu = '';
 var bibleVersions = 'kjv';
-var barTitle = 'Simple Bible';
+var barTitle = 'Simple Bible'.obs;
 var bookSelected = 'Genesis';
 int selectedChapter = 1;
 int lastChapter = 1;
 var shouldShowLeft = true;
 var shouldShowRight = true;
 var globalIndex = 2.obs;
+var colorIndex = 999;
 
 void main() {
   pages = [BooksLocalPage(bibleVersions, bookSelected, selectedChapter)];
@@ -56,15 +56,15 @@ class _MyHomePageState extends State<MyHomePage> {
   // int _currentIndex = 2;
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
-  // @override
-  // void initState(){
-  //   super.initState();
-  //   init();
-  // }
-  //
-  // Future init() async {
-  //
-  // }
+  @override
+  void initState(){
+    super.initState();
+    init();
+  }
+
+  Future init() async {
+    barTitle.value = bookSelected +' '+selectedChapter.toString();
+  }
 
   void onTabTapped(index) {
     setState(() {
@@ -76,12 +76,12 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Obx(() => Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(35.0), // here the desired height
+        preferredSize: const Size.fromHeight(35.0), // here the desired height
         child:  AppBar(
             leading: Container(),
             centerTitle: true,
-            title: Text(barTitle ,
-              style: TextStyle(
+            title: Text(barTitle.value,
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w300,
               ),
@@ -94,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
         data: NavigationBarThemeData(
           // indicatorColor: Colors.blue.shade100,
           labelTextStyle: MaterialStateProperty.all(
-            TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
           )
         ),
         child: NavigationBar(
@@ -103,25 +103,25 @@ class _MyHomePageState extends State<MyHomePage> {
           onDestinationSelected: (globalIndex) => {
               onTabTapped(globalIndex),
               if (globalIndex == 0) {
-                barTitle = "Books",
-                pages[0] = BooksSelectionPage()
+                barTitle.value = "Books",
+                pages[0] = const BooksSelectionPage()
               } else if (globalIndex == 1) {
-                barTitle = "Chapters",
-                pages[0] = ChapterSelectionPage()
+                barTitle.value = "Chapters",
+                pages[0] = const ChapterSelectionPage()
               } else if (globalIndex == 2) {
                 pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter),
-                barTitle = bookSelected +' '+selectedChapter.toString()
+                barTitle.value = bookSelected +' '+selectedChapter.toString()
               } else if (globalIndex == 3) {
-                barTitle = "Search",
-                pages[0] = SearchLocalPage()
+                barTitle.value = "Search",
+                pages[0] = const SearchLocalPage()
               } else if (globalIndex == 4) {
-                barTitle = "Settings",
-                pages[0] = SettingsLocalPage()
+                barTitle.value = "Settings",
+                pages[0] = const SettingsLocalPage()
               } else {
                 pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter),
               }
           },
-          destinations: [
+          destinations: const [
             NavigationDestination(
                 icon: Icon(Icons.book_outlined),
                 label: 'Books'

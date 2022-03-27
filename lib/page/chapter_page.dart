@@ -3,9 +3,10 @@ import 'package:simple_bible/api/books_api.dart';
 import 'package:simple_bible/model/books.dart';
 import 'package:simple_bible/main.dart';
 import 'package:simple_bible/page/bible_page.dart';
-import 'dart:developer';
 
 class ChapterSelectionPage extends StatelessWidget {
+  const ChapterSelectionPage({Key? key}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -16,10 +17,10 @@ class ChapterSelectionPage extends StatelessWidget {
 
         switch (snapshot.connectionState) {
           case ConnectionState.waiting:
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           default:
             if(snapshot.hasError) {
-              return Center(child: Text('Some error occurred!'));
+              return const Center(child: Text('Some error occurred!'));
             } else {
               return buildList(book!);
             }
@@ -30,7 +31,7 @@ class ChapterSelectionPage extends StatelessWidget {
 
   Widget buildList(chapters) => GridView.builder(
     shrinkWrap: true,
-    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
       crossAxisCount: 6,
     ),
     itemCount: chapters.length,
@@ -39,12 +40,12 @@ class ChapterSelectionPage extends StatelessWidget {
       return GridTile(
         child: InkWell(
           child: Container(
-            padding: EdgeInsets.only(top: 30.0,left: 10.0, right: 10.0, ),
+            padding: const EdgeInsets.only(top: 30.0,left: 10.0, right: 10.0, ),
             alignment: Alignment.center,
             child: Column(
               children: [
                 Text(chapterList.chapter.toString(),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     // color: Colors.black54,
                     fontWeight: FontWeight.w300,
@@ -57,7 +58,8 @@ class ChapterSelectionPage extends StatelessWidget {
             selectedChapter = chapterList.chapter,
             globalIndex.value = 2,
             pages[0] = BooksLocalPage(bibleVersions, bookSelected, chapterList.chapter),
-            barTitle = bookSelected +' '+selectedChapter.toString()
+            barTitle.value = bookSelected +' '+selectedChapter.toString(),
+            colorIndex = 999
           },
         ),
       );

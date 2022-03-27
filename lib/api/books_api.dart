@@ -5,7 +5,7 @@ import 'package:simple_bible/main.dart';
 
 class BooksApi {
   static Future<List<Book>> getBooksLocally(BuildContext context, jsonName, bookTitle, bookChapter) async{
-    if(mainBooks == '') {
+    if(mainBooks.isEmpty) {
       final assetBundle = DefaultAssetBundle.of(context);
       mainBooks = await assetBundle.loadString('assets/'+bibleVersions+'.json');
     }
@@ -13,16 +13,16 @@ class BooksApi {
     final bookList = body.map<Book>(Book.fromJson).toList();
     final resultText = bookList.where((val) => val.book == bookTitle && val.chapter == bookChapter).toList();
     final chapters = bookList.where((x) => x.book == bookTitle).toList();
-    final unique = Set<String>();
-    final uniquelist = chapters.where((x) => unique.add(x.chapter.toString())).toList();
-    lastChapter = uniquelist.length;
+    final unique = <String>{};
+    final uniqueList = chapters.where((x) => unique.add(x.chapter.toString())).toList();
+    lastChapter = uniqueList.length;
 
     return resultText;
   }
 }
 
 class BooksTitleApi {
-  static Future<List<BookTitle>> getBooksLocally(BuildContext context, jsonName) async{
+  static Future<List<BookTitle>> getBooksLocally(BuildContext context) async{
     if(mainBooksMenu == '') {
       final assetBundle = DefaultAssetBundle.of(context);
       mainBooksMenu = await assetBundle.loadString('assets/booktitle.json');
@@ -36,29 +36,32 @@ class BooksTitleApi {
 
 class BooksChapterApi {
   static Future<List<Book>> getBooksLocally(BuildContext context, jsonName,bookTitle) async{
-    if(mainBooks == null) {
+    if(mainBooks.isEmpty) {
       final assetBundle = DefaultAssetBundle.of(context);
       mainBooks = await assetBundle.loadString('assets/'+bibleVersions+'.json');
     }
     final body = json.decode(mainBooks);
-    final AllChapter = body.map<Book>((json) => Book.fromJson(json)).toList();
-    final bookChapter = AllChapter.where((x) => x.book == bookTitle).toList();
-    final unique = Set<String>();
-    final uniquelist = bookChapter.where((x) => unique.add(x.chapter.toString())).toList();
+    final allChapter = body.map<Book>((json) => Book.fromJson(json)).toList();
+    final bookChapter = allChapter.where((x) => x.book == bookTitle).toList();
+    final unique = <String>{};
+    final uniqueList = bookChapter.where((x) => unique.add(x.chapter.toString())).toList();
 
-    return uniquelist;
+    return uniqueList;
   }
 }
 
 class SearchApi {
-  static Future<List<Book>> getBooksLocally(BuildContext context, jsonName, SearchQuery) async{
-    if(mainBooks == '') {
+  static Future<List<Book>> getBooksLocally(BuildContext context, jsonName, searchQuery) async{
+    if(mainBooks.isEmpty) {
       final assetBundle = DefaultAssetBundle.of(context);
       mainBooks = await assetBundle.loadString('assets/'+bibleVersions+'.json');
     }
     final body = json.decode(mainBooks);
     final bookList = body.map<Book>(Book.fromJson).toList();
-    final resultText =  bookList.where((val) => val.text.toLowerCase().contains(SearchQuery.toLowerCase()) == true).toList();
+    final resultText = bookList.where((val) =>
+        val.text.toLowerCase().contains(searchQuery.toLowerCase()) == true
+        // || val.book.toLowerCase().contains(searchQuery.toLowerCase()) == true && val.chapter == 1 && val.verse == 1
+    ).toList();
     return resultText;
   }
 }

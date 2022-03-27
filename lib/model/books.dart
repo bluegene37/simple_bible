@@ -1,8 +1,5 @@
-// import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 
 class Book {
-  final String translation;
   final String id;
   final String book;
   final int chapter;
@@ -10,7 +7,6 @@ class Book {
   final String text;
 
   const Book({
-    required this.translation,
     required this.id,
     required this.book,
     required this.chapter,
@@ -19,7 +15,6 @@ class Book {
   });
 
   static Book fromJson(json) => Book(
-    translation: json['translation_id'],
     id: json['book_id'],
     book: json['book_name'],
     chapter: json['chapter'],

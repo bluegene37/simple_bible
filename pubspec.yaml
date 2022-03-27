@@ -36,8 +36,10 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_native_splash: ^2.0.1+1
   get: ^4.6.1
-  material_floating_search_bar: ^0.3.7
+  outline_search_bar: ^2.3.0
   flutter_switch: ^0.3.2
+  substring_highlight: ^1.0.33
+  flutter_sticky_header: ^0.6.1
 #  google_fonts: ^2.3.1
 #  shared_preferences: ^2.0.13
 

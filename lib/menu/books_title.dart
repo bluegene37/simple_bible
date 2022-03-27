@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:simple_bible/page/bible_page.dart';
 
 Widget buildOTHeader(BuildContext context) => Container(
   color: Colors.teal.shade200,
@@ -192,7 +191,7 @@ Widget buildOTBooks(BuildContext context) => Container(
 
 Widget buildNTHeader(BuildContext context) => Container(
   color: Colors.teal.shade200,
-  padding: EdgeInsets.only(
+  padding: const EdgeInsets.only(
     top: 13,
     bottom: 12,
   ),

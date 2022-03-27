@@ -1,88 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:outline_search_bar/outline_search_bar.dart';
 import 'package:simple_bible/main.dart';
 import 'package:simple_bible/api/books_api.dart';
 import 'package:simple_bible/model/books.dart';
-import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:simple_bible/page/bible_page.dart';
+import 'package:substring_highlight/substring_highlight.dart';
 
-var searchResultBody = searchHome();
+var searchQueryMain = ''.obs;
 
 class SearchLocalPage extends StatelessWidget {
+  const SearchLocalPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // This is handled by the search bar itself.
       resizeToAvoidBottomInset: false,
-      body:
-      Stack(
-        fit: StackFit.expand,
+      body: Stack(
+        fit: StackFit.loose,
         children: [
-          buildFloatingSearchBar(context),
-        ],
-      ),
+        Obx(() => SearchResultPage(searchQueryMain.value)),
+        OutlineSearchBar(
+        margin: const EdgeInsets.all(8.0),
+        initText: searchQueryMain.value,
+        hintText: 'Search here...',
+        onSearchButtonPressed: (query) => {
+            searchQueryMain.value = query,
+          },
+        onClearButtonPressed: (query) => {
+            searchQueryMain.value = '',
+          },
+        onKeywordChanged: (query) => {
+          if(query.isEmpty){
+            searchQueryMain.value = query,
+          }
+          },
+        ),
+      ],
+      )
     );
   }
 }
 
-Widget buildFloatingSearchBar(context) {
-  final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
-
-  return FloatingSearchBar(
-    hint: 'Search...',
-    scrollPadding: const EdgeInsets.only(top: 16, bottom: 56),
-    transitionDuration: const Duration(milliseconds: 800),
-    transitionCurve: Curves.easeInOut,
-    physics: const BouncingScrollPhysics(),
-    axisAlignment: isPortrait ? 0.0 : -1.0,
-    openAxisAlignment: 0.0,
-    width: isPortrait ? 600 : 500,
-    debounceDelay: const Duration(milliseconds: 500),
-    onQueryChanged: (query) {
-      // Call your model, bloc, controller here.
-      // SearchResultPage(query);
-    },
-    onSubmitted: (query) {
-      searchResultBody = SearchResultPage(query);
-      },
-    // Specify a custom transition to be used for
-    // animating between opened and closed stated.
-    transition: CircularFloatingSearchBarTransition(),
-    actions: [
-      FloatingSearchBarAction(
-        showIfOpened: false,
-        child: CircularButton(
-          icon: const Icon(Icons.book_outlined),
-          onPressed: () {},
-        ),
-      ),
-      FloatingSearchBarAction.searchToClear(
-        showIfClosed: false,
-      ),
-    ],
-    builder: (context, transition) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Material(
-          color: Colors.white,
-          elevation: 4.0,
-          child:
-          Column(
-            // mainAxisSize: MainAxisSize.min,
-            // children: Colors.accents.map((color) {
-            //   return Container(height: 112, color: color);
-            // }).toList(),
-          ),
-        ),
-      );
-    },
-    body: searchResultBody,
-  );
-}
-
 class SearchResultPage extends StatelessWidget {
   final String searchQuery;
-
   const SearchResultPage(this.searchQuery);
 
   @override
@@ -90,77 +51,65 @@ class SearchResultPage extends StatelessWidget {
     body: FutureBuilder<List<Book>>(
       future: SearchApi.getBooksLocally(context, bibleVersions, searchQuery),
       builder: (context, snapshot) {
-        final book = snapshot.data!;
-
-        barTitle = bookSelected +' '+selectedChapter.toString();
-        shouldShowRight = true;
-        shouldShowLeft = true;
-        if(selectedChapter == lastChapter){
-          shouldShowRight = false;
-        }else if(selectedChapter == 1){
-          shouldShowLeft = false;
+        if(snapshot.hasData){
+          final searchResults = snapshot.data!;
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              return const Center(child: CircularProgressIndicator());
+            default:
+              if(snapshot.hasError) {
+                return const Center(child: Text('No Search Result!'));
+              }else{
+                if(searchQueryMain.value.isNotEmpty && searchResults.isNotEmpty){
+                  Future.delayed(Duration.zero,(){
+                    barTitle.value =  'Search result: '+ searchResults.length.toString();
+                  });
+                  return buildSearchResult(searchResults);
+                }else if(searchQueryMain.value.isNotEmpty && searchResults.isEmpty ){
+                  Future.delayed(Duration.zero,(){
+                    barTitle.value = 'Search';
+                  });
+                  return Center(child: Text('No Result for: $searchQueryMain'));
+                }else{
+                  Future.delayed(Duration.zero,(){
+                    barTitle.value = 'Search';
+                  });
+                  return const Center(child: Text(' '));
+                }
+              }
+          }
         }else{
-
-        }
-        barTitle = 'Search result : ' + book.length.toString();
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return Center(child: CircularProgressIndicator());
-          default:
-            if(snapshot.hasError) {
-              return Center(child: Text('Some error occurred!'));
-            } else {
-              return buildBooks(book);
-            }
+          return const Center(child: Text(' '));
         }
       },
     ),
 );
 
 
-  Widget buildBooks(List<Book> books) => Container(
-    margin: EdgeInsets.only(top:50),
+  Widget buildSearchResult(List<Book> books) => Container(
+    margin: const EdgeInsets.only(top:50),
     child: ListView.builder(
-    physics: BouncingScrollPhysics(),
+    physics: const BouncingScrollPhysics(),
     itemCount: books.length,
-    padding: EdgeInsets.only(top: 10.0),
+    padding: const EdgeInsets.only(top: 10.0),
     itemBuilder: (context, index) {
       final book = books[index];
-      final numbering = index+1;
 
-      return
-        Card (
-        child: ListTile(
-        title: RichText(
-          text: TextSpan(
-            // text: index.toString(),
-            // style: DefaultTextStyle.of(context).style,
-            children: <TextSpan>[
-              TextSpan(text: book.book+' ', style: TextStyle( fontSize: 15, color: Colors.black,fontFamily: 'Roboto',fontWeight: FontWeight.w400, fontStyle: FontStyle.italic)),
-              TextSpan(text: book.chapter.toString()+':' , style: TextStyle( fontSize: 14, color: Colors.black,fontFamily: 'Roboto',fontWeight: FontWeight.w400, fontStyle: FontStyle.italic)),
-              TextSpan(text: book.verse.toString()+'\n' , style: TextStyle( fontSize: 14, color: Colors.black,fontFamily: 'Roboto',fontWeight: FontWeight.w400, fontStyle: FontStyle.italic)),
-              TextSpan(text: book.text , style: TextStyle( fontSize: 17, color: Colors.black87, fontFamily: 'Roboto', fontWeight: FontWeight.w300)),
-            ],
-          ),
-        ),
-        onTap: (){
-          bookSelected = book.book;
-          selectedChapter = book.chapter;
-          globalIndex.value = 2;
-          pages[0] = BooksLocalPage(bibleVersions, book.book, book.chapter);
-          barTitle = book.book +' '+book.chapter.toString();
-        },
-      )
-      );
-    },
-  )
+      return Card (
+          child: ListTile(
+          title: SubstringHighlight(text: book.book+' '+book.chapter.toString()+':'+book.verse.toString() ,term: searchQueryMain.value, textStyle: const TextStyle(fontSize: 15, color: Colors.black,fontFamily: 'Roboto',fontWeight: FontWeight.w400, fontStyle: FontStyle.italic)),
+          subtitle: SubstringHighlight(text: book.text ,term: searchQueryMain.value, textStyle: const TextStyle( fontSize: 17, color: Colors.black87, fontFamily: 'Roboto', fontWeight: FontWeight.w300)),
+          onTap: (){
+              bookSelected = book.book;
+              selectedChapter = book.chapter;
+              globalIndex.value = 2;
+              pages[0] = BooksLocalPage(bibleVersions, book.book, book.chapter);
+              barTitle.value = book.book +' '+book.chapter.toString();
+              colorIndex = book.verse - 1;
+            },
+          )
+        );
+      },
+    )
   );
 }
-
-Widget searchHome() => ListTile(
-    leading: Icon(Icons.add),
-    title: Text('GFG title',textScaleFactor: 1.5,),
-    trailing: Icon(Icons.done),
-    subtitle: Text('This is subtitle'),
-    selected: true,
-  );
