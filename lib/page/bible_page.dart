@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:simple_bible/api/books_api.dart';
 import 'package:simple_bible/model/books.dart';
 import 'package:simple_bible/main.dart';
+
+final ItemScrollController itemScrollController = ItemScrollController();
+// final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
+
 
 
 class BooksLocalPage extends StatelessWidget {
   final String jsonName;
   final String bookTitle;
   final int bookChapter;
+  final int jumpTo;
 
-  const BooksLocalPage(this.jsonName,this.bookTitle, this.bookChapter);
+  const BooksLocalPage(this.jsonName,this.bookTitle, this.bookChapter, this.jumpTo );
+
+  // void jumpToFunc() =>  itemScrollController.jumpTo(index: jumpTo);
+  void jumpToFunc() =>    itemScrollController.scrollTo(index: jumpTo, duration: const Duration(seconds: 1 ), curve: Curves.easeInOutCubic);
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -17,6 +26,7 @@ class BooksLocalPage extends StatelessWidget {
       future: BooksApi.getBooksLocally(context, jsonName, bookTitle, bookChapter),
       builder: (context, snapshot) {
         final book = snapshot.data;
+        WidgetsBinding.instance?.addPostFrameCallback((_) => Future.delayed(Duration.zero, () => jumpToFunc() ) );
 
         shouldShowRight = true;
         shouldShowLeft = true;
@@ -38,6 +48,7 @@ class BooksLocalPage extends StatelessWidget {
               return buildBooks(book!);
             }
         }
+
       },
     ),
     // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -56,12 +67,13 @@ class BooksLocalPage extends StatelessWidget {
   );
 
 
-  Widget buildBooks(List<Book> books) => ListView.builder(
+  Widget buildBooks(List<Book> books) => ScrollablePositionedList.builder(
     physics: const BouncingScrollPhysics(),
     padding: const EdgeInsets.only(top: 10.0),
     itemCount: books.length,
     itemBuilder: (context, index) {
       final book = books[index];
+      // WidgetsBinding.instance?.addPostFrameCallback((_) => itemScrollController.jumpTo(index: jumpTo));
 
       return ListTile(
         tileColor: index == colorIndex ? Colors.yellowAccent.shade100 : null,
@@ -81,6 +93,8 @@ class BooksLocalPage extends StatelessWidget {
         },
       );
     },
+    itemScrollController: itemScrollController,
+    // itemPositionsListener: itemPositionsListener,
   );
 
   // Widget buildNavigationButton() => FloatingActionButton.small(
@@ -110,4 +124,3 @@ class BooksLocalPage extends StatelessWidget {
   // );
 
 }
-

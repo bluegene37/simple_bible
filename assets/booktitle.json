@@ -1,245 +1,331 @@
-[{
-  "key": "Genesis",
-  "val": "50 Chapters, 1,533 Verses"
-}, {
-  "key": "Exodus",
-  "val": "40 Chapters, 1,213 Verses"
-}, {
-  "key": "Leviticus",
-  "val": "27 Chapters, 859 Verses"
-}, {
-  "key": "Numbers",
-  "val": "36 Chapters, 1288 Verses"
-}, {
-  "key": "Deuteronomy",
-  "val": "34 Chapters, 959 Verses"
-}, {
-  "key": "Joshua",
-  "val": "24 Chapters, 658 Verses"
-}, {
-  "key": "Judges",
-  "val": "21 Chapters, 618 Verses"
-}, {
-  "key": "Ruth",
-  "val": "4 Chapters, 85 Verses"
-}, {
-  "key": "1 Samuel",
-  "val": "31 Chapters, 810 Verses"
-}, {
-  "key": "2 Samuel",
-  "val": "24 Chapters, 695 Verses"
-}, {
-  "key": "1 Kings",
-  "val": " 22 Chapters, 816 Verses"
-}, {
-  "key": "2 Kings",
-  "val": "25 Chapters, 719 Verses"
-}, {
-  "key": "1 Chronicles",
-  "val": "29 Chapters, 942 Verses"
-}, {
-  "key": "2 Chronicles",
-  "val": "36 Chapters, 822 Verses"
-}, {
-  "key": "Ezra",
-  "val": "10 Chapters, 280 Verses"
-}, {
-  "key": "Nehemiah",
-  "val": " 13 Chapters, 406 Verses"
-}, {
-  "key": "Esther",
-  "val": "10 Chapters, 167 Verses"
-}, {
-  "key": "Job",
-  "val": "42 Chapters, 1,070 Verses"
-}, {
-  "key": "Psalms",
-  "val": "150 Chapters, 2,461 Verses"
-}, {
-  "key": "Proverbs",
-  "val": "31 Chapters, 915 Verses"
-},
+[
   {
+    "testament": "old",
+    "key": "Genesis",
+    "val": "50 Chapters, 1,533 Verses"
+  },
+  {
+    "testament": "old",
+    "key": "Exodus",
+    "val": "40 Chapters, 1,213 Verses"
+  },
+  {
+    "testament": "old",
+    "key": "Leviticus",
+    "val": "27 Chapters, 859 Verses"
+  },
+  {
+    "testament": "old",
+    "key": "Numbers",
+    "val": "36 Chapters, 1288 Verses"
+  },
+  {
+    "testament": "old",
+    "key": "Deuteronomy",
+    "val": "34 Chapters, 959 Verses"
+  },
+  {
+    "testament": "old",
+    "key": "Joshua",
+    "val": "24 Chapters, 658 Verses"
+  },
+  {
+    "testament": "old",
+    "key": "Judges",
+    "val": "21 Chapters, 618 Verses"
+  },
+  {
+    "testament": "old",
+    "key": "Ruth",
+    "val": "4 Chapters, 85 Verses"
+  },
+  {
+    "testament": "old",
+    "key": "1 Samuel",
+    "val": "31 Chapters, 810 Verses"
+  },
+  {
+    "testament": "old",
+    "key": "2 Samuel",
+    "val": "24 Chapters, 695 Verses"
+  },
+  {
+    "testament": "old",
+    "key": "1 Kings",
+    "val": " 22 Chapters, 816 Verses"
+  },
+  {
+    "testament": "old",
+    "key": "2 Kings",
+    "val": "25 Chapters, 719 Verses"
+  },
+  {
+    "testament": "old",
+    "key": "1 Chronicles",
+    "val": "29 Chapters, 942 Verses"
+  },
+  {
+    "testament": "old",
+    "key": "2 Chronicles",
+    "val": "36 Chapters, 822 Verses"
+  },
+  {
+    "testament": "old",
+    "key": "Ezra",
+    "val": "10 Chapters, 280 Verses"
+  },
+  {
+    "testament": "old",
+    "key": "Nehemiah",
+    "val": " 13 Chapters, 406 Verses"
+  },
+  {
+    "testament": "old",
+    "key": "Esther",
+    "val": "10 Chapters, 167 Verses"
+  },
+  {
+    "testament": "old",
+    "key": "Job",
+    "val": "42 Chapters, 1,070 Verses"
+  },
+  {
+    "testament": "old",
+    "key": "Psalms",
+    "val": "150 Chapters, 2,461 Verses"
+  },
+  {
+    "testament": "old",
+    "key": "Proverbs",
+    "val": "31 Chapters, 915 Verses"
+  },
+  {
+    "testament": "old",
     "key": "Ecclesiastes",
     "val": "12 Chapters, 222 Verses"
   },
   {
+    "testament": "old",
     "key": "Song of Solomon",
     "val": "8 Chapters, 117 Verses"
   },
   {
+    "testament": "old",
     "key": "Isaiah",
     "val": "66 Chapters, 1,292 Verses"
   },
   {
+    "testament": "old",
     "key": "Jeremiah",
     "val": "52 Chapters, 1,364 Verses"
   },
   {
+    "testament": "old",
     "key": "Lamentations",
     "val": "5 Chapters, 154 Verses"
   },
   {
+    "testament": "old",
     "key": "Ezekiel",
     "val": "48 Chapters, 1,273 Verses"
   },
   {
+    "testament": "old",
     "key": "Daniel",
     "val": "12 Chapters, 357 Verses"
   },
   {
+    "testament": "old",
     "key": "Hosea",
     "val": "14 Chapters, 197 Verses"
   },
   {
+    "testament": "old",
     "key": "Joel",
     "val": "3 Chapters, 73 Verses"
   },
   {
+    "testament": "old",
     "key": "Amos",
     "val": "9 Chapters, 146 Verses"
   },
   {
+    "testament": "old",
     "key": "Obadiah",
     "val": "1 Chapters, 21 Verses"
   },
   {
+    "testament": "old",
     "key": "Jonah",
     "val": "4 Chapters, 48 Verses"
   },
   {
+    "testament": "old",
     "key": "Micah",
     "val": "7 Chapters, 105 Verses"
   },
   {
+    "testament": "old",
     "key": "Nahum",
     "val": "3 Chapters, 47 Verses"
   },
   {
+    "testament": "old",
     "key": "Habakkuk",
     "val": "3 Chapters, 56 Verses"
   },
   {
+    "testament": "old",
     "key": "Zephaniah",
     "val": "3 Chapters, 53 Verses"
   },
   {
+    "testament": "old",
     "key": "Haggai",
     "val": "2 Chapters, 38 Verses"
   },
   {
+    "testament": "old",
     "key": "Zechariah",
     "val": "14 Chapters, 211 Verses"
   },
   {
+    "testament": "old",
     "key": "Malachi",
     "val": "4 Chapters, 55 Verses"
   },
   {
+    "testament": "new",
     "key": "Matthew",
     "val": "28 Chapters, 1,071 Verses"
   },
   {
+    "testament": "new",
     "key": "Mark",
     "val": "16 Chapters, 678 Verses"
   },
   {
+    "testament": "new",
     "key": "Luke",
     "val": "24 Chapters, 1,151 Verses"
   },
   {
+    "testament": "new",
     "key": "John",
     "val": "21 Chapters, 879 Verses"
   },
   {
+    "testament": "new",
     "key": "Acts",
     "val": "28 Chapters, 1,007 Verses"
   },
   {
+    "testament": "new",
     "key": "Romans",
     "val": "16 Chapters, 433 Verses"
   },
   {
+    "testament": "new",
     "key": "1 Corinthians",
     "val": "16 Chapters, 437 Verses"
   },
   {
+    "testament": "new",
     "key": "2 Corinthians",
     "val": "13  Chapters, 257 Verses"
   },
   {
+    "testament": "new",
     "key": "Galatians",
     "val": "6 Chapters, 149 Verses"
   },
   {
+    "testament": "new",
     "key": "Ephesians",
     "val": "6 Chapters, 155 Verses"
   },
   {
+    "testament": "new",
     "key": "Philippians",
     "val": "4 Chapters, 104 Verses"
   },
   {
+    "testament": "new",
     "key": "Colossians",
     "val": " 4 Chapters, 95 Verses"
   },
   {
+    "testament": "new",
     "key": "1 Thessalonians",
     "val": "5 Chapters, 89 Verses"
   },
   {
+    "testament": "new",
     "key": "2 Thessalonians",
     "val": "3 Chapters, 47 Verses"
   },
   {
+    "testament": "new",
     "key": "1 Timothy",
     "val": "6 Chapters, 133 Verses"
   },
   {
+    "testament": "new",
     "key": "2 Timothy",
     "val": " 4 Chapters, 83 Verses"
   },
   {
+    "testament": "new",
     "key": "Titus",
     "val": "3 Chapters, 46 Verses"
   },
   {
+    "testament": "new",
     "key": "Philemon",
     "val": "1 Chapter, 25 Verses"
   },
   {
+    "testament": "new",
     "key": "Hebrews",
     "val": "13 Chapters, 303 Verses"
   },
   {
+    "testament": "new",
     "key": "James",
     "val": "5 Chapters, 108 Verses"
   },
   {
+    "testament": "new",
     "key": "1 Peter",
     "val": "5 Chapters, 105 Verses"
   },
   {
+    "testament": "new",
     "key": "2 Peter",
     "val": "3 Chapters, 61 Verses"
   },
   {
+    "testament": "new",
     "key": "1 John",
     "val": "5 Chapters, 105 Verses"
   },
   {
+    "testament": "new",
     "key": "2 John",
     "val": "1 Chapter, 13 Verses"
   },
   {
+    "testament": "new",
     "key": "3 John",
     "val": "1 Chapter, 14 Verses"
   },
   {
+    "testament": "new",
     "key": "Jude",
     "val": "1 Chapter, 25 Verses"
   },
   {
+    "testament": "new",
     "key": "Revelation",
     "val": "22 Chapters, 404 Verses"
   }

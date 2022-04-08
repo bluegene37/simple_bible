@@ -20,7 +20,7 @@ var globalIndex = 2.obs;
 var colorIndex = 999;
 
 void main() {
-  pages = [BooksLocalPage(bibleVersions, bookSelected, selectedChapter)];
+  pages = [BooksLocalPage(bibleVersions, bookSelected, selectedChapter, 0)];
   runApp(const MyApp());
 }
 
@@ -32,8 +32,8 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch:  Colors.teal,
         fontFamily: 'Roboto',
+        primarySwatch:  Colors.teal,
         ),
       home: const MyHomePage(
         title:'Simple Bible',
@@ -109,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 barTitle.value = "Chapters",
                 pages[0] = const ChapterSelectionPage()
               } else if (globalIndex == 2) {
-                pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter),
+                pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter, 0),
                 barTitle.value = bookSelected +' '+selectedChapter.toString()
               } else if (globalIndex == 3) {
                 barTitle.value = "Search",
@@ -118,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 barTitle.value = "Settings",
                 pages[0] = const SettingsLocalPage()
               } else {
-                pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter),
+                pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter,0),
               }
           },
           destinations: const [

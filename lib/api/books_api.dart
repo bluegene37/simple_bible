@@ -22,10 +22,10 @@ class BooksApi {
 }
 
 class BooksTitleApi {
-  static Future<List<BookTitle>> getBooksLocally(BuildContext context) async{
+  static Future<List<BookTitle>> getBooksLocally(BuildContext context, testament) async{
     if(mainBooksMenu == '') {
       final assetBundle = DefaultAssetBundle.of(context);
-      mainBooksMenu = await assetBundle.loadString('assets/booktitle.json');
+      mainBooksMenu = await assetBundle.loadString('assets/'+testament+'.json');
     }
     final body = json.decode(mainBooksMenu);
     final bookNames = body.map<BookTitle>(BookTitle.fromJson).toList();

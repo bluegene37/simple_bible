@@ -103,7 +103,7 @@ class SearchResultPage extends StatelessWidget {
               bookSelected = book.book;
               selectedChapter = book.chapter;
               globalIndex.value = 2;
-              pages[0] = BooksLocalPage(bibleVersions, book.book, book.chapter);
+              pages[0] = BooksLocalPage(bibleVersions, book.book, book.chapter,book.verse > 4 ? book.verse - 4 : book.verse - 1);
               barTitle.value = book.book +' '+book.chapter.toString();
               colorIndex = book.verse - 1;
             },

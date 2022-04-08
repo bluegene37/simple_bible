@@ -26,15 +26,18 @@ class Book {
 
 
 class BookTitle {
+  final String testament;
   final String key;
   final String val;
 
   const BookTitle({
+    required this.testament,
     required this.key,
     required this.val,
   });
 
   static BookTitle fromJson(json) => BookTitle(
+      testament: json['testament'],
       key: json['key'],
       val: json['val']
   );
