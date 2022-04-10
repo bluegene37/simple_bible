@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:simple_bible/api/books_api.dart';
 import 'package:simple_bible/model/books.dart';
@@ -7,7 +9,8 @@ import 'package:simple_bible/main.dart';
 final ItemScrollController itemScrollController = ItemScrollController();
 // final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
 
-
+var shadeIdx = 8;
+var colorFade = const Color(0xfffbc02d).obs;
 
 class BooksLocalPage extends StatelessWidget {
   final String jsonName;
@@ -17,8 +20,8 @@ class BooksLocalPage extends StatelessWidget {
 
   const BooksLocalPage(this.jsonName,this.bookTitle, this.bookChapter, this.jumpTo );
 
-  // void jumpToFunc() =>  itemScrollController.jumpTo(index: jumpTo);
-  void jumpToFunc() =>    itemScrollController.scrollTo(index: jumpTo, duration: const Duration(seconds: 1 ), curve: Curves.easeInOutCubic);
+  void jumpToFunc() =>  itemScrollController.jumpTo(index: jumpTo);
+  // void jumpToFunc() =>    itemScrollController.scrollTo(index: jumpTo, duration: const Duration(seconds: 1 ), curve: Curves.easeInOutCubic);
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -26,7 +29,23 @@ class BooksLocalPage extends StatelessWidget {
       future: BooksApi.getBooksLocally(context, jsonName, bookTitle, bookChapter),
       builder: (context, snapshot) {
         final book = snapshot.data;
-        WidgetsBinding.instance?.addPostFrameCallback((_) => Future.delayed(Duration.zero, () => jumpToFunc() ) );
+        // WidgetsBinding.instance?.addPostFrameCallback((_) => Future.delayed(Duration.zero, () => jumpToFunc() ) );
+        Future.delayed(Duration.zero, () => {
+              jumpToFunc(),
+              if(colorIndex < 999){
+                  shadeIdx = 8,
+                  colorFade.value = Color(shadesList[8]),
+              Timer.periodic(const Duration(seconds: 2), (timer) =>
+              {
+                if(shadeIdx > 0){shadeIdx--},
+                colorFade.value = Color(shadesList[shadeIdx]),
+                if(shadeIdx < 1 || shadeIdx == 0){
+                  timer.cancel(),
+                },
+              }),
+            }
+          }
+        );
 
         shouldShowRight = true;
         shouldShowLeft = true;
@@ -73,24 +92,38 @@ class BooksLocalPage extends StatelessWidget {
     itemCount: books.length,
     itemBuilder: (context, index) {
       final book = books[index];
-      // WidgetsBinding.instance?.addPostFrameCallback((_) => itemScrollController.jumpTo(index: jumpTo));
+      var selectedIdx = false.obs;
+      selectedIdx.value = index == colorIndex ? true : false;
 
-      return ListTile(
-        tileColor: index == colorIndex ? Colors.yellowAccent.shade100 : null,
+      return Obx(() => ListTile(
+        tileColor: selectedIdx.value ? colorFade.value : null,
         title: RichText(
           text: TextSpan(
             // text: book.verse.toString()+' ',
             // style: DefaultTextStyle.of(context).style,
             children: <TextSpan>[
-              TextSpan(text: book.verse.toString()+' ',
-                  style: const TextStyle( fontSize: 13, color: Colors.black,fontFamily: 'Roboto',fontWeight: FontWeight.w400, fontStyle: FontStyle.italic)),
-              TextSpan(text: book.text , style: const TextStyle( fontSize: 17, color: Colors.black87, fontFamily: 'Roboto', fontWeight: FontWeight.w300)),
+              TextSpan(text: book.verse.toString()+'. ',
+                  style: TextStyle(
+                      fontSize: 13,
+                      color: globalTextColor,
+                      // fontFamily: 'Roboto',
+                      fontWeight: FontWeight.w400,
+                      fontStyle: FontStyle.italic)
+              ),
+              TextSpan(text: book.text ,
+                  style: TextStyle(
+                      fontSize: 17,
+                      color: globalTextColor,
+                      // fontFamily: 'Roboto',
+                      fontWeight: FontWeight.w300)
+              ),
             ],
           ),
         ),
         onTap: (){
 
         },
+      )
       );
     },
     itemScrollController: itemScrollController,
@@ -124,3 +157,4 @@ class BooksLocalPage extends StatelessWidget {
   // );
 
 }
+

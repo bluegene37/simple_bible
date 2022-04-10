@@ -1,3 +1,4 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:simple_bible/page/search_page.dart';
@@ -18,6 +19,11 @@ var shouldShowLeft = true;
 var shouldShowRight = true;
 var globalIndex = 2.obs;
 var colorIndex = 999;
+var globalColor = Colors.grey.shade300;
+var globalTextColor = Colors.black;
+var globalSearchColor = Colors.red;
+var globalHighLightColor = Colors.yellow.shade200;
+var shadesList = [0xfffafafa,0xfffffde7,0xfffff9c4,0xfffff59d,0xfffff176,0xffffee58,0xffffeb3b,0xfffdd835,0xfffbc02d];
 
 void main() {
   pages = [BooksLocalPage(bibleVersions, bookSelected, selectedChapter, 0)];
@@ -29,16 +35,29 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        fontFamily: 'Roboto',
-        primarySwatch:  Colors.teal,
+    return AdaptiveTheme(
+        light: ThemeData(
+          brightness: Brightness.light,
+          primarySwatch: Colors.grey,
+          accentColor: Colors.grey,
         ),
-      home: const MyHomePage(
-        title:'Simple Bible',
-      ),
+        dark: ThemeData(
+          brightness: Brightness.dark,
+          primarySwatch: Colors.grey,
+          accentColor: Colors.white,
+        ),
+        initial: AdaptiveThemeMode.light,
+        builder: (theme, darkTheme) => GetMaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: theme,
+          darkTheme: darkTheme,
+          home: const MyHomePage(
+            title:'Simple Bible',
+          ),
+        )
     );
+
+
   }
 }
 
@@ -103,14 +122,15 @@ class _MyHomePageState extends State<MyHomePage> {
           onDestinationSelected: (globalIndex) => {
               onTabTapped(globalIndex),
               if (globalIndex == 0) {
-                barTitle.value = "Books",
+                barTitle.value = "Books (66)",
                 pages[0] = const BooksSelectionPage()
               } else if (globalIndex == 1) {
                 barTitle.value = "Chapters",
                 pages[0] = const ChapterSelectionPage()
               } else if (globalIndex == 2) {
                 pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter, 0),
-                barTitle.value = bookSelected +' '+selectedChapter.toString()
+                barTitle.value = bookSelected +' '+selectedChapter.toString(),
+                colorIndex = 999
               } else if (globalIndex == 3) {
                 barTitle.value = "Search",
                 pages[0] = const SearchLocalPage()

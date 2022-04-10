@@ -37,14 +37,21 @@ class ChapterSelectionPage extends StatelessWidget {
     itemCount: chapters.length,
     itemBuilder: (context, index) {
       final chapterList = chapters[index];
+
       return GridTile(
         child: InkWell(
           child: Container(
-            padding: const EdgeInsets.only(top: 30.0,left: 10.0, right: 10.0, ),
-            alignment: Alignment.center,
+            margin: const EdgeInsets.all(5.0),
+            decoration: BoxDecoration(shape: BoxShape.circle,color: selectedChapter == chapterList.chapter ? globalHighLightColor : null),
+            // color: selectedChapter == chapterList.chapter ? globalHighLightColor : null,
+            // padding: const EdgeInsets.only(top: 20.0,left: 10.0, right: 10.0, ),
+            // alignment: Alignment.center,
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(chapterList.chapter.toString(),
+                  // textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 16,
                     // color: Colors.black54,

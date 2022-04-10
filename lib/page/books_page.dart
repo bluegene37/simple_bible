@@ -6,6 +6,7 @@ import 'package:simple_bible/page/bible_page.dart';
 import 'package:simple_bible/api/books_api.dart';
 import 'package:simple_bible/model/books.dart';
 
+
 class BooksSelectionPage extends StatelessWidget {
   const BooksSelectionPage({Key? key}) : super(key: key);
 
@@ -40,13 +41,14 @@ class BooksSelectionPage extends StatelessWidget {
           SliverStickyHeader.builder(
               builder: (context, state) => Container(
                     height: 40.0,
-                    color: (state.isPinned ? Colors.teal : Colors.lightBlue)
-                        .withOpacity(1.0 - state.scrollPercentage),
+                    color: (state.isPinned ? globalColor : globalColor).withOpacity(1.0 - state.scrollPercentage),
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     alignment: Alignment.center,
                     child: const Text(
-                      'Old Testament',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+                      'Old Testament (39)',
+                      style: TextStyle(
+                          // color: Colors.white,
+                          fontSize: 16),
                     ),
                   ),
               sliver: SliverGrid(
@@ -62,8 +64,14 @@ class BooksSelectionPage extends StatelessWidget {
 
                     return InkWell(
                       child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        // only(top: 20.0, left: 10.0, right: 10.0),
+                        margin: const EdgeInsets.all(5.0),
+                        padding: const EdgeInsets.symmetric(vertical: 5.0),
+                        // color: bookSelected == bookTitle.key ? globalHighLightColor : null,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          color: bookSelected == bookTitle.key ? globalHighLightColor : null,
+                          borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                        ),
                         alignment: Alignment.center,
                         child: Column(
                           children: [
@@ -78,7 +86,7 @@ class BooksSelectionPage extends StatelessWidget {
                               bookTitle.val,
                               style: const TextStyle(
                                   fontSize: 13,
-                                  color: Colors.black54,
+                                  // color: Colors.black54,
                                   fontWeight: FontWeight.w400,
                                   fontStyle: FontStyle.italic),
                             )
@@ -92,7 +100,7 @@ class BooksSelectionPage extends StatelessWidget {
                         pages[0] = BooksLocalPage( bibleVersions, bookTitle.key, selectedChapter,0),
                         barTitle.value =
                             bookSelected + ' ' + selectedChapter.toString(),
-                        colorIndex = 999
+                        colorIndex = 999,
                       },
                     );
                   },
@@ -102,13 +110,12 @@ class BooksSelectionPage extends StatelessWidget {
           SliverStickyHeader.builder(
               builder: (context, state) => Container(
                     height: 40.0,
-                    color: (state.isPinned ? Colors.teal : Colors.teal.shade200)
-                        .withOpacity(1.0 - state.scrollPercentage),
+                    color: (state.isPinned ? globalColor : globalColor).withOpacity(1.0 - state.scrollPercentage),
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     alignment: Alignment.center,
                     child: const Text(
-                      'New Testament',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+                      'New Testament (27)',
+                      style: TextStyle(fontSize: 16),
                     ),
                   ),
               sliver: SliverGrid(
@@ -124,8 +131,14 @@ class BooksSelectionPage extends StatelessWidget {
 
                     return InkWell(
                       child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        // only(top: 20.0, left: 10.0, right: 10.0),
+                        margin: const EdgeInsets.all(5.0),
+                        padding: const EdgeInsets.symmetric(vertical: 5.0),
+                        // color: bookSelected == bookTitle.key ? globalHighLightColor : null,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          color: bookSelected == bookTitle.key ? globalHighLightColor : null,
+                          borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                        ),
                         alignment: Alignment.center,
                         child: Column(
                           children: [
@@ -140,7 +153,7 @@ class BooksSelectionPage extends StatelessWidget {
                               bookTitle.val,
                               style: const TextStyle(
                                   fontSize: 13,
-                                  color: Colors.black54,
+                                  // color: Colors.black54,
                                   fontWeight: FontWeight.w400,
                                   fontStyle: FontStyle.italic),
                             )
@@ -154,7 +167,7 @@ class BooksSelectionPage extends StatelessWidget {
                         pages[0] = BooksLocalPage(bibleVersions, bookTitle.key, selectedChapter,0),
                         barTitle.value =
                             bookSelected + ' ' + selectedChapter.toString(),
-                        colorIndex = 999
+                        colorIndex = 999,
                       },
                     );
                   },
@@ -195,7 +208,7 @@ class BooksSelectionPage extends StatelessWidget {
                       bookTitle.val,
                       style: const TextStyle(
                           fontSize: 13,
-                          color: Colors.black54,
+                          // color: Colors.black54,
                           fontWeight: FontWeight.w400,
                           fontStyle: FontStyle.italic),
                     )

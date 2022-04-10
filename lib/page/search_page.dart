@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:outline_search_bar/outline_search_bar.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:simple_bible/main.dart';
 import 'package:simple_bible/api/books_api.dart';
 import 'package:simple_bible/model/books.dart';
@@ -8,6 +9,7 @@ import 'package:simple_bible/page/bible_page.dart';
 import 'package:substring_highlight/substring_highlight.dart';
 
 var searchQueryMain = ''.obs;
+var searchIdxSel = 99999999.obs;
 
 class SearchLocalPage extends StatelessWidget {
   const SearchLocalPage({Key? key}) : super(key: key);
@@ -29,6 +31,7 @@ class SearchLocalPage extends StatelessWidget {
           },
         onClearButtonPressed: (query) => {
             searchQueryMain.value = '',
+          searchIdxSel.value = 99999999
           },
         onKeywordChanged: (query) => {
           if(query.isEmpty){
@@ -51,6 +54,11 @@ class SearchResultPage extends StatelessWidget {
     body: FutureBuilder<List<Book>>(
       future: SearchApi.getBooksLocally(context, bibleVersions, searchQuery),
       builder: (context, snapshot) {
+        Future.delayed(Duration.zero, () => {
+        if(searchIdxSel < 99999999){
+            itemScrollController.jumpTo(index: searchIdxSel.value)
+          }
+        });
         if(snapshot.hasData){
           final searchResults = snapshot.data!;
           switch (snapshot.connectionState) {
@@ -87,29 +95,54 @@ class SearchResultPage extends StatelessWidget {
 
 
   Widget buildSearchResult(List<Book> books) => Container(
-    margin: const EdgeInsets.only(top:50),
-    child: ListView.builder(
+    margin: const EdgeInsets.only(top:59.0),
+    child: ScrollablePositionedList.builder(
     physics: const BouncingScrollPhysics(),
     itemCount: books.length,
     padding: const EdgeInsets.only(top: 10.0),
     itemBuilder: (context, index) {
       final book = books[index];
+      var tileSelected = false.obs;
+      if(searchIdxSel < 99999999){
+        tileSelected.value = index == searchIdxSel.value ? true : false;
+      }
 
       return Card (
-          child: ListTile(
-          title: SubstringHighlight(text: book.book+' '+book.chapter.toString()+':'+book.verse.toString() ,term: searchQueryMain.value, textStyle: const TextStyle(fontSize: 15, color: Colors.black,fontFamily: 'Roboto',fontWeight: FontWeight.w400, fontStyle: FontStyle.italic)),
-          subtitle: SubstringHighlight(text: book.text ,term: searchQueryMain.value, textStyle: const TextStyle( fontSize: 17, color: Colors.black87, fontFamily: 'Roboto', fontWeight: FontWeight.w300)),
+          child: Obx(() => ListTile(
+          selected: tileSelected.value,
+          selectedTileColor: globalHighLightColor,
+          title: SubstringHighlight(text: book.book+' '+book.chapter.toString()+':'+book.verse.toString() ,term: searchQueryMain.value,
+              textStyle: TextStyle(
+                  fontSize: 15,
+                  color: globalTextColor,
+                  fontWeight: FontWeight.w400,
+                  fontStyle: FontStyle.italic),
+              textStyleHighlight: TextStyle( color: globalSearchColor),
+          ),
+
+          subtitle: SubstringHighlight(text: book.text ,term: searchQueryMain.value,
+              textStyle: TextStyle(
+                  fontSize: 17,
+                  color: globalTextColor,
+                  fontWeight: FontWeight.w300),
+              textStyleHighlight: TextStyle(              // highlight style
+                color: globalSearchColor,
+              ),
+          ),
           onTap: (){
               bookSelected = book.book;
               selectedChapter = book.chapter;
               globalIndex.value = 2;
-              pages[0] = BooksLocalPage(bibleVersions, book.book, book.chapter,book.verse > 4 ? book.verse - 4 : book.verse - 1);
+              pages[0] = BooksLocalPage(bibleVersions, book.book,book.chapter, book.verse - 1);
               barTitle.value = book.book +' '+book.chapter.toString();
               colorIndex = book.verse - 1;
+              searchIdxSel.value = index;
             },
+          )
           )
         );
       },
+      itemScrollController: itemScrollController,
     )
   );
 }
