@@ -24,6 +24,8 @@ var globalTextColor = Colors.black;
 var globalSearchColor = Colors.red;
 var globalHighLightColor = Colors.yellow.shade200;
 var shadesList = [0xfffafafa,0xfffffde7,0xfffff9c4,0xfffff59d,0xfffff176,0xffffee58,0xffffeb3b,0xfffdd835,0xfffbc02d];
+var globalFont = 'Roboto';
+var fontSize = 2.0.obs;
 
 void main() {
   pages = [BooksLocalPage(bibleVersions, bookSelected, selectedChapter, 0)];
@@ -40,11 +42,13 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.light,
           primarySwatch: Colors.grey,
           accentColor: Colors.grey,
+          fontFamily: globalFont,
         ),
         dark: ThemeData(
           brightness: Brightness.dark,
           primarySwatch: Colors.grey,
           accentColor: Colors.white,
+          fontFamily: globalFont,
         ),
         initial: AdaptiveThemeMode.light,
         builder: (theme, darkTheme) => GetMaterialApp(

@@ -64,23 +64,39 @@ class SettingsLocalPage extends StatefulWidget {
                 // leading: const Icon(Icons.format_paint),
                 title: const Text('Version: KJV/NIV'),
               ),
-              SettingsTile.switchTile(
-                onToggle: (value) {
-                  value3.value = value;
-                },
-                initialValue: value3.value,
-                // leading: const Icon(Icons.format_paint),
-                title: const Text('Font: '),
+              SettingsTile.navigation(
+                // leading: Icon(Icons.language),
+                title: Text('Font: '),
+                value: const Text('English'),
               ),
+              // SettingsTile.switchTile(
+              //   onToggle: (value) {
+              //     value3.value = value;
+              //   },
+              //   initialValue: value3.value,
+              //   // leading: const Icon(Icons.format_paint),
+              //   title: const Text('Font: '),
+              // ),
               SettingsTile.switchTile(
                 onToggle: (value) {
                   value4.value = value;
                 },
                 initialValue: value4.value,
                 // leading: const Icon(Icons.format_paint),
-                title: const Text('Font Size: '),
+                title: Text('Font Size: '+fontSize.value.toString()),
               ),
             ],
+          ),
+          CustomSettingsSection(
+            child: Slider.adaptive(
+              min: 0.0,
+              max: 4.0,
+              value: fontSize.value,
+              onChanged: (newFontSize) {
+                fontSize.value = newFontSize;
+              },
+              divisions: 4,
+            ),
           ),
         ],
       ),
@@ -88,3 +104,4 @@ class SettingsLocalPage extends StatefulWidget {
     ),
   );
 }
+

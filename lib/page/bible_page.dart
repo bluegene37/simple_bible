@@ -32,18 +32,18 @@ class BooksLocalPage extends StatelessWidget {
         // WidgetsBinding.instance?.addPostFrameCallback((_) => Future.delayed(Duration.zero, () => jumpToFunc() ) );
         Future.delayed(Duration.zero, () => {
               jumpToFunc(),
-              if(colorIndex < 999){
-                  shadeIdx = 8,
-                  colorFade.value = Color(shadesList[8]),
-              Timer.periodic(const Duration(seconds: 2), (timer) =>
-              {
-                if(shadeIdx > 0){shadeIdx--},
-                colorFade.value = Color(shadesList[shadeIdx]),
-                if(shadeIdx < 1 || shadeIdx == 0){
-                  timer.cancel(),
-                },
-              }),
-            }
+            //   if(colorIndex < 999){
+            //       shadeIdx = 8,
+            //       colorFade.value = Color(shadesList[8]),
+            //   Timer.periodic(const Duration(seconds: 2), (timer) =>
+            //   {
+            //     if(shadeIdx > 0){shadeIdx--},
+            //     colorFade.value = Color(shadesList[shadeIdx]),
+            //     if(shadeIdx < 1 || shadeIdx == 0){
+            //       timer.cancel(),
+            //     },
+            //   }),
+            // }
           }
         );
 
@@ -96,7 +96,8 @@ class BooksLocalPage extends StatelessWidget {
       selectedIdx.value = index == colorIndex ? true : false;
 
       return Obx(() => ListTile(
-        tileColor: selectedIdx.value ? colorFade.value : null,
+        // tileColor: selectedIdx.value ? colorFade.value : null,
+        tileColor: selectedIdx.value ? globalHighLightColor : null,
         title: RichText(
           text: TextSpan(
             // text: book.verse.toString()+' ',
