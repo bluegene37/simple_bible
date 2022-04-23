@@ -21,7 +21,6 @@ class BooksLocalPage extends StatelessWidget {
   const BooksLocalPage(this.jsonName,this.bookTitle, this.bookChapter, this.jumpTo );
 
   void jumpToFunc() =>  itemScrollController.jumpTo(index: jumpTo);
-  // void jumpToFunc() =>    itemScrollController.scrollTo(index: jumpTo, duration: const Duration(seconds: 1 ), curve: Curves.easeInOutCubic);
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -70,19 +69,6 @@ class BooksLocalPage extends StatelessWidget {
 
       },
     ),
-    // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-    // floatingActionButton: Stack(
-    //   children: <Widget>[
-    //     Align(
-    //       alignment: Alignment.bottomLeft,
-    //       child: shouldShowLeft ? buildNavigationButtonLeft() : null,
-    //     ),
-    //     Align(
-    //       alignment: Alignment.bottomRight,
-    //       child: shouldShowRight ? buildNavigationButton() : null,
-    //     ),
-    //   ],
-    // ),
   );
 
 
@@ -130,32 +116,5 @@ class BooksLocalPage extends StatelessWidget {
     itemScrollController: itemScrollController,
     // itemPositionsListener: itemPositionsListener,
   );
-
-  // Widget buildNavigationButton() => FloatingActionButton.small(
-  //   backgroundColor: Color(0xFFB2D6D3),
-  //   child: Icon(Icons.arrow_forward_ios_rounded),
-  //   onPressed: () {
-  //     if(selectedChapter < lastChapter){
-  //       selectedChapter++;
-  //     }else{
-  //       shouldShowRight = false;
-  //     }
-  //     BooksLocalPage(jsonName,bookTitle, selectedChapter);
-  //   },
-  // );
-
-  // Widget buildNavigationButtonLeft() => FloatingActionButton.small(
-  //   backgroundColor: Color(0xFFB2D6D3),
-  //   child: Icon(Icons.arrow_back_ios_rounded),
-  //   onPressed: () {
-  //     if(selectedChapter > 1){
-  //       selectedChapter--;
-  //     }else{
-  //       shouldShowLeft = false;
-  //     }
-  //     BooksLocalPage(jsonName,bookTitle, selectedChapter);
-  //   },
-  // );
-
 }
 

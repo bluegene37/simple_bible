@@ -1,8 +1,8 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:get/get.dart';
 import 'package:settings_ui/settings_ui.dart';
-
 import '../main.dart';
 
 var value1 = false.obs;
@@ -28,23 +28,19 @@ class SettingsLocalPage extends StatefulWidget {
           SettingsSection(
             // title: const Text('Common'),
             tiles: <SettingsTile>[
-              // SettingsTile.navigation(
-              //   leading: const Icon(Icons.language),
-              //   title: const Text('Language'),
-              //   value: const Text('English'),
-              // ),
               SettingsTile.switchTile(
+                activeSwitchColor: globalColor,
                 onToggle: (value) {
                   value1.value = value;
                   if(value1.value){
-                    globalColor = Colors.grey.shade800;
+                    // globalColor = Colors.blue;
                     globalTextColor = Colors.white;
                     globalSearchColor = Colors.amber;
                     globalHighLightColor = Colors.grey.shade700;
                     shadesList = [0xff303030,0xff303030,0xff303030,0xff424242,0xff424242,0xff616161,0xff616161,0xff757575,0xff757575];
                     AdaptiveTheme.of(context).setDark();
                   }else{
-                    globalColor = Colors.grey.shade300;
+                    // globalColor = Colors.blue;
                     globalTextColor = Colors.black;
                     globalSearchColor = Colors.red;
                     globalHighLightColor = Colors.yellow.shade200;
@@ -64,44 +60,52 @@ class SettingsLocalPage extends StatefulWidget {
                 // leading: const Icon(Icons.format_paint),
                 title: const Text('Version: KJV/NIV'),
               ),
-              SettingsTile.navigation(
-                // leading: Icon(Icons.language),
-                title: Text('Font: '),
-                value: const Text('English'),
-              ),
-              // SettingsTile.switchTile(
-              //   onToggle: (value) {
-              //     value3.value = value;
-              //   },
-              //   initialValue: value3.value,
-              //   // leading: const Icon(Icons.format_paint),
-              //   title: const Text('Font: '),
-              // ),
-              SettingsTile.switchTile(
-                onToggle: (value) {
-                  value4.value = value;
-                },
-                initialValue: value4.value,
-                // leading: const Icon(Icons.format_paint),
+              SettingsTile(
                 title: Text('Font Size: '+fontSize.value.toString()),
               ),
             ],
           ),
           CustomSettingsSection(
-            child: Slider.adaptive(
-              min: 0.0,
-              max: 4.0,
-              value: fontSize.value,
-              onChanged: (newFontSize) {
-                fontSize.value = newFontSize;
-              },
-              divisions: 4,
+             child: Slider.adaptive(
+                min: 0.0,
+                max: 4.0,
+                value: fontSize.value,
+                onChanged: (newFontSize) {
+                  fontSize.value = newFontSize;
+                },
+                divisions: 4,
+              ),
+          ),
+          CustomSettingsSection(
+            child: SettingsTile(
+              title: const Text('Font:'),
+            ),
+          ),
+          CustomSettingsSection(
+            child: SettingsTile(
+                  title: const Text('Color Theme:'),
+                ),
+          ),
+          CustomSettingsSection(
+            child: Container(
+              padding: const EdgeInsets.only(left: 20.0,right: 20.0),
+              child: colorPicker(),
             ),
           ),
         ],
       ),
       ),
     ),
+  );
+}
+
+
+Widget colorPicker(){
+  return MaterialColorPicker(
+    onColorChange: (Color color) {
+      globalColor = color;
+      },
+    selectedColor: globalColor
   );
 }
 

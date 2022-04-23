@@ -1,11 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:simple_bible/main.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_bible/page/bible_page.dart';
 import 'package:simple_bible/api/books_api.dart';
 import 'package:simple_bible/model/books.dart';
-
 
 class BooksSelectionPage extends StatelessWidget {
   const BooksSelectionPage({Key? key}) : super(key: key);

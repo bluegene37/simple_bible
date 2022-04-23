@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -19,7 +21,7 @@ var shouldShowLeft = true;
 var shouldShowRight = true;
 var globalIndex = 2.obs;
 var colorIndex = 999;
-var globalColor = Colors.grey.shade300;
+var globalColor = Colors.blue.shade100;
 var globalTextColor = Colors.black;
 var globalSearchColor = Colors.red;
 var globalHighLightColor = Colors.yellow.shade200;
@@ -40,14 +42,12 @@ class MyApp extends StatelessWidget {
     return AdaptiveTheme(
         light: ThemeData(
           brightness: Brightness.light,
-          primarySwatch: Colors.grey,
-          accentColor: Colors.grey,
+          primaryColor: globalColor,
           fontFamily: globalFont,
         ),
         dark: ThemeData(
           brightness: Brightness.dark,
-          primarySwatch: Colors.grey,
-          accentColor: Colors.white,
+          primaryColor: globalColor,
           fontFamily: globalFont,
         ),
         initial: AdaptiveThemeMode.light,
@@ -127,35 +127,50 @@ class _MyHomePageState extends State<MyHomePage> {
               onTabTapped(globalIndex),
               if (globalIndex == 0) {
                 barTitle.value = "Books (66)",
-                pages[0] = const BooksSelectionPage()
+                if(pages.toString().contains('BooksSelectionPage')){
+                  }else {
+                    pages[0] = const BooksSelectionPage()
+                  }
               } else if (globalIndex == 1) {
                 barTitle.value = "Chapters",
-                pages[0] = const ChapterSelectionPage()
+                if(pages.toString().contains('ChapterSelectionPage')){
+                  }else {
+                    pages[0] = const ChapterSelectionPage()
+                  }
               } else if (globalIndex == 2) {
-                pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter, 0),
+                if(pages.toString().contains('BooksLocalPage')){
+                  }else{
+                    pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter, 0),
+                  },
                 barTitle.value = bookSelected +' '+selectedChapter.toString(),
                 colorIndex = 999
               } else if (globalIndex == 3) {
                 barTitle.value = "Search",
-                pages[0] = const SearchLocalPage()
+                if(pages.toString().contains('SearchLocalPage')){
+                  }else {
+                    pages[0] = const SearchLocalPage()
+                  }
               } else if (globalIndex == 4) {
                 barTitle.value = "Settings",
-                pages[0] = const SettingsLocalPage()
+                if(pages.toString().contains('SettingsLocalPage')){
+                  }else {
+                    pages[0] = const SettingsLocalPage()
+                  }
               } else {
                 pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter,0),
-              }
+              },
           },
           destinations: const [
             NavigationDestination(
-                icon: Icon(Icons.book_outlined),
+                icon: Icon(Icons.menu_book_outlined),
                 label: 'Books'
             ),
             NavigationDestination(
-                icon: Icon(Icons.menu_outlined),
+                icon: Icon(Icons.library_books_outlined),
                 label: 'Chapters'
             ),
             NavigationDestination(
-                icon: Icon(Icons.menu_book_outlined),
+                icon: Icon(Icons.auto_stories_outlined),
                 label: 'Bible'
             ),
             NavigationDestination(
