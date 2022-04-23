@@ -4,6 +4,7 @@ import 'package:simple_bible/model/books.dart';
 import 'package:simple_bible/main.dart';
 import 'package:simple_bible/page/bible_page.dart';
 
+
 class ChapterSelectionPage extends StatelessWidget {
   const ChapterSelectionPage({Key? key}) : super(key: key);
 
@@ -11,9 +12,11 @@ class ChapterSelectionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     body: FutureBuilder<List<Book>>(
-      future: BooksChapterApi.getBooksLocally(context, bibleVersions, bookSelected),
+      future: bookSelectedHist != bookSelected ? BooksChapterApi.getBooksLocally(context, bibleVersions, bookSelected) : null,
       builder: (context, snapshot) {
-        final book = snapshot.data;
+        if(bookSelectedHist != bookSelected){bookSelectedHist = bookSelected;}
+
+        final book =  bookSelectedHist != bookSelected ?  snapshot.data : chaptersScreen;
 
         switch (snapshot.connectionState) {
           case ConnectionState.waiting:

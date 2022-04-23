@@ -25,9 +25,12 @@ class BooksLocalPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     body: FutureBuilder<List<Book>>(
-      future: BooksApi.getBooksLocally(context, jsonName, bookTitle, bookChapter),
+      future: selectedChapterHist != selectedChapter && bookSelectedHist != bookSelected ? BooksApi.getBooksLocally(context, jsonName, bookTitle, bookChapter) : null,
       builder: (context, snapshot) {
-        final book = snapshot.data;
+
+        final book = selectedChapterHist != selectedChapter && bookSelectedHist != bookSelected ? snapshot.data : bibleScreen;
+        if(selectedChapterHist != selectedChapter){selectedChapterHist = selectedChapter;}
+
         // WidgetsBinding.instance?.addPostFrameCallback((_) => Future.delayed(Duration.zero, () => jumpToFunc() ) );
         Future.delayed(Duration.zero, () => {
               jumpToFunc(),
@@ -72,7 +75,7 @@ class BooksLocalPage extends StatelessWidget {
   );
 
 
-  Widget buildBooks(List<Book> books) => ScrollablePositionedList.builder(
+  Widget buildBooks(books) => ScrollablePositionedList.builder(
     physics: const BouncingScrollPhysics(),
     padding: const EdgeInsets.only(top: 10.0),
     itemCount: books.length,

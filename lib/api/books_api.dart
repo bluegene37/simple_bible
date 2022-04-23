@@ -16,7 +16,7 @@ class BooksApi {
     final unique = <String>{};
     final uniqueList = chapters.where((x) => unique.add(x.chapter.toString())).toList();
     lastChapter = uniqueList.length;
-
+    bibleScreen = resultText;
     return resultText;
   }
 }
@@ -45,7 +45,7 @@ class BooksChapterApi {
     final bookChapter = allChapter.where((x) => x.book == bookTitle).toList();
     final unique = <String>{};
     final uniqueList = bookChapter.where((x) => unique.add(x.chapter.toString())).toList();
-
+    chaptersScreen = uniqueList;
     return uniqueList;
   }
 }
@@ -62,6 +62,7 @@ class SearchApi {
         val.text.toLowerCase().contains(searchQuery.toLowerCase()) == true
         // || val.book.toLowerCase().contains(searchQuery.toLowerCase()) == true && val.chapter == 1 && val.verse == 1
     ).toList();
+    searchScreen = resultText;
     return resultText;
   }
 }

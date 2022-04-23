@@ -8,7 +8,7 @@ import 'package:simple_bible/model/books.dart';
 import 'package:simple_bible/page/bible_page.dart';
 import 'package:substring_highlight/substring_highlight.dart';
 
-var searchQueryMain = ''.obs;
+var searchResults = [];
 var searchIdxSel = 99999999.obs;
 
 class SearchLocalPage extends StatelessWidget {
@@ -21,24 +21,24 @@ class SearchLocalPage extends StatelessWidget {
       body: Stack(
         fit: StackFit.loose,
         children: [
-        Obx(() => SearchResultPage(searchQueryMain.value)),
-        OutlineSearchBar(
-        margin: const EdgeInsets.all(8.0),
-        initText: searchQueryMain.value,
-        hintText: 'Search here...',
-        onSearchButtonPressed: (query) => {
-            searchQueryMain.value = query,
-          },
-        onClearButtonPressed: (query) => {
-            searchQueryMain.value = '',
-          searchIdxSel.value = 99999999
-          },
-        onKeywordChanged: (query) => {
-          if(query.isEmpty){
-            searchQueryMain.value = query,
-          }
-          },
-        ),
+          Obx(() => SearchResultPage(searchQueryMain.value)),
+          OutlineSearchBar(
+            margin: const EdgeInsets.all(8.0),
+            initText: searchQueryMain.value,
+            hintText: 'Search here...',
+            onSearchButtonPressed: (query) => {
+                searchQueryMain.value = query,
+              },
+            onClearButtonPressed: (query) => {
+                searchQueryMain.value = '',
+                searchIdxSel.value = 99999999
+              },
+            onKeywordChanged: (query) => {
+                if(query.isEmpty){
+                  searchQueryMain.value = query,
+                }
+            },
+          ),
       ],
       )
     );
@@ -52,15 +52,17 @@ class SearchResultPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     body: FutureBuilder<List<Book>>(
-      future: SearchApi.getBooksLocally(context, bibleVersions, searchQuery),
+      future: searchResultHist != searchQueryMain.value && searchQueryMain.isNotEmpty ? SearchApi.getBooksLocally(context, bibleVersions, searchQuery) : null,
       builder: (context, snapshot) {
+        if(searchResultHist != searchQueryMain.value){searchResultHist = searchQueryMain.value;}
+        searchResults = searchResultHist != searchQueryMain.value ? snapshot.data! : searchScreen;
+
         Future.delayed(Duration.zero, () => {
         if(searchIdxSel < 99999999){
             itemScrollController.jumpTo(index: searchIdxSel.value)
           }
         });
-        if(snapshot.hasData){
-          final searchResults = snapshot.data!;
+        if(searchResults.isNotEmpty){
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
               return const Center(child: CircularProgressIndicator());
@@ -73,11 +75,6 @@ class SearchResultPage extends StatelessWidget {
                     barTitle.value =  'Search result: '+ searchResults.length.toString();
                   });
                   return buildSearchResult(searchResults);
-                }else if(searchQueryMain.value.isNotEmpty && searchResults.isEmpty ){
-                  Future.delayed(Duration.zero,(){
-                    barTitle.value = 'Search';
-                  });
-                  return Center(child: Text('No Result for: $searchQueryMain'));
                 }else{
                   Future.delayed(Duration.zero,(){
                     barTitle.value = 'Search';
@@ -87,14 +84,21 @@ class SearchResultPage extends StatelessWidget {
               }
           }
         }else{
-          return const Center(child: Text(' '));
+          if(searchQueryMain.value.isNotEmpty) {
+            Future.delayed(Duration.zero, () {
+              barTitle.value = 'Search';
+            });
+            return Center(child: Text('No Result for: $searchQueryMain'));
+          }else{
+            return const Center(child: Text(' '));
+          }
         }
       },
     ),
 );
 
 
-  Widget buildSearchResult(List<Book> books) => Container(
+  Widget buildSearchResult(books) => Container(
     margin: const EdgeInsets.only(top:59.0),
     child: ScrollablePositionedList.builder(
     physics: const BouncingScrollPhysics(),

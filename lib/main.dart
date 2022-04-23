@@ -14,9 +14,13 @@ var mainBooks = '';
 var mainBooksMenu = '';
 var bibleVersions = 'kjv';
 var barTitle = 'Simple Bible'.obs;
+var bookSelectedHist = '';
 var bookSelected = 'Genesis';
+int selectedChapterHist = 0;
 int selectedChapter = 1;
 int lastChapter = 1;
+var searchResultHist = '';
+var searchQueryMain = ''.obs;
 var shouldShowLeft = true;
 var shouldShowRight = true;
 var globalIndex = 2.obs;
@@ -28,6 +32,9 @@ var globalHighLightColor = Colors.yellow.shade200;
 var shadesList = [0xfffafafa,0xfffffde7,0xfffff9c4,0xfffff59d,0xfffff176,0xffffee58,0xffffeb3b,0xfffdd835,0xfffbc02d];
 var globalFont = 'Roboto';
 var fontSize = 2.0.obs;
+var chaptersScreen = [];
+var bibleScreen = [];
+var searchScreen = [];
 
 void main() {
   pages = [BooksLocalPage(bibleVersions, bookSelected, selectedChapter, 0)];
@@ -60,8 +67,6 @@ class MyApp extends StatelessWidget {
           ),
         )
     );
-
-
   }
 }
 
