@@ -118,7 +118,7 @@ class SearchResultPage extends StatelessWidget {
           title: SubstringHighlight(text: book.book+' '+book.chapter.toString()+':'+book.verse.toString() ,term: searchQueryMain.value,
               textStyle: TextStyle(
                   fontSize: 15,
-                  color: globalTextColor,
+                  color: globalTextColor.value,
                   fontWeight: FontWeight.w400,
                   fontStyle: FontStyle.italic),
               textStyleHighlight: TextStyle( color: globalSearchColor),
@@ -127,7 +127,7 @@ class SearchResultPage extends StatelessWidget {
           subtitle: SubstringHighlight(text: book.text ,term: searchQueryMain.value,
               textStyle: TextStyle(
                   fontSize: 17,
-                  color: globalTextColor,
+                  color: globalTextColor.value,
                   fontWeight: FontWeight.w300),
               textStyleHighlight: TextStyle(              // highlight style
                 color: globalSearchColor,

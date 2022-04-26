@@ -5,6 +5,8 @@ import 'package:simple_bible/page/bible_page.dart';
 import 'package:simple_bible/api/books_api.dart';
 import 'package:simple_bible/model/books.dart';
 
+import 'chapter_page.dart';
+
 class BooksSelectionPage extends StatelessWidget {
   const BooksSelectionPage({Key? key}) : super(key: key);
 
@@ -39,7 +41,7 @@ class BooksSelectionPage extends StatelessWidget {
           SliverStickyHeader.builder(
               builder: (context, state) => Container(
                     height: 40.0,
-                    color: (state.isPinned ? globalColor : globalColor).withOpacity(1.0 - state.scrollPercentage),
+                    color: (state.isPinned ? globalColor.value : globalColor.value).withOpacity(1.0 - state.scrollPercentage),
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     alignment: Alignment.center,
                     child: const Text(
@@ -94,10 +96,12 @@ class BooksSelectionPage extends StatelessWidget {
                       onTap: () => {
                         bookSelected = bookTitle.key,
                         selectedChapter = 1,
-                        globalIndex.value = 2,
-                        pages[0] = BooksLocalPage( bibleVersions, bookTitle.key, selectedChapter,0),
-                        barTitle.value =
-                            bookSelected + ' ' + selectedChapter.toString(),
+                        globalIndex.value = 1,
+                        pages[0] = const ChapterSelectionPage(),
+                        barTitle.value = "Chapters",
+                        // globalIndex.value = 2,
+                        // pages[0] = BooksLocalPage( bibleVersions, bookTitle.key, selectedChapter,0),
+                        // barTitle.value = bookSelected + ' ' + selectedChapter.toString(),
                         colorIndex = 999,
                       },
                     );
@@ -108,7 +112,7 @@ class BooksSelectionPage extends StatelessWidget {
           SliverStickyHeader.builder(
               builder: (context, state) => Container(
                     height: 40.0,
-                    color: (state.isPinned ? globalColor : globalColor).withOpacity(1.0 - state.scrollPercentage),
+                    color: (state.isPinned ? globalColor.value : globalColor.value).withOpacity(1.0 - state.scrollPercentage),
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     alignment: Alignment.center,
                     child: const Text(

@@ -25,10 +25,9 @@ class BooksLocalPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     body: FutureBuilder<List<Book>>(
-      future: selectedChapterHist != selectedChapter && bookSelectedHist != bookSelected ? BooksApi.getBooksLocally(context, jsonName, bookTitle, bookChapter) : null,
+      future: selectedChapterHist != selectedChapter || bookSelectedHist != bookSelected ? BooksApi.getBooksLocally(context, jsonName, bookTitle, bookChapter) : null,
       builder: (context, snapshot) {
-
-        final book = selectedChapterHist != selectedChapter && bookSelectedHist != bookSelected ? snapshot.data : bibleScreen;
+        final book = selectedChapterHist != selectedChapter || bookSelectedHist != bookSelected ? snapshot.data : bibleScreen;
         if(selectedChapterHist != selectedChapter){selectedChapterHist = selectedChapter;}
 
         // WidgetsBinding.instance?.addPostFrameCallback((_) => Future.delayed(Duration.zero, () => jumpToFunc() ) );
@@ -94,16 +93,16 @@ class BooksLocalPage extends StatelessWidget {
             children: <TextSpan>[
               TextSpan(text: book.verse.toString()+'. ',
                   style: TextStyle(
-                      fontSize: 13,
-                      color: globalTextColor,
+                      fontSize: 11+fontSize.value,
+                      color: globalTextColor.value,
                       // fontFamily: 'Roboto',
                       fontWeight: FontWeight.w400,
                       fontStyle: FontStyle.italic)
               ),
               TextSpan(text: book.text ,
                   style: TextStyle(
-                      fontSize: 17,
-                      color: globalTextColor,
+                      fontSize: 15+fontSize.value,
+                      color: globalTextColor.value,
                       // fontFamily: 'Roboto',
                       fontWeight: FontWeight.w300)
               ),

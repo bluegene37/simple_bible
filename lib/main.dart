@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -25,10 +23,11 @@ var shouldShowLeft = true;
 var shouldShowRight = true;
 var globalIndex = 2.obs;
 var colorIndex = 999;
-var globalColor = Colors.blue.shade100;
-var globalTextColor = Colors.black;
+var globalColor = Colors.blue.shade100.obs;
+var globalColorShade = Colors.blue.shade100;
+var globalTextColor = Colors.black.obs;
 var globalSearchColor = Colors.red;
-var globalHighLightColor = Colors.yellow.shade200;
+var globalHighLightColor = globalColor.value;
 var shadesList = [0xfffafafa,0xfffffde7,0xfffff9c4,0xfffff59d,0xfffff176,0xffffee58,0xffffeb3b,0xfffdd835,0xfffbc02d];
 var globalFont = 'Roboto';
 var fontSize = 2.0.obs;
@@ -38,7 +37,7 @@ var searchScreen = [];
 
 void main() {
   pages = [BooksLocalPage(bibleVersions, bookSelected, selectedChapter, 0)];
-  runApp(const MyApp());
+    runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -49,12 +48,12 @@ class MyApp extends StatelessWidget {
     return AdaptiveTheme(
         light: ThemeData(
           brightness: Brightness.light,
-          primaryColor: globalColor,
+          primaryColor: globalColor.value,
           fontFamily: globalFont,
         ),
         dark: ThemeData(
           brightness: Brightness.dark,
-          primaryColor: globalColor,
+          primaryColor: globalColor.value,
           fontFamily: globalFont,
         ),
         initial: AdaptiveThemeMode.light,
@@ -105,13 +104,15 @@ class _MyHomePageState extends State<MyHomePage> {
     return Obx(() => Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(35.0), // here the desired height
-        child:  AppBar(
+        child: AppBar(
             leading: Container(),
             centerTitle: true,
+            backgroundColor: globalColor.value,
             title: Text(barTitle.value,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w300,
+                color: globalTextColor.value ,
               ),
             ),
           )
@@ -120,9 +121,9 @@ class _MyHomePageState extends State<MyHomePage> {
       body: SafeArea(child: pages[0]),
       bottomNavigationBar: NavigationBarTheme(
         data: NavigationBarThemeData(
-          // indicatorColor: Colors.blue.shade100,
+          indicatorColor: globalColor.value,
           labelTextStyle: MaterialStateProperty.all(
-            const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
           )
         ),
         child: NavigationBar(
@@ -193,4 +194,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
