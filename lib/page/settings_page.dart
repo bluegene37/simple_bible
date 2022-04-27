@@ -1,7 +1,6 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_font_picker/flutter_font_picker.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -84,28 +83,117 @@ class SettingsLocalPage extends StatefulWidget {
           ),
           CustomSettingsSection(
             child: SettingsTile(
-              title: Text('Font: Oswald', style: GoogleFonts.getFont('Raleway' , fontSize: 20)) ,
+              title: Text('Font: '+globalFont.value, style: GoogleFonts.getFont(globalFont.value , fontSize: 20)) ,
             ),
           ),
           CustomSettingsSection(
             child: Container(
               padding: const EdgeInsets.only(left: 20.0,right: 20.0),
-              // margin: const EdgeInsets.symmetric(vertical: 20.0),
-              height: 130.0,
+              height: 200.0,
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 2.0),
+                // scrollDirection: Axis.horizontal,
+                physics: const PageScrollPhysics(),
                 children: <Widget>[
-                  Card( child : ListTile( title : Text('Raleway', style: GoogleFonts.getFont('Raleway' , fontSize: 20)))),
-                  Card( child : ListTile( title : Text('Oswald ', style: GoogleFonts.getFont('Oswald', fontSize: 20)))),
-                  Card( child : ListTile( title : Text('Slabo 27px', style: GoogleFonts.getFont('Slabo 27px', fontSize: 20)))),
-                  Card( child : ListTile( title : Text('Lato', style: GoogleFonts.getFont('Lato', fontSize: 20)))),
-                  Card( child : ListTile( title : Text('Quattrocento', style: GoogleFonts.getFont('Quattrocento', fontSize: 20)))),
-                  Card( child : ListTile( title : Text('Merriweather', style: GoogleFonts.getFont('Merriweather', fontSize: 20)))),
-                  Card( child : ListTile( title : Text('Lobster', style: GoogleFonts.getFont('Lobster', fontSize: 20)))),
-                  Card( child : ListTile( title : Text('Open Sans', style: GoogleFonts.getFont('Open Sans', fontSize: 20)))),
-                  Card( child : ListTile( title : Text('Roboto', style: GoogleFonts.getFont('Roboto', fontSize: 20)))),
-                  Card( child : ListTile( title : Text('Inconsolata', style: GoogleFonts.getFont('Inconsolata', fontSize: 20)))),
-                  Card( child : ListTile( title : Text('Indie Flower', style: GoogleFonts.getFont('Indie Flower', fontSize: 20)))),
+                  Card(
+                    color: globalFont.value == 'Raleway' ? globalColor.value : null,
+                  child: InkWell(
+                  onTap: () {
+                      globalFont.value = 'Raleway';
+                      },
+                      child : ListTile( title : Text('Raleway', style: GoogleFonts.getFont('Raleway' , fontSize: 20))),
+                    ),
+                  ),
+                  Card(
+                      color: globalFont.value == 'Oswald' ? globalColor.value : null,
+                      child: InkWell(
+                      onTap: () {
+                      globalFont.value = 'Oswald';
+                      },
+                          child : ListTile( title : Text('Oswald ', style: GoogleFonts.getFont('Oswald', fontSize: 20))),
+                    ),
+                  ),
+                  Card(
+                      color: globalFont == 'Slabo 27px' ? globalColor.value : null,
+                      child: InkWell(
+                        onTap: () {
+                          globalFont.value = 'Slabo 27px';
+                        },
+                        child : ListTile( title : Text('Slabo 27px', style: GoogleFonts.getFont('Slabo 27px', fontSize: 20))),
+                      ),
+                  ),
+                  Card(
+                      color: globalFont == 'Lato' ? globalColor.value : null,
+                      child: InkWell(
+                        onTap: () {
+                          globalFont.value = 'Lato';
+                        },
+                        child : ListTile( title : Text('Lato', style: GoogleFonts.getFont('Lato', fontSize: 20))),
+                      ),
+                  ),
+                  Card(
+                      color: globalFont == 'Quattrocento' ? globalColor.value : null,
+                      child: InkWell(
+                        onTap: () {
+                          globalFont.value = 'Quattrocento';
+                        },
+                        child : ListTile( title : Text('Quattrocento', style: GoogleFonts.getFont('Quattrocento', fontSize: 20))),
+                      ),
+                  ),
+                  Card(
+                      color: globalFont == 'Merriweather' ? globalColor.value : null,
+                      child: InkWell(
+                        onTap: () {
+                          globalFont.value = 'Merriweather';
+                        },
+                        child : ListTile( title : Text('Merriweather', style: GoogleFonts.getFont('Merriweather', fontSize: 20))),
+                      ),
+                  ),
+                  Card(
+                      color: globalFont == 'Lobster' ? globalColor.value : null,
+                      child: InkWell(
+                        onTap: () {
+                          globalFont.value = 'Lobster';
+                        },
+                        child : ListTile( title : Text('Lobster', style: GoogleFonts.getFont('Lobster', fontSize: 20))),
+                      ),
+                  ),
+                  Card(
+                      color: globalFont == 'Open Sans' ? globalColor.value : null,
+                      child: InkWell(
+                        onTap: () {
+                          globalFont.value = 'Open Sans';
+                        },
+                        child : ListTile( title : Text('Open Sans', style: GoogleFonts.getFont('Open Sans', fontSize: 20))),
+                      ),
+                  ),
+                  Card(
+                    color: globalFont == 'Roboto' ? globalColor.value : null,
+                    child: InkWell(
+                      onTap: () {
+                        globalFont.value = 'Roboto';
+                      },
+                      child : ListTile( title : Text('Roboto', style: GoogleFonts.getFont('Roboto', fontSize: 20))),
+                    ),
+                  ),
+                  Card(
+                    color: globalFont == 'Inconsolata' ? globalColor.value : null,
+                    child: InkWell(
+                      onTap: () {
+                        globalFont.value = 'Inconsolata';
+                      },
+                      child : ListTile( title : Text('Inconsolata', style: GoogleFonts.getFont('Inconsolata', fontSize: 20))),
+                    ),
+                  ),
+                  Card(
+                    color: globalFont == 'Indie Flower' ? globalColor.value : null,
+                    child: InkWell(
+                      onTap: () {
+                        globalFont.value = 'Indie Flower';
+                      },
+                      child : ListTile( title : Text('Indie Flower', style: GoogleFonts.getFont('Indie Flower', fontSize: 20))),
+                    ),
+                  ),
                 ],
               ),
             ),

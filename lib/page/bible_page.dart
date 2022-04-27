@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:simple_bible/api/books_api.dart';
 import 'package:simple_bible/model/books.dart';
@@ -92,19 +93,10 @@ class BooksLocalPage extends StatelessWidget {
             // style: DefaultTextStyle.of(context).style,
             children: <TextSpan>[
               TextSpan(text: book.verse.toString()+'. ',
-                  style: TextStyle(
-                      fontSize: 11+fontSize.value,
-                      color: globalTextColor.value,
-                      // fontFamily: 'Roboto',
-                      fontWeight: FontWeight.w400,
-                      fontStyle: FontStyle.italic)
-              ),
+                  style: GoogleFonts.getFont(globalFont.value, fontSize: 11+fontSize.value, color: globalTextColor.value , fontWeight: FontWeight.w300, fontStyle: FontStyle.italic ),
+                ),
               TextSpan(text: book.text ,
-                  style: TextStyle(
-                      fontSize: 15+fontSize.value,
-                      color: globalTextColor.value,
-                      // fontFamily: 'Roboto',
-                      fontWeight: FontWeight.w300)
+                  style: GoogleFonts.getFont(globalFont.value, fontSize: 15+fontSize.value, color: globalTextColor.value , fontWeight: FontWeight.w300 ),
               ),
             ],
           ),

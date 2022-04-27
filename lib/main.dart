@@ -29,7 +29,7 @@ var globalTextColor = Colors.black.obs;
 var globalSearchColor = Colors.red;
 var globalHighLightColor = globalColor.value;
 var shadesList = [0xfffafafa,0xfffffde7,0xfffff9c4,0xfffff59d,0xfffff176,0xffffee58,0xffffeb3b,0xfffdd835,0xfffbc02d];
-var globalFont = 'Roboto';
+var globalFont = 'Roboto'.obs;
 var fontSize = 2.0.obs;
 var chaptersScreen = [];
 var bibleScreen = [];
@@ -49,12 +49,12 @@ class MyApp extends StatelessWidget {
         light: ThemeData(
           brightness: Brightness.light,
           primaryColor: globalColor.value,
-          fontFamily: globalFont,
+          fontFamily: globalFont.value,
         ),
         dark: ThemeData(
           brightness: Brightness.dark,
           primaryColor: globalColor.value,
-          fontFamily: globalFont,
+          fontFamily: globalFont.value,
         ),
         initial: AdaptiveThemeMode.light,
         builder: (theme, darkTheme) => GetMaterialApp(
