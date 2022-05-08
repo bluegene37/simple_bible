@@ -8,10 +8,10 @@ import 'package:simple_bible/model/books.dart';
 import 'package:simple_bible/main.dart';
 
 final ItemScrollController itemScrollController = ItemScrollController();
-// final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
 
 var shadeIdx = 8;
 var colorFade = const Color(0xfffbc02d).obs;
+
 
 class BooksLocalPage extends StatelessWidget {
   final String jsonName;
@@ -28,8 +28,10 @@ class BooksLocalPage extends StatelessWidget {
     body: FutureBuilder<List<Book>>(
       future: selectedChapterHist != selectedChapter || bookSelectedHist != bookSelected ? BooksApi.getBooksLocally(context, jsonName, bookTitle, bookChapter) : null,
       builder: (context, snapshot) {
+
         final book = selectedChapterHist != selectedChapter || bookSelectedHist != bookSelected ? snapshot.data : bibleScreen;
         if(selectedChapterHist != selectedChapter){selectedChapterHist = selectedChapter;}
+        if(bookSelectedHist != bookSelected){bookSelectedHist = bookSelected;}
 
         // WidgetsBinding.instance?.addPostFrameCallback((_) => Future.delayed(Duration.zero, () => jumpToFunc() ) );
         Future.delayed(Duration.zero, () => {
@@ -86,25 +88,39 @@ class BooksLocalPage extends StatelessWidget {
 
       return Obx(() => ListTile(
         // tileColor: selectedIdx.value ? colorFade.value : null,
-        tileColor: selectedIdx.value ? globalHighLightColor : null,
-        title: RichText(
-          text: TextSpan(
-            // text: book.verse.toString()+' ',
+        tileColor: selectedIdx.value ? themeColorShades[colorSliderIdx.value] : null,
+        title: Text.rich(
+          TextSpan(
+            // text: 'Test',
             // style: DefaultTextStyle.of(context).style,
             children: <TextSpan>[
               TextSpan(text: book.verse.toString()+'. ',
-                  style: GoogleFonts.getFont(globalFont.value, fontSize: 11+fontSize.value, color: globalTextColor.value , fontWeight: FontWeight.w300, fontStyle: FontStyle.italic ),
+                  style: GoogleFonts.getFont(globalFont.value, fontSize: 11+fontSize.value,
+                      color: globalTextColors[textColorIdx.value] ,
+                      fontWeight: FontWeight.w300, fontStyle: FontStyle.italic ),
                 ),
               TextSpan(text: book.text ,
-                  style: GoogleFonts.getFont(globalFont.value, fontSize: 15+fontSize.value, color: globalTextColor.value , fontWeight: FontWeight.w300 ),
+                  style: GoogleFonts.getFont(globalFont.value, fontSize: 15+fontSize.value,
+                      color: globalTextColors[textColorIdx.value] ,
+                      // backgroundColor: Colors.greenAccent.shade100,
+                  ),
               ),
             ],
           ),
         ),
         onTap: (){
-
+          // selectedIdx.value = false;
         },
-      )
+        onLongPress: (){
+            showModalBottomSheet(
+              context: context,
+              builder: (context) => SizedBox(
+                height: 100.0,
+                child: highLighter(),
+              ),
+            );
+          },
+        )
       );
     },
     itemScrollController: itemScrollController,
@@ -112,3 +128,48 @@ class BooksLocalPage extends StatelessWidget {
   );
 }
 
+// double mWidth = Dimens.height = MediaQuery.of(context).size.width;
+// double mHeight = Dimens.height = MediaQuery.of(context).size.height;
+
+Widget highLighter(){
+  return ListView.separated(
+    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+    scrollDirection: Axis.horizontal,
+    itemCount: highLightColors.length,
+    separatorBuilder: (context, index){
+      return const SizedBox(width: 5);
+    },
+    itemBuilder: (context, index) {
+      return InkWell(
+        child: CircleAvatar(
+          radius: 50 / 2,
+          backgroundColor: highLightColors[index],
+          // child: Icon(Icons.check, color: textColorDynamic.value) ,
+        ),
+        onTap: (){
+          Navigator.pop(context);
+        },
+      );
+    }
+  );
+}
+
+var highLightColors = [
+  Colors.red.shade100,
+  Colors.pink.shade100,
+  Colors.purple.shade100,
+  Colors.indigo.shade100,
+  Colors.blue.shade100,
+  Colors.lightBlue.shade100,
+  Colors.cyan.shade100,
+  Colors.teal.shade100,
+  Colors.green.shade100,
+  Colors.lightGreen.shade100,
+  Colors.lime.shade100,
+  Colors.yellow.shade100,
+  Colors.amber.shade100,
+  Colors.orange.shade100,
+  Colors.deepOrange.shade100,
+  Colors.brown.shade100,
+  Colors.blueGrey.shade100,
+];

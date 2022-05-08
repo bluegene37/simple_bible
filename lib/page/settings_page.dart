@@ -1,233 +1,237 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:settings_ui/settings_ui.dart';
 import '../main.dart';
 
-var value1 = false.obs;
-var value2 = false.obs;
-var value3 = false.obs;
-var value4 = false.obs;
+final ItemScrollController itemScrollController = ItemScrollController();
 
 class SettingsLocalPage extends StatefulWidget {
   const SettingsLocalPage({Key? key}) : super(key: key);
 
   @override
   _SettingsLocalPageState createState() => _SettingsLocalPageState();
-  }
+}
 
-  class _SettingsLocalPageState extends State<SettingsLocalPage> {
-    bool status = false;
+class _SettingsLocalPageState extends State<SettingsLocalPage> {
+  bool status = false;
+
+  // @override
+  // void dispose() {
+  //   // Hive.box('settings').close();
+  //   Hive.close();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    body: Center(
-      child: Obx(() =>  SettingsList(
-        sections: [
-          SettingsSection(
-            // title: const Text('Common'),
-            tiles: <SettingsTile>[
-              SettingsTile.switchTile(
-                activeSwitchColor: globalColor.value,
-                onToggle: (value) {
-                  value1.value = value;
-                  if(value1.value){
-                    // globalColor = Colors.blue;
-                    globalTextColor.value = Colors.white;
-                    globalSearchColor = Colors.amber;
-                    globalHighLightColor = Colors.grey.shade700;
-                    shadesList = [0xff303030,0xff303030,0xff303030,0xff424242,0xff424242,0xff616161,0xff616161,0xff757575,0xff757575];
-                    AdaptiveTheme.of(context).setDark();
-                  }else{
-                    // globalColor = Colors.blue;
-                    globalTextColor.value = Colors.black;
-                    globalSearchColor = Colors.red;
-                    globalHighLightColor = Colors.yellow.shade200;
-                    shadesList = [0xfffafafa,0xfffffde7,0xfffff9c4,0xfffff59d,0xfffff176,0xffffee58,0xffffeb3b,0xfffdd835,0xfffbc02d];
-                    AdaptiveTheme.of(context).setLight();
-                  }
-                },
-                initialValue: value1.value,
-                // leading: const Icon(Icons.format_paint),
-                title: const Text('Theme: Light/Dark'),
-              ),
-              // SettingsTile.switchTile(
-              //   onToggle: (value) {
-              //     value2.value = value;
-              //   },
-              //   initialValue: value2.value,
-              //   // leading: const Icon(Icons.format_paint),
-              //   title: const Text('Version: KJV/NIV'),
-              // ),
-              SettingsTile(
-                title: Text('Font Size: '+  (fontSize.value + 15).toStringAsFixed(2)),
-              ),
-            ],
-          ),
-          CustomSettingsSection(
-            child: Container(
-              padding: const EdgeInsets.only(left: 20.0,right: 20.0),
-              child: CupertinoSlider(
-                min: 0.0,
-                max: 15.0,
-                value: fontSize.value,
-                onChanged: (double newFontSize) {
-                  fontSize.value = newFontSize;
-                },
-                // divisions: 10,
-              ),
-            ),
-          ),
-          CustomSettingsSection(
-            child: SettingsTile(
-              title: Text('Font: '+globalFont.value, style: GoogleFonts.getFont(globalFont.value , fontSize: 20)) ,
-            ),
-          ),
-          CustomSettingsSection(
-            child: Container(
-              padding: const EdgeInsets.only(left: 20.0,right: 20.0),
-              height: 200.0,
-              child: ListView(
-                padding: const EdgeInsets.symmetric(vertical: 2.0),
-                // scrollDirection: Axis.horizontal,
-                physics: const PageScrollPhysics(),
-                children: <Widget>[
-                  Card(
-                    color: globalFont.value == 'Raleway' ? globalColor.value : null,
-                  child: InkWell(
-                  onTap: () {
-                      globalFont.value = 'Raleway';
-                      },
-                      child : ListTile( title : Text('Raleway', style: GoogleFonts.getFont('Raleway' , fontSize: 20))),
+        body: Center(
+          child: Obx( () => SettingsList(
+              sections: [
+                SettingsSection(
+                  // title: const Text('Common'),
+                  tiles: <SettingsTile>[
+                    // SettingsTile.switchTile(
+                    //   activeSwitchColor: themeColors[colorSliderIdx.value],
+                    //   onToggle: (value) {
+                    //     themeMode.value = value;
+                    //     box.put('themeMode', value);
+                    //     if (value) {
+                    //       textColorIdx.value = 0;
+                    //       box.put('textColorIdx', 0);
+                    //       AdaptiveTheme.of(context).setDark();
+                    //     } else {
+                    //       textColorIdx.value = 1;
+                    //       box.put('textColorIdx', 1);
+                    //       AdaptiveTheme.of(context).setLight();
+                    //     }
+                    //   },
+                    //   initialValue: themeMode.value,
+                    //   // leading: const Icon(Icons.format_paint),
+                    //   title: const Text('Theme: Light/Dark'),
+                    // ),
+                    SettingsTile(
+                      title: const Text('Text Preview:'),
+                      value: Text(
+                          'In the beginning God created the heaven and the earth. ',
+                          style: GoogleFonts.getFont(globalFont.value,
+                              fontSize: 15 + fontSize.value)),
                     ),
-                  ),
-                  Card(
-                      color: globalFont.value == 'Oswald' ? globalColor.value : null,
-                      child: InkWell(
-                      onTap: () {
-                      globalFont.value = 'Oswald';
-                      },
-                          child : ListTile( title : Text('Oswald ', style: GoogleFonts.getFont('Oswald', fontSize: 20))),
+                    SettingsTile(
+                      title: Text('Font Size: ' +
+                          (fontSize.value + 15).toStringAsFixed(2)),
                     ),
-                  ),
-                  Card(
-                      color: globalFont == 'Slabo 27px' ? globalColor.value : null,
-                      child: InkWell(
-                        onTap: () {
-                          globalFont.value = 'Slabo 27px';
-                        },
-                        child : ListTile( title : Text('Slabo 27px', style: GoogleFonts.getFont('Slabo 27px', fontSize: 20))),
-                      ),
-                  ),
-                  Card(
-                      color: globalFont == 'Lato' ? globalColor.value : null,
-                      child: InkWell(
-                        onTap: () {
-                          globalFont.value = 'Lato';
-                        },
-                        child : ListTile( title : Text('Lato', style: GoogleFonts.getFont('Lato', fontSize: 20))),
-                      ),
-                  ),
-                  Card(
-                      color: globalFont == 'Quattrocento' ? globalColor.value : null,
-                      child: InkWell(
-                        onTap: () {
-                          globalFont.value = 'Quattrocento';
-                        },
-                        child : ListTile( title : Text('Quattrocento', style: GoogleFonts.getFont('Quattrocento', fontSize: 20))),
-                      ),
-                  ),
-                  Card(
-                      color: globalFont == 'Merriweather' ? globalColor.value : null,
-                      child: InkWell(
-                        onTap: () {
-                          globalFont.value = 'Merriweather';
-                        },
-                        child : ListTile( title : Text('Merriweather', style: GoogleFonts.getFont('Merriweather', fontSize: 20))),
-                      ),
-                  ),
-                  Card(
-                      color: globalFont == 'Lobster' ? globalColor.value : null,
-                      child: InkWell(
-                        onTap: () {
-                          globalFont.value = 'Lobster';
-                        },
-                        child : ListTile( title : Text('Lobster', style: GoogleFonts.getFont('Lobster', fontSize: 20))),
-                      ),
-                  ),
-                  Card(
-                      color: globalFont == 'Open Sans' ? globalColor.value : null,
-                      child: InkWell(
-                        onTap: () {
-                          globalFont.value = 'Open Sans';
-                        },
-                        child : ListTile( title : Text('Open Sans', style: GoogleFonts.getFont('Open Sans', fontSize: 20))),
-                      ),
-                  ),
-                  Card(
-                    color: globalFont == 'Roboto' ? globalColor.value : null,
-                    child: InkWell(
-                      onTap: () {
-                        globalFont.value = 'Roboto';
-                      },
-                      child : ListTile( title : Text('Roboto', style: GoogleFonts.getFont('Roboto', fontSize: 20))),
-                    ),
-                  ),
-                  Card(
-                    color: globalFont == 'Inconsolata' ? globalColor.value : null,
-                    child: InkWell(
-                      onTap: () {
-                        globalFont.value = 'Inconsolata';
-                      },
-                      child : ListTile( title : Text('Inconsolata', style: GoogleFonts.getFont('Inconsolata', fontSize: 20))),
-                    ),
-                  ),
-                  Card(
-                    color: globalFont == 'Indie Flower' ? globalColor.value : null,
-                    child: InkWell(
-                      onTap: () {
-                        globalFont.value = 'Indie Flower';
-                      },
-                      child : ListTile( title : Text('Indie Flower', style: GoogleFonts.getFont('Indie Flower', fontSize: 20))),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-         ),
-
-          CustomSettingsSection(
-            child: SettingsTile(
-                  title: const Text('Color Theme:'),
+                  ],
                 ),
-          ),
-          CustomSettingsSection(
-            child: Container(
-              padding: const EdgeInsets.only(left: 20.0,right: 20.0),
-              child: colorPicker(),
+                CustomSettingsSection(
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                    child: CupertinoSlider(
+                      min: 0.0,
+                      max: 15.0,
+                      value: fontSize.value,
+                      onChanged: (double newFontSize) {
+                        fontSize.value = newFontSize;
+                        box.put('fontSize', newFontSize);
+                      },
+                      // divisions: 10,
+                    ),
+                  ),
+                ),
+                CustomSettingsSection(
+                  child: SettingsTile(
+                    // title: Text('Font: '+globalFont.value, style: GoogleFonts.getFont(globalFont.value , fontSize: 20)) ,
+                    // title: Text('Font: ${box.get('globalFont')}' + globalFont.value ),
+                    title: const Text('Font:'),
+                    // trailing: SizedBox(
+                    //   width: 250,
+                    //   height: 60,
+                    //   child: fontPicker(),
+                    // ),
+                  ),
+                ),
+                CustomSettingsSection(
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 50.0, right: 50.0),
+                    child: fontPicker(),
+                  ),
+                ),
+                CustomSettingsSection(
+                  child: SettingsTile(
+                    title: const Text('Color Theme:'),
+                    // trailing: SizedBox(
+                    //   width: 150,
+                    //   height: 60,
+                    //   child: colorSlider(),
+                    // ),
+                  ),
+                ),
+                CustomSettingsSection(
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 25.0, right: 25.0),
+                    height: 45,
+                    child: colorSlider(),
+                  ),
+                ),
+              ],
             ),
           ),
-          // const CustomSettingsSection(
-          //   child: CircleColor(color: Colors.blue, circleSize: 40,),
-          // ),
-        ],
-      ),
-      ),
+        ),
+      );
+}
+
+Widget fontPicker(){
+  CarouselController scrollCarouselController = CarouselController();
+  return CarouselSlider(
+    carouselController: scrollCarouselController,
+    options: CarouselOptions(
+      // aspectRatio: 4.0/9,
+      height: 60,
+      initialPage: globalFontIdx,
+      enlargeCenterPage: true,
+      enableInfiniteScroll: false,
+      autoPlay: false,
+      autoPlayInterval: const Duration(seconds: 2),
     ),
+    items: fontLists.map((i) {
+      return Builder(
+        builder: (BuildContext context) {
+          return Container(
+            width: MediaQuery.of(context).size.width,
+            margin: const EdgeInsets.symmetric(horizontal: 1.0),
+            child: Obx(()=> Card(
+              color: globalFont.value == i ? themeColorShades[colorSliderIdx.value] : null,
+              child: InkWell(
+                onTap: () {
+                  globalFont.value = i;
+                  box.put('globalFont', i);
+                  globalFontIdx = fontLists.indexWhere((list) => list.contains(i));
+                  box.put('globalFontIdx', fontLists.indexWhere((list) => list.contains(i)));
+                },
+                child: ListTile(
+                    title: Text(i, style: GoogleFonts.getFont(i, fontSize: 20, ),textAlign: TextAlign.center )),
+              ),
+              ),
+            ),
+          );
+        },
+      );
+    }).toList(),
   );
+
 }
 
+var fontLists = [
+  'Inconsolata',
+  'Indie Flower',
+  'Lato',
+  'Lobster',
+  'Merriweather',
+  'Open Sans',
+  'Oswald',
+  'Quattrocento',
+  'Raleway',
+  'Roboto',
+  'Slabo 27px',
+];
 
-Widget colorPicker(){
-  return MaterialColorPicker(
-      // allowShades: false,
-    onColorChange: (Color color) {
-        globalColor.value = color;
+
+Widget colorSlider(){
+  return  ScrollablePositionedList.separated(
+    scrollDirection: Axis.horizontal,
+    itemCount: themeColors.length,
+    separatorBuilder: (context, index){
+      return const SizedBox(width: 5);
     },
-    selectedColor: globalColor.value
+    itemBuilder: (context, index){
+      if(!statusBarChanged){
+        Future.delayed(Duration.zero, () => {
+          itemScrollController.jumpTo(index: colorSliderIdx.value),
+          statusBarChanged = true
+        });
+      }
+      return  InkWell(
+        child: Obx(() =>CircleAvatar(
+          radius: 50 / 2,
+          backgroundColor: themeColors[index],
+          child: colorSliderIdx.value == index ? Icon(Icons.check, color: textColorDynamic.value) : null,
+          ),
+        ),
+        onTap: (){
+          onchangeColor(index);
+          checkColorBrightness();
+            if(index == 0){
+              AdaptiveTheme.of(context).setLight();
+              onchangeTextColor(1);
+            }else if(index == 1){
+              AdaptiveTheme.of(context).setDark();
+              onchangeTextColor(0);
+            }else{
+              AdaptiveTheme.of(context).setLight();
+              onchangeTextColor(1);
+            }
+        },
+      );
+    },
+    itemScrollController: itemScrollController,
   );
 }
 
+onchangeColor(idx){
+  colorSliderIdx.value = idx;
+  box.put('colorSliderIdx', idx);
+}
+
+onchangeTextColor(idx){
+  textColorIdx.value = idx;
+  box.put('textColorIdx', idx);
+}
+
+checkColorBrightness(){
+  brightness = ThemeData.estimateBrightnessForColor(themeColors[colorSliderIdx.value]);
+  textColorDynamic.value = brightness == Brightness.light ? Colors.black : Colors.white;
+}

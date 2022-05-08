@@ -6,6 +6,9 @@ import 'package:simple_bible/page/settings_page.dart';
 import 'package:simple_bible/page/books_page.dart';
 import 'package:simple_bible/page/chapter_page.dart';
 import 'package:simple_bible/page/bible_page.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+var box = Hive.box('settingsDB');
 
 var pages = [];
 var mainBooks = '';
@@ -21,23 +24,95 @@ var searchResultHist = '';
 var searchQueryMain = ''.obs;
 var shouldShowLeft = true;
 var shouldShowRight = true;
+var themeMode = false.obs;
 var globalIndex = 2.obs;
 var colorIndex = 999;
-var globalColor = Colors.blue.shade100.obs;
-var globalColorShade = Colors.blue.shade100;
-var globalTextColor = Colors.black.obs;
-var globalSearchColor = Colors.red;
-var globalHighLightColor = globalColor.value;
-var shadesList = [0xfffafafa,0xfffffde7,0xfffff9c4,0xfffff59d,0xfffff176,0xffffee58,0xffffeb3b,0xfffdd835,0xfffbc02d];
+var textColorIdx = 1.obs;
+var colorSliderIdx = 0.obs;
 var globalFont = 'Roboto'.obs;
+var globalFontIdx = 9;
 var fontSize = 2.0.obs;
 var chaptersScreen = [];
 var bibleScreen = [];
 var searchScreen = [];
+var textColorDynamic = Colors.black.obs;
+var brightness = ThemeData.estimateBrightnessForColor(themeColors[colorSliderIdx.value]);
+var statusBarChanged = false;
 
-void main() {
+var globalTextColors = const [
+  Colors.white,
+  Colors.black
+];
+
+var themeColors = const [
+  Colors.white,
+  Colors.black,
+  Colors.red,
+  Colors.pink,
+  Colors.purple,
+  Colors.deepPurpleAccent,
+  Colors.indigo,
+  Colors.blue,
+  Colors.lightBlue,
+  Colors.cyan,
+  Colors.teal,
+  Colors.green,
+  Colors.lightGreen,
+  Colors.lime,
+  // Colors.yellow,
+  Colors.amber,
+  Colors.orange,
+  Colors.deepOrange,
+  Colors.brown,
+  Colors.grey,
+  Colors.blueGrey,
+];
+
+var themeColorShades = [
+  Colors.grey.shade300,
+  Colors.grey,
+  Colors.red.shade100,
+  Colors.pink.shade100,
+  Colors.purple.shade100,
+  Colors.deepPurpleAccent.shade100,
+  Colors.indigo.shade100,
+  Colors.blue.shade100,
+  Colors.lightBlue.shade100,
+  Colors.cyan.shade100,
+  Colors.teal.shade100,
+  Colors.green.shade100,
+  Colors.lightGreen.shade100,
+  Colors.lime.shade100,
+  // Colors.yellow.shade100,
+  Colors.amber.shade100,
+  Colors.orange.shade100,
+  Colors.deepOrange.shade100,
+  Colors.brown.shade100,
+  Colors.grey.shade100,
+  Colors.blueGrey.shade100,
+];
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  await Hive.openBox("settingsDB");
+
+  themeMode.value = box.get('themeMode',defaultValue:false);
+  bibleVersions = box.get('bibleVersions',defaultValue: 'kjv');
+  bookSelected = box.get('bookSelected',defaultValue: 'Genesis');
+  selectedChapter = box.get('selectedChapter',defaultValue: 1);
+  colorSliderIdx.value = box.get('colorSliderIdx',defaultValue: 5);
+  textColorIdx.value = box.get('textColorIdx',defaultValue: 1);
+  globalFont.value = box.get('globalFont',defaultValue:'Roboto');
+  globalFontIdx = box.get('globalFontIdx',defaultValue: 9);
+  fontSize.value = box.get('fontSize',defaultValue: 2.0);
+
+  brightness = ThemeData.estimateBrightnessForColor(themeColors[colorSliderIdx.value]);
+  textColorDynamic.value = brightness == Brightness.light ? Colors.black : Colors.white;
+
   pages = [BooksLocalPage(bibleVersions, bookSelected, selectedChapter, 0)];
-    runApp(const MyApp());
+
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -48,15 +123,15 @@ class MyApp extends StatelessWidget {
     return AdaptiveTheme(
         light: ThemeData(
           brightness: Brightness.light,
-          primaryColor: globalColor.value,
+          primaryColor: themeColors[colorSliderIdx.value],
           fontFamily: globalFont.value,
         ),
         dark: ThemeData(
           brightness: Brightness.dark,
-          primaryColor: globalColor.value,
+          primaryColor: themeColors[colorSliderIdx.value],
           fontFamily: globalFont.value,
         ),
-        initial: AdaptiveThemeMode.light,
+        initial: themeMode.value ? AdaptiveThemeMode.dark : AdaptiveThemeMode.light,
         builder: (theme, darkTheme) => GetMaterialApp(
           debugShowCheckedModeBanner: false,
           theme: theme,
@@ -107,12 +182,13 @@ class _MyHomePageState extends State<MyHomePage> {
         child: AppBar(
             leading: Container(),
             centerTitle: true,
-            backgroundColor: globalColor.value,
+            backgroundColor: themeColors[colorSliderIdx.value],
             title: Text(barTitle.value,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w300,
-                color: globalTextColor.value ,
+                color: textColorDynamic.value,
+                // globalTextColors[textColorIdx.value] ,
               ),
             ),
           )
@@ -121,7 +197,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: SafeArea(child: pages[0]),
       bottomNavigationBar: NavigationBarTheme(
         data: NavigationBarThemeData(
-          indicatorColor: globalColor.value,
+          indicatorColor: themeColorShades[colorSliderIdx.value],
           labelTextStyle: MaterialStateProperty.all(
             const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
           )
@@ -158,6 +234,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   }
               } else if (globalIndex == 4) {
                 barTitle.value = "Settings",
+                statusBarChanged = false,
                 if(pages.toString().contains('SettingsLocalPage')){
                   }else {
                     pages[0] = const SettingsLocalPage()

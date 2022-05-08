@@ -23,6 +23,10 @@ class SearchLocalPage extends StatelessWidget {
         children: [
           Obx(() => SearchResultPage(searchQueryMain.value)),
           OutlineSearchBar(
+            clearButtonColor: colorSliderIdx.value == 0 ? globalTextColors[textColorIdx.value] : themeColors[colorSliderIdx.value],
+            cursorColor: colorSliderIdx.value == 0 || colorSliderIdx.value == 1 ? globalTextColors[textColorIdx.value] : themeColors[colorSliderIdx.value],
+            searchButtonIconColor: colorSliderIdx.value == 0 || colorSliderIdx.value == 1 ? globalTextColors[textColorIdx.value] : themeColors[colorSliderIdx.value],
+            borderColor: colorSliderIdx.value == 0 || colorSliderIdx.value == 1 ? globalTextColors[textColorIdx.value] : themeColors[colorSliderIdx.value],
             margin: const EdgeInsets.all(8.0),
             initText: searchQueryMain.value,
             hintText: 'Search here...',
@@ -88,7 +92,11 @@ class SearchResultPage extends StatelessWidget {
             Future.delayed(Duration.zero, () {
               barTitle.value = 'Search';
             });
-            return Center(child: Text('No Result for: $searchQueryMain'));
+            return Center(child: Container(
+              padding: const EdgeInsets.all(15.0),
+              child: Text('No Result for: $searchQueryMain', style: const TextStyle(fontSize: 20) ),
+            )
+            );
           }else{
             return const Center(child: Text(' '));
           }
@@ -114,24 +122,26 @@ class SearchResultPage extends StatelessWidget {
       return Card (
           child: Obx(() => ListTile(
           selected: tileSelected.value,
-          selectedTileColor: globalHighLightColor,
+          selectedTileColor: themeColorShades[colorSliderIdx.value],
           title: SubstringHighlight(text: book.book+' '+book.chapter.toString()+':'+book.verse.toString() ,term: searchQueryMain.value,
               textStyle: TextStyle(
                   fontSize: 15,
-                  color: globalTextColor.value,
+                  color: globalTextColors[textColorIdx.value],
                   fontWeight: FontWeight.w400,
                   fontStyle: FontStyle.italic),
-              textStyleHighlight: TextStyle( color: globalSearchColor),
+                  textStyleHighlight: TextStyle(
+                      color: colorSliderIdx.value == 0 || colorSliderIdx.value == 1 ? globalTextColors[textColorIdx.value] : themeColors[colorSliderIdx.value],
+                      fontSize: 18 , fontWeight: FontWeight.w500, fontStyle: FontStyle.italic),
           ),
 
           subtitle: SubstringHighlight(text: book.text ,term: searchQueryMain.value,
               textStyle: TextStyle(
                   fontSize: 17,
-                  color: globalTextColor.value,
+                  color: globalTextColors[textColorIdx.value],
                   fontWeight: FontWeight.w300),
-              textStyleHighlight: TextStyle(              // highlight style
-                color: globalSearchColor,
-              ),
+                  textStyleHighlight: TextStyle(
+                      color: colorSliderIdx.value == 0 || colorSliderIdx.value == 1 ? globalTextColors[textColorIdx.value] : themeColors[colorSliderIdx.value],
+                      fontSize: 18 , fontWeight: FontWeight.w500, fontStyle: FontStyle.italic),
           ),
           onTap: (){
               bookSelected = book.book;

@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.simple_bible">
    <application
-        android:label="simple_bible"
+        android:label="SimpleBible"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
