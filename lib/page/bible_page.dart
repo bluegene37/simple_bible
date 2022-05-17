@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,10 +9,29 @@ import 'package:simple_bible/model/books.dart';
 import 'package:simple_bible/main.dart';
 
 final ItemScrollController itemScrollController = ItemScrollController();
-
+var textUnderline = [].obs;
 var shadeIdx = 8;
 var colorFade = const Color(0xfffbc02d).obs;
 
+var highLightColors = [
+  Colors.red.shade100,
+  Colors.pink.shade100,
+  Colors.purple.shade100,
+  Colors.indigo.shade100,
+  Colors.blue.shade100,
+  Colors.lightBlue.shade100,
+  Colors.cyan.shade100,
+  Colors.teal.shade100,
+  Colors.green.shade100,
+  Colors.lightGreen.shade100,
+  Colors.lime.shade100,
+  Colors.yellow.shade100,
+  Colors.amber.shade100,
+  Colors.orange.shade100,
+  Colors.deepOrange.shade100,
+  Colors.brown.shade100,
+  Colors.blueGrey.shade100,
+];
 
 class BooksLocalPage extends StatelessWidget {
   final String jsonName;
@@ -36,6 +56,8 @@ class BooksLocalPage extends StatelessWidget {
         // WidgetsBinding.instance?.addPostFrameCallback((_) => Future.delayed(Duration.zero, () => jumpToFunc() ) );
         Future.delayed(Duration.zero, () => {
               jumpToFunc(),
+          textUnderline.value = [],
+
             //   if(colorIndex < 999){
             //       shadeIdx = 8,
             //       colorFade.value = Color(shadesList[8]),
@@ -83,12 +105,9 @@ class BooksLocalPage extends StatelessWidget {
     itemCount: books.length,
     itemBuilder: (context, index) {
       final book = books[index];
-      var selectedIdx = false.obs;
-      selectedIdx.value = index == colorIndex ? true : false;
 
       return Obx(() => ListTile(
-        // tileColor: selectedIdx.value ? colorFade.value : null,
-        tileColor: selectedIdx.value ? themeColorShades[colorSliderIdx.value] : null,
+        // tileColor: textUnderline.value.contains(index) ? themeColorShades[colorSliderIdx.value] : null,
         title: Text.rich(
           TextSpan(
             // text: 'Test',
@@ -99,26 +118,50 @@ class BooksLocalPage extends StatelessWidget {
                       color: globalTextColors[textColorIdx.value] ,
                       fontWeight: FontWeight.w300, fontStyle: FontStyle.italic ),
                 ),
-              TextSpan(text: book.text ,
+              TextSpan(
+                  text: book.text ,
+                  recognizer: TapGestureRecognizer()..onTap = () {
+                      if(textUnderline.contains(book.id+book.chapter.toString()+book.verse.toString())){
+                        textUnderline.remove(book.id+book.chapter.toString()+book.verse.toString());
+                      }else{
+                        textUnderline.add(book.id+book.chapter.toString()+book.verse.toString());
+                      }
+                    showModalBottomSheet(
+                      context: context,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(20.0),
+                        ),
+                      ),
+                      builder: (context) => SizedBox(
+                        height: 200.0,
+                        child: highLighter(),
+                      ),
+                    );
+                  },
                   style: GoogleFonts.getFont(globalFont.value, fontSize: 15+fontSize.value,
                       color: globalTextColors[textColorIdx.value] ,
-                      // backgroundColor: Colors.greenAccent.shade100,
+                      decoration: textUnderline.value.contains(book.id+book.chapter.toString()+book.verse.toString()) ? TextDecoration.underline : null,
+                      decorationStyle: textUnderline.value.contains(book.id+book.chapter.toString()+book.verse.toString()) ? TextDecorationStyle.dashed : null,
+                      backgroundColor: !box.containsKey(book.id+book.chapter.toString()+book.verse.toString()+'color')
+                          ? null
+                          : highLightColors[box.get(book.id+book.chapter.toString()+book.verse.toString()+'color',defaultValue: 0)],
                   ),
-              ),
+                ),
             ],
           ),
         ),
         onTap: (){
-          // selectedIdx.value = false;
+
         },
         onLongPress: (){
-            showModalBottomSheet(
-              context: context,
-              builder: (context) => SizedBox(
-                height: 100.0,
-                child: highLighter(),
-              ),
-            );
+            // showModalBottomSheet(
+            //   context: context,
+            //   builder: (context) => SizedBox(
+            //     height: 100.0,
+            //     child: highLighter(),
+            //   ),
+            // );
           },
         )
       );
@@ -142,34 +185,25 @@ Widget highLighter(){
     itemBuilder: (context, index) {
       return InkWell(
         child: CircleAvatar(
-          radius: 50 / 2,
+          radius: 45 / 2,
           backgroundColor: highLightColors[index],
           // child: Icon(Icons.check, color: textColorDynamic.value) ,
         ),
         onTap: (){
           Navigator.pop(context);
+          for (var uniqueKey in textUnderline) {
+            box.put(uniqueKey+'color', index);
+            if(!box.containsKey(uniqueKey+'color')){
+              // box.put(uniqueKey+'color', index);
+            }else{
+              // box.delete(uniqueKey+'color');
+            }
+
+          }
+          textUnderline.value = [];
         },
       );
     }
   );
 }
 
-var highLightColors = [
-  Colors.red.shade100,
-  Colors.pink.shade100,
-  Colors.purple.shade100,
-  Colors.indigo.shade100,
-  Colors.blue.shade100,
-  Colors.lightBlue.shade100,
-  Colors.cyan.shade100,
-  Colors.teal.shade100,
-  Colors.green.shade100,
-  Colors.lightGreen.shade100,
-  Colors.lime.shade100,
-  Colors.yellow.shade100,
-  Colors.amber.shade100,
-  Colors.orange.shade100,
-  Colors.deepOrange.shade100,
-  Colors.brown.shade100,
-  Colors.blueGrey.shade100,
-];
