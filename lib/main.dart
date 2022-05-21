@@ -1,5 +1,6 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:simple_bible/page/search_page.dart';
 import 'package:simple_bible/page/settings_page.dart';
@@ -111,6 +112,10 @@ void main() async {
   textColorDynamic.value = brightness == Brightness.light ? Colors.black : Colors.white;
 
   pages = [BooksLocalPage(bibleVersions, bookSelected, selectedChapter, 0)];
+
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
   runApp(const MyApp());
 }

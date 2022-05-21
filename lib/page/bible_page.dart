@@ -126,18 +126,44 @@ class BooksLocalPage extends StatelessWidget {
                       }else{
                         textUnderline.add(book.id+book.chapter.toString()+book.verse.toString());
                       }
-                    showModalBottomSheet(
-                      context: context,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(20.0),
-                        ),
-                      ),
-                      builder: (context) => SizedBox(
-                        height: 200.0,
-                        child: highLighter(),
-                      ),
-                    );
+
+                    if(textUnderline.isNotEmpty){
+                      Scaffold.of(context).showBottomSheet<void>(
+                        (BuildContext context) {
+                          return  Padding(
+                            padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                            child: SizedBox(
+                                height: 112,
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      const SizedBox(
+                                        height: 1,
+                                        width: 100,
+                                        child: Divider(
+                                          color: Colors.grey
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 38,
+                                        child: Text('Test'),
+                                      ),
+                                      SizedBox(
+                                        height: 70,
+                                        child: highLighter(),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                            ),
+                          );
+                        },
+                      );
+                    }else{
+                      Navigator.pop(context);
+                    }
                   },
                   style: GoogleFonts.getFont(globalFont.value, fontSize: 15+fontSize.value,
                       color: globalTextColors[textColorIdx.value] ,
@@ -155,20 +181,15 @@ class BooksLocalPage extends StatelessWidget {
 
         },
         onLongPress: (){
-            // showModalBottomSheet(
-            //   context: context,
-            //   builder: (context) => SizedBox(
-            //     height: 100.0,
-            //     child: highLighter(),
-            //   ),
-            // );
-          },
-        )
-      );
-    },
-    itemScrollController: itemScrollController,
+
+        },
+      )
+    );
+  },
+  itemScrollController: itemScrollController,
     // itemPositionsListener: itemPositionsListener,
   );
+
 }
 
 // double mWidth = Dimens.height = MediaQuery.of(context).size.width;
@@ -176,34 +197,34 @@ class BooksLocalPage extends StatelessWidget {
 
 Widget highLighter(){
   return ListView.separated(
-    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-    scrollDirection: Axis.horizontal,
-    itemCount: highLightColors.length,
-    separatorBuilder: (context, index){
-      return const SizedBox(width: 5);
-    },
-    itemBuilder: (context, index) {
-      return InkWell(
-        child: CircleAvatar(
-          radius: 45 / 2,
-          backgroundColor: highLightColors[index],
-          // child: Icon(Icons.check, color: textColorDynamic.value) ,
-        ),
-        onTap: (){
-          Navigator.pop(context);
-          for (var uniqueKey in textUnderline) {
-            box.put(uniqueKey+'color', index);
-            if(!box.containsKey(uniqueKey+'color')){
-              // box.put(uniqueKey+'color', index);
-            }else{
-              // box.delete(uniqueKey+'color');
-            }
+          padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+          scrollDirection: Axis.horizontal,
+          itemCount: highLightColors.length,
+          separatorBuilder: (context, index){
+            return const SizedBox(width: 5);
+          },
+          itemBuilder: (context, index) {
+            return InkWell(
+              child: CircleAvatar(
+                radius: 45 / 2,
+                backgroundColor: highLightColors[index],
+                // child: Icon(Icons.check, color: textColorDynamic.value) ,
+              ),
+              onTap: (){
+                Navigator.pop(context);
+                for (var uniqueKey in textUnderline) {
+                  box.put(uniqueKey+'color', index);
+                  if(!box.containsKey(uniqueKey+'color')){
+                    // box.put(uniqueKey+'color', index);
+                  }else{
+                    // box.delete(uniqueKey+'color');
+                  }
 
+                }
+                textUnderline.value = [];
+              },
+            );
           }
-          textUnderline.value = [];
-        },
       );
-    }
-  );
-}
+  }
 
