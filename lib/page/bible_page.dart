@@ -12,6 +12,8 @@ final ItemScrollController itemScrollController = ItemScrollController();
 var textUnderline = [].obs;
 var shadeIdx = 8;
 var colorFade = const Color(0xfffbc02d).obs;
+var highlightSelected = [];
+var highlightClear = [];
 
 var highLightColors = [
   Colors.red.shade100,
@@ -123,32 +125,33 @@ class BooksLocalPage extends StatelessWidget {
                   recognizer: TapGestureRecognizer()..onTap = () {
                       if(textUnderline.contains(book.id+book.chapter.toString()+book.verse.toString())){
                         textUnderline.remove(book.id+book.chapter.toString()+book.verse.toString());
+                        highlightSelected.remove(box.get(book.id+book.chapter.toString()+book.verse.toString()+'color'));
+                        highlightClear.remove(book.id+book.chapter.toString()+book.verse.toString()+box.get(book.id+book.chapter.toString()+book.verse.toString()+'color').toString());
                       }else{
                         textUnderline.add(book.id+book.chapter.toString()+book.verse.toString());
+                        highlightSelected.add(box.get(book.id+book.chapter.toString()+book.verse.toString()+'color'));
+                        highlightClear.add(book.id+book.chapter.toString()+book.verse.toString()+box.get(book.id+book.chapter.toString()+book.verse.toString()+'color').toString());
                       }
 
                     if(textUnderline.isNotEmpty){
-                      Scaffold.of(context).showBottomSheet<void>(
+                      final PersistentBottomSheetController bottomSheetController = Scaffold.of(context).showBottomSheet<void>(
                         (BuildContext context) {
                           return  Padding(
                             padding: const EdgeInsets.only(left: 10.0, right: 10.0),
                             child: SizedBox(
-                                height: 112,
+                                height: 80,
                                 child: Center(
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     mainAxisSize: MainAxisSize.min,
                                     children: <Widget>[
                                       const SizedBox(
-                                        height: 1,
-                                        width: 100,
+                                        height: 10,
+                                        width: 70,
                                         child: Divider(
+                                          thickness: 3,
                                           color: Colors.grey
                                         ),
-                                      ),
-                                      const SizedBox(
-                                        height: 38,
-                                        child: Text('Test'),
                                       ),
                                       SizedBox(
                                         height: 70,
@@ -161,6 +164,11 @@ class BooksLocalPage extends StatelessWidget {
                           );
                         },
                       );
+                      bottomSheetController.closed.then((value) {
+                        textUnderline.value = [];
+                        highlightSelected = [];
+                        highlightClear = [];
+                      });
                     }else{
                       Navigator.pop(context);
                     }
@@ -204,24 +212,26 @@ Widget highLighter(){
             return const SizedBox(width: 5);
           },
           itemBuilder: (context, index) {
+
             return InkWell(
               child: CircleAvatar(
                 radius: 45 / 2,
                 backgroundColor: highLightColors[index],
-                // child: Icon(Icons.check, color: textColorDynamic.value) ,
+                child: highlightSelected.contains(index) ? const Icon(Icons.close, color: Colors.black) : null,
               ),
               onTap: (){
                 Navigator.pop(context);
                 for (var uniqueKey in textUnderline) {
-                  box.put(uniqueKey+'color', index);
-                  if(!box.containsKey(uniqueKey+'color')){
-                    // box.put(uniqueKey+'color', index);
-                  }else{
-                    // box.delete(uniqueKey+'color');
+                  if(highlightClear.contains(uniqueKey+index.toString())){
+                    box.delete(uniqueKey+'color');
                   }
-
+                  if(!highlightSelected.contains(index)){
+                    box.put(uniqueKey+'color', index);
+                  }
                 }
                 textUnderline.value = [];
+                highlightSelected = [];
+                highlightClear = [];
               },
             );
           }

@@ -98,11 +98,13 @@ void main() async {
   await Hive.initFlutter();
   await Hive.openBox("settingsDB");
 
+  // box.clear();
+
   themeMode.value = box.get('themeMode',defaultValue:false);
   bibleVersions = box.get('bibleVersions',defaultValue: 'kjv');
   bookSelected = box.get('bookSelected',defaultValue: 'Genesis');
   selectedChapter = box.get('selectedChapter',defaultValue: 1);
-  colorSliderIdx.value = box.get('colorSliderIdx',defaultValue: 5);
+  colorSliderIdx.value = box.get('colorSliderIdx',defaultValue: 8);
   textColorIdx.value = box.get('textColorIdx',defaultValue: 1);
   globalFont.value = box.get('globalFont',defaultValue:'Roboto');
   globalFontIdx = box.get('globalFontIdx',defaultValue: 9);
