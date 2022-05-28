@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -14,6 +15,9 @@ var shadeIdx = 8;
 var colorFade = const Color(0xfffbc02d).obs;
 var highlightSelected = [];
 var highlightClear = [];
+var bottomPadding = 0.0.obs;
+var copyTextClipboard = '';
+var copyTextByVerse = [];
 
 var highLightColors = [
   Colors.red.shade100,
@@ -92,7 +96,7 @@ class BooksLocalPage extends StatelessWidget {
             if(snapshot.hasError) {
               return const Center(child: Text('Some error occurred!'));
             } else {
-              return buildBooks(book!);
+              return Obx(() =>buildBooks(book!) );
             }
         }
 
@@ -100,22 +104,21 @@ class BooksLocalPage extends StatelessWidget {
     ),
   );
 
-
   Widget buildBooks(books) => ScrollablePositionedList.builder(
     physics: const BouncingScrollPhysics(),
-    padding: const EdgeInsets.only(top: 10.0),
+    padding: EdgeInsets.only(top: 10.0, bottom: bottomPadding.value ),
     itemCount: books.length,
     itemBuilder: (context, index) {
       final book = books[index];
 
       return Obx(() => ListTile(
-        // tileColor: textUnderline.value.contains(index) ? themeColorShades[colorSliderIdx.value] : null,
+        tileColor: colorIndex == index ? themeColorShades[colorSliderIdx.value] : null,
         title: Text.rich(
           TextSpan(
             // text: 'Test',
             // style: DefaultTextStyle.of(context).style,
             children: <TextSpan>[
-              TextSpan(text: book.verse.toString()+'. ',
+              TextSpan(text: '${book.verse}. ',
                   style: GoogleFonts.getFont(globalFont.value, fontSize: 11+fontSize.value,
                       color: globalTextColors[textColorIdx.value] ,
                       fontWeight: FontWeight.w300, fontStyle: FontStyle.italic ),
@@ -127,19 +130,27 @@ class BooksLocalPage extends StatelessWidget {
                         textUnderline.remove(book.id+book.chapter.toString()+book.verse.toString());
                         highlightSelected.remove(box.get(book.id+book.chapter.toString()+book.verse.toString()+'color'));
                         highlightClear.remove(book.id+book.chapter.toString()+book.verse.toString()+box.get(book.id+book.chapter.toString()+book.verse.toString()+'color').toString());
+                        // copyTextClipboard = copyTextClipboard.replaceAll(book.text, "");
+                        copyTextByVerse.remove(book.verse);
                       }else{
                         textUnderline.add(book.id+book.chapter.toString()+book.verse.toString());
                         highlightSelected.add(box.get(book.id+book.chapter.toString()+book.verse.toString()+'color'));
                         highlightClear.add(book.id+book.chapter.toString()+book.verse.toString()+box.get(book.id+book.chapter.toString()+book.verse.toString()+'color').toString());
+                        // copyTextClipboard = '$copyTextClipboard '+book.text;
+                        copyTextByVerse.add(book.verse);
                       }
 
                     if(textUnderline.isNotEmpty){
+                      bottomPadding.value = 120.0;
                       final PersistentBottomSheetController bottomSheetController = Scaffold.of(context).showBottomSheet<void>(
                         (BuildContext context) {
                           return  Padding(
-                            padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                            padding: const EdgeInsets.only(
+                                // bottom: MediaQuery.of(context).viewInsets.bottom
+                                left: 10.0, right: 10.0
+                            ),
                             child: SizedBox(
-                                height: 80,
+                                height: 120,
                                 child: Center(
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -153,10 +164,15 @@ class BooksLocalPage extends StatelessWidget {
                                           color: Colors.grey
                                         ),
                                       ),
+                                      const SizedBox(height: 5),
+                                      SizedBox(
+                                        height: 30,
+                                        child: copyBtn(),
+                                      ),
                                       SizedBox(
                                         height: 70,
                                         child: highLighter(),
-                                      ),
+                                      )
                                     ],
                                   ),
                                 )
@@ -165,16 +181,19 @@ class BooksLocalPage extends StatelessWidget {
                         },
                       );
                       bottomSheetController.closed.then((value) {
+                        bottomPadding.value = 0.0;
                         textUnderline.value = [];
                         highlightSelected = [];
                         highlightClear = [];
+                        copyTextClipboard = '';
                       });
                     }else{
+                      bottomPadding.value = 0.0;
                       Navigator.pop(context);
                     }
                   },
                   style: GoogleFonts.getFont(globalFont.value, fontSize: 15+fontSize.value,
-                      color: globalTextColors[textColorIdx.value] ,
+                      color: !box.containsKey(book.id+book.chapter.toString()+book.verse.toString()+'color') && brightness == Brightness.dark ?  globalTextColors[textColorIdx.value] : Colors.black ,
                       decoration: textUnderline.value.contains(book.id+book.chapter.toString()+book.verse.toString()) ? TextDecoration.underline : null,
                       decorationStyle: textUnderline.value.contains(book.id+book.chapter.toString()+book.verse.toString()) ? TextDecorationStyle.dashed : null,
                       backgroundColor: !box.containsKey(book.id+book.chapter.toString()+book.verse.toString()+'color')
@@ -200,8 +219,26 @@ class BooksLocalPage extends StatelessWidget {
 
 }
 
-// double mWidth = Dimens.height = MediaQuery.of(context).size.width;
-// double mHeight = Dimens.height = MediaQuery.of(context).size.height;
+
+
+Widget copyBtn(){
+  return  ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        primary: themeColors[colorSliderIdx.value],
+      ),
+      child: const Text('Copy selected text'),
+      onPressed: () {
+          copyTextClipboard = '';
+          for (var i in bibleScreen) {
+            if(copyTextByVerse.contains(i.verse) ){
+              copyTextClipboard = '$copyTextClipboard '+i.text;
+            }
+          }
+          Clipboard.setData(
+            ClipboardData(text: copyTextClipboard ),
+          );
+      });
+}
 
 Widget highLighter(){
   return ListView.separated(
@@ -232,6 +269,7 @@ Widget highLighter(){
                 textUnderline.value = [];
                 highlightSelected = [];
                 highlightClear = [];
+                copyTextClipboard = '';
               },
             );
           }

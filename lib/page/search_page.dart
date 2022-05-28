@@ -128,10 +128,12 @@ class SearchResultPage extends StatelessWidget {
                   fontSize: 15,
                   color: globalTextColors[textColorIdx.value],
                   fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic),
-                  textStyleHighlight: TextStyle(
-                      color: colorSliderIdx.value == 0 || colorSliderIdx.value == 1 ? globalTextColors[textColorIdx.value] : themeColors[colorSliderIdx.value],
-                      fontSize: 18 , fontWeight: FontWeight.w500, fontStyle: FontStyle.italic),
+                  fontStyle: FontStyle.italic
+              ),
+              textStyleHighlight: TextStyle(
+                  color: colorSliderIdx.value == 0 || colorSliderIdx.value == 1 ? globalTextColors[textColorIdx.value] : themeColors[colorSliderIdx.value],
+                  fontSize: 18 , fontWeight: FontWeight.w500, fontStyle: FontStyle.italic
+              ),
           ),
 
           subtitle: SubstringHighlight(text: book.text ,term: searchQueryMain.value,

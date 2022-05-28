@@ -1,6 +1,4 @@
-import 'dart:ui';
 
-import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
 part 'settingsdb.g.dart';

@@ -62,8 +62,7 @@ class _SettingsLocalPageState extends State<SettingsLocalPage> {
                               fontSize: 15 + fontSize.value)),
                     ),
                     SettingsTile(
-                      title: Text('Font Size: ' +
-                          (fontSize.value + 15).toStringAsFixed(2)),
+                      title: Text('Font Size: ${(fontSize.value + 15).toStringAsFixed(2)}'),
                     ),
                   ],
                 ),

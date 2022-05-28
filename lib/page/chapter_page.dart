@@ -69,7 +69,7 @@ class ChapterSelectionPage extends StatelessWidget {
             box.put('selectedChapter', chapterList.chapter),
             globalIndex.value = 2,
             pages[0] = BooksLocalPage(bibleVersions, bookSelected, chapterList.chapter, 0),
-            barTitle.value = bookSelected +' '+selectedChapter.toString(),
+            barTitle.value = '$bookSelected $selectedChapter',
             colorIndex = 999
           },
         ),
