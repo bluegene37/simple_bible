@@ -222,22 +222,46 @@ class BooksLocalPage extends StatelessWidget {
 
 
 Widget copyBtn(){
-  return  ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        primary: themeColors[colorSliderIdx.value],
-      ),
-      child: const Text('Copy selected text'),
-      onPressed: () {
-          copyTextClipboard = '';
-          for (var i in bibleScreen) {
-            if(copyTextByVerse.contains(i.verse) ){
-              copyTextClipboard = '$copyTextClipboard '+i.text;
+  return Row(
+    children: [
+      const Spacer(),
+      ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: themeColors[colorSliderIdx.value],
+          ),
+          child: Text('Copy selected text' , style: TextStyle( color: textColorDynamic.value),),
+          onPressed: () {
+            copyTextClipboard = '';
+            for (var i in bibleScreen) {
+              if(copyTextByVerse.contains(i.verse) ){
+                copyTextClipboard = '$copyTextClipboard '+i.text;
+              }
             }
-          }
-          Clipboard.setData(
-            ClipboardData(text: copyTextClipboard ),
-          );
-      });
+
+            Clipboard.setData(
+              ClipboardData(text: copyTextClipboard ),
+            );
+          }),
+      const Spacer(),
+      ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: themeColors[colorSliderIdx.value],
+          ),
+          child: Text('Copy text w/ verse no' , style: TextStyle( color: textColorDynamic.value),),
+          onPressed: () {
+            copyTextClipboard = '';
+            for (var i in bibleScreen) {
+              if(copyTextByVerse.contains(i.verse) ){
+                copyTextClipboard = '$copyTextClipboard ${i.verse}${'.'} ${i.text}';
+              }
+            }
+            Clipboard.setData(
+              ClipboardData(text: copyTextClipboard ),
+            );
+          }),
+      const Spacer(),
+    ],
+  );
 }
 
 Widget highLighter(){
