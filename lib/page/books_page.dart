@@ -167,7 +167,7 @@ class BooksSelectionPage extends StatelessWidget {
                         pages[0] = const ChapterSelectionPage(),
                         // BooksLocalPage(bibleVersions, bookTitle.key, selectedChapter,0),
                         barTitle.value =
-                        bookSelected + ' ' + selectedChapter.toString(),
+                        '$bookSelected $selectedChapter',
                         colorIndex = 999,
                       },
                     );
@@ -222,7 +222,7 @@ class BooksSelectionPage extends StatelessWidget {
                 globalIndex.value = 2,
                 pages[0] = BooksLocalPage(bibleVersions, bookTitle.key, selectedChapter,0),
                 barTitle.value =
-                    bookSelected + ' ' + selectedChapter.toString(),
+                    '$bookSelected $selectedChapter',
                 colorIndex = 999
               },
             ),

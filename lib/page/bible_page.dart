@@ -62,7 +62,8 @@ class BooksLocalPage extends StatelessWidget {
         // WidgetsBinding.instance?.addPostFrameCallback((_) => Future.delayed(Duration.zero, () => jumpToFunc() ) );
         Future.delayed(Duration.zero, () => {
               jumpToFunc(),
-          textUnderline.value = [],
+              Navigator.of(context).maybePop(),
+              textUnderline.value = [],
 
             //   if(colorIndex < 999){
             //       shadeIdx = 8,
@@ -234,7 +235,8 @@ Widget copyBtn(){
             copyTextClipboard = '';
             for (var i in bibleScreen) {
               if(copyTextByVerse.contains(i.verse) ){
-                copyTextClipboard = '$copyTextClipboard '+i.text;
+                copyTextClipboard = '$copyTextClipboard ${i.text}';
+                Get.snackbar('', 'Copied!');
               }
             }
 
@@ -247,12 +249,13 @@ Widget copyBtn(){
           style: ElevatedButton.styleFrom(
             primary: themeColors[colorSliderIdx.value],
           ),
-          child: Text('Copy text w/ verse no' , style: TextStyle( color: textColorDynamic.value),),
+          child: Text('Copy w/ verse(s)' , style: TextStyle( color: textColorDynamic.value),),
           onPressed: () {
             copyTextClipboard = '';
             for (var i in bibleScreen) {
               if(copyTextByVerse.contains(i.verse) ){
                 copyTextClipboard = '$copyTextClipboard ${i.verse}${'.'} ${i.text}';
+                Get.snackbar('', 'Copied');
               }
             }
             Clipboard.setData(

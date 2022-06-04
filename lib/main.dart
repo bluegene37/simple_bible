@@ -10,6 +10,7 @@ import 'package:simple_bible/page/bible_page.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 var box = Hive.box('settingsDB');
+var historyBox = Hive.box('searchHistoryDB');
 
 var pages = [];
 var mainBooks = '';
@@ -97,8 +98,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   await Hive.openBox("settingsDB");
+  await Hive.openBox("searchHistoryDB");
 
   // box.clear();
+  // historyBox.clear();
 
   themeMode.value = box.get('themeMode',defaultValue:false);
   bibleVersions = box.get('bibleVersions',defaultValue: 'kjv');
@@ -172,7 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future init() async {
-    barTitle.value = bookSelected +' '+selectedChapter.toString();
+    barTitle.value = '$bookSelected $selectedChapter';
   }
 
   void onTabTapped(index) {
@@ -231,7 +234,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   }else{
                     pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter, 0),
                   },
-                barTitle.value = bookSelected +' '+selectedChapter.toString(),
+                barTitle.value = '$bookSelected $selectedChapter',
                 colorIndex = 999
               } else if (globalIndex == 3) {
                 barTitle.value = "Search",
