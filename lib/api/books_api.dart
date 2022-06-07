@@ -7,7 +7,7 @@ class BooksApi {
   static Future<List<Book>> getBooksLocally(BuildContext context, jsonName, bookTitle, bookChapter) async{
     if(mainBooks.isEmpty) {
       final assetBundle = DefaultAssetBundle.of(context);
-      mainBooks = await assetBundle.loadString('assets/'+bibleVersions+'.json');
+      mainBooks = await assetBundle.loadString('assets/$bibleVersions.json');
     }
     final body = json.decode(mainBooks);
     final bookList = body.map<Book>(Book.fromJson).toList();
@@ -25,7 +25,7 @@ class BooksTitleApi {
   static Future<List<BookTitle>> getBooksLocally(BuildContext context, testament) async{
     if(mainBooksMenu == '') {
       final assetBundle = DefaultAssetBundle.of(context);
-      mainBooksMenu = await assetBundle.loadString('assets/'+testament+'.json');
+      mainBooksMenu = await assetBundle.loadString('assets/$testament.json');
     }
     final body = json.decode(mainBooksMenu);
     final bookNames = body.map<BookTitle>(BookTitle.fromJson).toList();
@@ -38,7 +38,7 @@ class BooksChapterApi {
   static Future<List<Book>> getBooksLocally(BuildContext context, jsonName,bookTitle) async{
     if(mainBooks.isEmpty) {
       final assetBundle = DefaultAssetBundle.of(context);
-      mainBooks = await assetBundle.loadString('assets/'+bibleVersions+'.json');
+      mainBooks = await assetBundle.loadString('assets/$bibleVersions.json');
     }
     final body = json.decode(mainBooks);
     final allChapter = body.map<Book>((json) => Book.fromJson(json)).toList();
@@ -54,14 +54,18 @@ class SearchApi {
   static Future<List<Book>> getBooksLocally(BuildContext context, jsonName, searchQuery) async{
     if(mainBooks.isEmpty) {
       final assetBundle = DefaultAssetBundle.of(context);
-      mainBooks = await assetBundle.loadString('assets/'+bibleVersions+'.json');
+      mainBooks = await assetBundle.loadString('assets/$bibleVersions.json');
     }
     final body = json.decode(mainBooks);
     final bookList = body.map<Book>(Book.fromJson).toList();
+    final chapterSearch = searchQuery.replaceAll(RegExp(r'[^0-9]'),'');
+    final bookString = searchQuery.replaceAll(RegExp(r'[^a-zA-Z]'), '');
     final resultText = bookList.where((val) =>
-        val.text.toLowerCase().contains(searchQuery.toLowerCase()) == true
-        // || val.book.toLowerCase().contains(searchQuery.toLowerCase()) == true && val.chapter == 1 && val.verse == 1
+      val.text.toLowerCase().contains(searchQuery.toLowerCase()) == true
+      || val.book.toLowerCase().contains(searchQuery.toLowerCase()) == true && val.chapter == 1 && val.verse == 1
+      || val.book.toLowerCase().contains(bookString.toLowerCase()) == true && val.chapter == int.parse(chapterSearch) && val.verse == 1
     ).toList();
+
     searchScreen = resultText;
     return resultText;
   }

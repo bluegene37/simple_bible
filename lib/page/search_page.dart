@@ -14,24 +14,29 @@ var searchIdxSel = 99999999.obs;
 var hideHistory = false.obs;
 var historyText = historyBox.values.toList().obs;
 var historyKeys = historyBox.keys.toList().obs;
+var txt = TextEditingController();
+var focusNode = FocusNode();
 
 class SearchLocalPage extends StatelessWidget {
   const SearchLocalPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    FocusScope.of(context).requestFocus(focusNode);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Obx(() => Stack(
         fit: StackFit.loose,
         children: [
           hideHistory.value ? Obx(() => SearchResultPage(searchQueryMain.value)) : const HistoryPage(),
-          OutlineSearchBar(
+          Obx(() => OutlineSearchBar(
+              focusNode: focusNode ,
               clearButtonColor: colorSliderIdx.value == 0 ? globalTextColors[textColorIdx.value] : themeColors[colorSliderIdx.value],
               cursorColor: colorSliderIdx.value == 0 || colorSliderIdx.value == 1 ? globalTextColors[textColorIdx.value] : themeColors[colorSliderIdx.value],
               searchButtonIconColor: colorSliderIdx.value == 0 || colorSliderIdx.value == 1 ? globalTextColors[textColorIdx.value] : themeColors[colorSliderIdx.value],
               borderColor: colorSliderIdx.value == 0 || colorSliderIdx.value == 1 ? globalTextColors[textColorIdx.value] : themeColors[colorSliderIdx.value],
               margin: const EdgeInsets.all(8.0),
+              textEditingController: txt,
               initText: searchQueryMain.value,
               hintText: 'Search here...',
               onSearchButtonPressed: (query) => {
@@ -52,9 +57,10 @@ class SearchLocalPage extends StatelessWidget {
                 searchQueryMain.value = query,
               }
             },
+          )
           ),
         ],
-      )
+        )
       )
     );
   }
@@ -195,20 +201,28 @@ class HistoryPage extends StatelessWidget {
               child: Obx(() => ListView.builder(
                 shrinkWrap: true,
                 physics: const BouncingScrollPhysics(),
-                itemCount: historyText.value.length,
+                itemCount: historyKeys.value.length,
                 itemBuilder: (context, index) {
+                  if(index > 25){
+                    historyBox.delete(historyKeys.value[historyKeys.value.length - 1 -index]);
+                  }
                   return Card(
                     child: ListTile(
-                      title: Text(historyText.value[index]),
-                      subtitle: Text(historyKeys.value[index]),
+                      title: Text(historyText.value[historyText.value.length - 1 -index]),
+                      subtitle: Text(historyKeys.value[historyKeys.value.length - 1 -index]),
                       trailing: IconButton(
                         icon: const Icon(Icons.delete),
                         onPressed: () {
-                          historyBox.delete(historyKeys.value[index]);
+                          historyBox.delete(historyKeys.value[historyText.value.length - 1 -index]);
                           historyText.value = historyBox.values.toList().obs;
                           historyKeys.value = historyBox.keys.toList().obs;
                         },
-                      )
+                      ),
+                      onTap: (){
+                        searchQueryMain.value = historyText.value[historyText.value.length - 1 -index];
+                        txt.text = historyText.value[historyText.value.length - 1 -index];
+                        hideHistory.value = true;
+                      },
                     ),
                   );
                 },
