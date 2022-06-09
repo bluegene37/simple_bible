@@ -58,14 +58,11 @@ class SearchApi {
     }
     final body = json.decode(mainBooks);
     final bookList = body.map<Book>(Book.fromJson).toList();
-    final chapterSearch = searchQuery.replaceAll(RegExp(r'[^0-9]'),'');
-    final bookString = searchQuery.replaceAll(RegExp(r'[^a-zA-Z]'), '');
     final resultText = bookList.where((val) =>
-      val.text.toLowerCase().contains(searchQuery.toLowerCase()) == true
-      || val.book.toLowerCase().contains(searchQuery.toLowerCase()) == true && val.chapter == 1 && val.verse == 1
-      || val.book.toLowerCase().contains(bookString.toLowerCase()) == true && val.chapter == int.parse(chapterSearch) && val.verse == 1
+      (val.text.toLowerCase().contains(searchQuery.toLowerCase().trim()) == true)
+      || (val.book.toLowerCase().contains(searchQuery.toLowerCase().trim()) == true && val.chapter == 1 && val.verse == 1)
+      // || (val.book.toLowerCase().contains(searchQuery.replaceAll(RegExp(r"\d"), "").toLowerCase().trim()) == true && val.chapter == int.parse(searchQuery.replaceAll(RegExp(r"\D"), "")) && val.verse == 1)
     ).toList();
-
     searchScreen = resultText;
     return resultText;
   }

@@ -41,9 +41,18 @@ class SearchLocalPage extends StatelessWidget {
               hintText: 'Search here...',
               onSearchButtonPressed: (query) => {
                 searchQueryMain.value = query,
+                hideHistory.value = true,
                 if(query.isNotEmpty){
-                  historyBox.put(DateFormat("yyyy-MM-dd HH:mm:ss").format(DateTime.now()), query),
-                  hideHistory.value = true
+                  if(historyBox.values.contains(query)){
+                      historyBox.toMap().forEach((key, value){
+                          if(value == query) {
+                            historyBox.delete(key);
+                          }
+                      }),
+                    historyBox.put(DateFormat("yyyy-MM-dd HH:mm:ss").format(DateTime.now()), query),
+                  }else{
+                    historyBox.put(DateFormat("yyyy-MM-dd HH:mm:ss").format(DateTime.now()), query),
+                  }
                 }
               },
               onClearButtonPressed: (query) => {
@@ -89,7 +98,11 @@ class SearchResultPage extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             default:
               if(snapshot.hasError) {
-                return const Center(child: Text('No Search Result!'));
+                return Center(child: Container(
+                padding: const EdgeInsets.all(15.0),
+                  child: Text('No Result for: $searchQueryMain', style: const TextStyle(fontSize: 20) ),
+                  ),
+                );
               }else{
                 if(searchQueryMain.value.isNotEmpty && searchResults.isNotEmpty){
                   Future.delayed(Duration.zero,(){
@@ -219,6 +232,11 @@ class HistoryPage extends StatelessWidget {
                         },
                       ),
                       onTap: (){
+                        searchQueryMain.value = '';
+                        searchIdxSel.value = 99999999;
+                        barTitle.value = "Search";
+                        hideHistory.value = false;
+
                         searchQueryMain.value = historyText.value[historyText.value.length - 1 -index];
                         txt.text = historyText.value[historyText.value.length - 1 -index];
                         hideHistory.value = true;

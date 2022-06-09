@@ -19,6 +19,8 @@ var bibleVersions = 'kjv';
 var barTitle = 'Simple Bible'.obs;
 var bookSelectedHist = '';
 var bookSelected = 'Genesis';
+var bookIdxSel = 0;
+var bookOldNew = '';
 int selectedChapterHist = 0;
 int selectedChapter = 1;
 int lastChapter = 1;
@@ -106,6 +108,8 @@ void main() async {
   themeMode.value = box.get('themeMode',defaultValue:false);
   bibleVersions = box.get('bibleVersions',defaultValue: 'kjv');
   bookSelected = box.get('bookSelected',defaultValue: 'Genesis');
+  bookIdxSel = box.get('bookIdxSel',defaultValue: 0);
+  bookOldNew = box.get('bookOldNew',defaultValue: 'O');
   selectedChapter = box.get('selectedChapter',defaultValue: 1);
   colorSliderIdx.value = box.get('colorSliderIdx',defaultValue: 8);
   textColorIdx.value = box.get('textColorIdx',defaultValue: 1);
@@ -190,17 +194,11 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(35.0), // here the desired height
         child: AppBar(
-            leading: Container(),
             centerTitle: true,
             backgroundColor: themeColors[colorSliderIdx.value],
-            title: Text(barTitle.value,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w300,
-                color: textColorDynamic.value,
-                // globalTextColors[textColorIdx.value] ,
-              ),
-            ),
+            leading: Center(child: Text('Old (66)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w300, color: textColorDynamic.value,))),
+            title: Text(barTitle.value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300, color: textColorDynamic.value,),),
+            actions: [Center(child: Text('New (27)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w300, color: textColorDynamic.value,),)),]
           )
       ),
       key: _key,

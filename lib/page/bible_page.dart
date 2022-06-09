@@ -100,7 +100,6 @@ class BooksLocalPage extends StatelessWidget {
               return Obx(() =>buildBooks(book!) );
             }
         }
-
       },
     ),
   );
