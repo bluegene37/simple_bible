@@ -196,9 +196,9 @@ class _MyHomePageState extends State<MyHomePage> {
         child: AppBar(
             centerTitle: true,
             backgroundColor: themeColors[colorSliderIdx.value],
-            leading: Center(child: Text('Old (66)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w300, color: textColorDynamic.value,))),
+            leading: globalIndex.value == 0 ? Center(child: Text('Old (39)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w300, color: textColorDynamic.value,))) : null,
             title: Text(barTitle.value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300, color: textColorDynamic.value,),),
-            actions: [Center(child: Text('New (27)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w300, color: textColorDynamic.value,),)),]
+            actions: globalIndex.value == 0 ? [Center(child: Text('New (27)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w300, color: textColorDynamic.value,),)),] : null
           )
       ),
       key: _key,
