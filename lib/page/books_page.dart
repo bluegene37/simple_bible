@@ -1,4 +1,5 @@
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:simple_bible/main.dart';
 import 'package:flutter/material.dart';
@@ -31,8 +32,7 @@ class BooksSelectionPage extends StatelessWidget {
                 if (snapshot.hasError) {
                   return const Center(child: Text('Some error occurred!'));
                 } else {
-                  return
-                    buildListViewRow(oldTestament!,newTestament!);
+                  return buildListViewRow(oldTestament!,newTestament!);
                     // buildSliverGrid(oldTestament!, newTestament!);
                 }
             }
@@ -301,93 +301,118 @@ class BooksSelectionPage extends StatelessWidget {
               itemScrollController2.jumpTo(index: bookIdxSel )
             }
           });
-          return Row(
-            children: [
-              Expanded(
-                child: ScrollablePositionedList.builder(
-                  shrinkWrap: true,
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: oldT.length,
-                  itemBuilder: (context, index) {
-                    final bookTitle = oldT[index];
-                    return InkWell(
-                      child: Container(
-                        margin: const EdgeInsets.all(4.0),
-                        padding: const EdgeInsets.symmetric(vertical: 4.0),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.rectangle,
-                          color: bookSelected == bookTitle.key ? themeColorShades[colorSliderIdx.value] : null,
-                          borderRadius: const BorderRadius.all(Radius.circular(30.0)),
-                        ),
-                        alignment: Alignment.center,
-                        child: Column(
-                          children: [
-                            Text( bookTitle.key, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w300,),),
-                            Text(bookTitle.val, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w400, fontStyle: FontStyle.italic),)
-                          ],
-                        ),
+          return Column(
+            children: <Widget>[
+              Card(
+                child: SizedBox(
+                  height: 35,
+                  child: GridView.count(
+                      crossAxisCount: 2,
+                      children: <Widget>[
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        color: themeColorShades[colorSliderIdx.value],
+                        child: Text('Old Testament',textAlign: TextAlign.center, style: GoogleFonts.raleway(fontSize: 17.0,)),
                       ),
-                      onTap: () => {
-                        bookSelected = bookTitle.key,
-                        box.put('bookSelected', bookTitle.key),
-                        selectedChapter = 1,
-                        globalIndex.value = 1,
-                        pages[0] = const ChapterSelectionPage(),
-                        barTitle.value = "Chapters",
-                        colorIndex = 999,
-                        bookOldNew = 'O',
-                        bookIdxSel = index,
-                        box.put('bookOldNew', 'O'),
-                        box.put('bookIdxSel', index),
-                      },
-                    );
-                  },
-                  itemScrollController: itemScrollController,
-                )
-              ),
-              Expanded(
-                  child: ScrollablePositionedList.builder(
-                    shrinkWrap: true,
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: newT.length,
-                    itemBuilder: (context, index) {
-                      final bookTitle = newT[index];
-                      return InkWell(
-                        child: Container(
-                          margin: const EdgeInsets.all(4.0),
-                          padding: const EdgeInsets.symmetric(vertical: 4.0),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.rectangle,
-                            color: bookSelected == bookTitle.key ? themeColorShades[colorSliderIdx.value] : null,
-                            borderRadius: const BorderRadius.all(Radius.circular(30.0)),
-                          ),
-                          alignment: Alignment.center,
-                          child: Column(
-                            children: [
-                              Text(bookTitle.key, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w300,),),
-                              Text(bookTitle.val, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w400, fontStyle: FontStyle.italic),)
-                            ],
-                          ),
-                        ),
-                        onTap: () => {
-                          bookSelected = bookTitle.key,
-                          box.put('bookSelected', bookTitle.key),
-                          selectedChapter = 1,
-                          globalIndex.value = 1,
-                          pages[0] = const ChapterSelectionPage(),
-                          barTitle.value = "Chapters",
-                          colorIndex = 999,
-                          bookOldNew = 'N',
-                          bookIdxSel = index,
-                          box.put('bookOldNew', 'N'),
-                          box.put('bookIdxSel', index),
-                        },
-                      );
-                    },
-                    itemScrollController: itemScrollController2,
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        color: themeColorShades[colorSliderIdx.value],
+                        child: Text('New Testament' ,textAlign: TextAlign.center, style: GoogleFonts.raleway(fontSize: 17.0,)),
+                      ),
+                    ]
                   )
+                ),
               ),
-            ],
+              Expanded( child: Row(
+                    children: [
+                      Expanded(
+                          child: ScrollablePositionedList.builder(
+                            shrinkWrap: true,
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: oldT.length,
+                            itemBuilder: (context, index) {
+                              final bookTitle = oldT[index];
+                              return InkWell(
+                                child: Container(
+                                  margin: const EdgeInsets.all(4.0),
+                                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.rectangle,
+                                    color: bookSelected == bookTitle.key ? themeColorShades[colorSliderIdx.value] : null,
+                                    borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Column(
+                                    children: [
+                                      Text( bookTitle.key, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w300,),),
+                                      Text(bookTitle.val, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w400, fontStyle: FontStyle.italic),)
+                                    ],
+                                  ),
+                                ),
+                                onTap: () => {
+                                  bookSelected = bookTitle.key,
+                                  box.put('bookSelected', bookTitle.key),
+                                  selectedChapter = 1,
+                                  globalIndex.value = 1,
+                                  pages[0] = const ChapterSelectionPage(),
+                                  barTitle.value = "Chapters",
+                                  colorIndex = 999,
+                                  bookOldNew = 'O',
+                                  bookIdxSel = index,
+                                  box.put('bookOldNew', 'O'),
+                                  box.put('bookIdxSel', index),
+                                },
+                              );
+                            },
+                            itemScrollController: itemScrollController,
+                          )
+                      ),
+                      Expanded(
+                          child: ScrollablePositionedList.builder(
+                            shrinkWrap: true,
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: newT.length,
+                            itemBuilder: (context, index) {
+                              final bookTitle = newT[index];
+                              return InkWell(
+                                child: Container(
+                                  margin: const EdgeInsets.all(4.0),
+                                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.rectangle,
+                                    color: bookSelected == bookTitle.key ? themeColorShades[colorSliderIdx.value] : null,
+                                    borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Column(
+                                    children: [
+                                      Text(bookTitle.key, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w300,),),
+                                      Text(bookTitle.val, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w400, fontStyle: FontStyle.italic),)
+                                    ],
+                                  ),
+                                ),
+                                onTap: () => {
+                                  bookSelected = bookTitle.key,
+                                  box.put('bookSelected', bookTitle.key),
+                                  selectedChapter = 1,
+                                  globalIndex.value = 1,
+                                  pages[0] = const ChapterSelectionPage(),
+                                  barTitle.value = "Chapters",
+                                  colorIndex = 999,
+                                  bookOldNew = 'N',
+                                  bookIdxSel = index,
+                                  box.put('bookOldNew', 'N'),
+                                  box.put('bookIdxSel', index),
+                                },
+                              );
+                            },
+                            itemScrollController: itemScrollController2,
+                          )
+                      ),
+                    ],
+                 )
+              ),
+             ]
           );
         }
     ),

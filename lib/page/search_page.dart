@@ -239,6 +239,8 @@ class HistoryPage extends StatelessWidget {
 
                         searchQueryMain.value = historyText.value[historyText.value.length - 1 -index];
                         txt.text = historyText.value[historyText.value.length - 1 -index];
+                        historyBox.delete(historyKeys.value[historyKeys.value.length - 1 -index]);
+                        historyBox.put(DateFormat("yyyy-MM-dd HH:mm:ss").format(DateTime.now()), historyText.value[historyText.value.length - 1 -index]);
                         hideHistory.value = true;
                       },
                     ),

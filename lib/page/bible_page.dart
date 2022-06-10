@@ -229,7 +229,7 @@ Widget copyBtn(){
           style: ElevatedButton.styleFrom(
             primary: themeColors[colorSliderIdx.value],
           ),
-          child: Text('Copy selected text' , style: TextStyle( color: textColorDynamic.value),),
+          child: Text('Copy selected texts' , style: TextStyle( color: textColorDynamic.value),),
           onPressed: () {
             copyTextClipboard = '';
             for (var i in bibleScreen) {
@@ -248,7 +248,7 @@ Widget copyBtn(){
           style: ElevatedButton.styleFrom(
             primary: themeColors[colorSliderIdx.value],
           ),
-          child: Text('Copy w/ verse(s)' , style: TextStyle( color: textColorDynamic.value),),
+          child: Text('Copy w/ verse number(s)' , style: TextStyle( color: textColorDynamic.value),),
           onPressed: () {
             copyTextClipboard = '';
             for (var i in bibleScreen) {
