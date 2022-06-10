@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,7 +11,8 @@ import 'package:simple_bible/model/books.dart';
 import 'package:simple_bible/main.dart';
 
 final ItemScrollController itemScrollController = ItemScrollController();
-var textUnderline = [].obs;
+final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
+
 var shadeIdx = 8;
 var colorFade = const Color(0xfffbc02d).obs;
 var highlightSelected = [];
@@ -18,6 +20,7 @@ var highlightClear = [];
 var bottomPadding = 0.0.obs;
 var copyTextClipboard = '';
 var copyTextByVerse = [];
+var scrollChecker = 0;
 
 var highLightColors = [
   Colors.red.shade100,
@@ -63,7 +66,19 @@ class BooksLocalPage extends StatelessWidget {
         Future.delayed(Duration.zero, () => {
               jumpToFunc(),
               Navigator.of(context).maybePop(),
+              barTitle.value = '$bookTitle $bookChapter',
               textUnderline.value = [],
+              itemPositionsListener.itemPositions.addListener(() => {
+                if(itemPositionsListener.itemPositions.value.first.index > scrollChecker){
+                  // print('Up')
+                  hideFloatingBtn.value = true
+                },
+                if(itemPositionsListener.itemPositions.value.first.index < scrollChecker){
+                  // print('Down')
+                  hideFloatingBtn.value = false
+                },
+                scrollChecker = itemPositionsListener.itemPositions.value.first.index
+              }),
 
             //   if(colorIndex < 999){
             //       shadeIdx = 8,
@@ -110,7 +125,6 @@ class BooksLocalPage extends StatelessWidget {
     itemCount: books.length,
     itemBuilder: (context, index) {
       final book = books[index];
-
       return Obx(() => ListTile(
         tileColor: colorIndex == index ? themeColorShades[colorSliderIdx.value] : null,
         title: Text.rich(
@@ -214,12 +228,9 @@ class BooksLocalPage extends StatelessWidget {
     );
   },
   itemScrollController: itemScrollController,
-    // itemPositionsListener: itemPositionsListener,
+  itemPositionsListener: itemPositionsListener,
   );
-
 }
-
-
 
 Widget copyBtn(){
   return Row(
@@ -235,7 +246,7 @@ Widget copyBtn(){
             for (var i in bibleScreen) {
               if(copyTextByVerse.contains(i.verse) ){
                 copyTextClipboard = '$copyTextClipboard ${i.text}';
-                Get.snackbar('', 'Copied!');
+                // Get.snackbar('', 'Copied!');
               }
             }
 
@@ -248,13 +259,13 @@ Widget copyBtn(){
           style: ElevatedButton.styleFrom(
             primary: themeColors[colorSliderIdx.value],
           ),
-          child: Text('Copy w/ verse number(s)' , style: TextStyle( color: textColorDynamic.value),),
+          child: Text('Copy w/ verse(s)' , style: TextStyle( color: textColorDynamic.value),),
           onPressed: () {
             copyTextClipboard = '';
             for (var i in bibleScreen) {
               if(copyTextByVerse.contains(i.verse) ){
                 copyTextClipboard = '$copyTextClipboard ${i.verse}${'.'} ${i.text}';
-                Get.snackbar('', 'Copied');
+                // Get.snackbar('', 'Copied');
               }
             }
             Clipboard.setData(
@@ -301,4 +312,3 @@ Widget highLighter(){
           }
       );
   }
-

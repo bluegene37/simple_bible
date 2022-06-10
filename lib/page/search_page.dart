@@ -15,14 +15,18 @@ var hideHistory = false.obs;
 var historyText = historyBox.values.toList().obs;
 var historyKeys = historyBox.keys.toList().obs;
 var txt = TextEditingController();
-var focusNode = FocusNode();
 
 class SearchLocalPage extends StatelessWidget {
   const SearchLocalPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    FocusScope.of(context).requestFocus(focusNode);
+    if(searchQueryMain.value.isNotEmpty){
+      FocusScope.of(context).requestFocus(FocusNode());
+    }else{
+      // FocusScope.of(context).unfocus();
+    }
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Obx(() => Stack(
@@ -30,7 +34,7 @@ class SearchLocalPage extends StatelessWidget {
         children: [
           hideHistory.value ? Obx(() => SearchResultPage(searchQueryMain.value)) : const HistoryPage(),
           Obx(() => OutlineSearchBar(
-              focusNode: focusNode ,
+              focusNode: FocusNode() ,
               clearButtonColor: colorSliderIdx.value == 0 ? globalTextColors[textColorIdx.value] : themeColors[colorSliderIdx.value],
               cursorColor: colorSliderIdx.value == 0 || colorSliderIdx.value == 1 ? globalTextColors[textColorIdx.value] : themeColors[colorSliderIdx.value],
               searchButtonIconColor: colorSliderIdx.value == 0 || colorSliderIdx.value == 1 ? globalTextColors[textColorIdx.value] : themeColors[colorSliderIdx.value],
@@ -176,7 +180,11 @@ class SearchResultPage extends StatelessWidget {
           ),
           onTap: (){
               bookSelected = book.book;
+              box.put('bookSelected', book.book);
               selectedChapter = book.chapter;
+              if(bookSelected != bookSelectedHist){
+                refreshChapter = true;
+              }
               globalIndex.value = 2;
               pages[0] = BooksLocalPage(bibleVersions, book.book,book.chapter, book.verse - 1);
               barTitle.value = book.book +' '+book.chapter.toString();

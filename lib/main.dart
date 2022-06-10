@@ -12,15 +12,13 @@ import 'package:hive_flutter/hive_flutter.dart';
 var box = Hive.box('settingsDB');
 var historyBox = Hive.box('searchHistoryDB');
 
-var pages = [];
+var pages = [].obs;
 var mainBooks = '';
 var mainBooksMenu = '';
 var bibleVersions = 'kjv';
 var barTitle = 'Simple Bible'.obs;
 var bookSelectedHist = '';
 var bookSelected = 'Genesis';
-var bookIdxSel = 0;
-var bookOldNew = '';
 int selectedChapterHist = 0;
 int selectedChapter = 1;
 int lastChapter = 1;
@@ -42,6 +40,9 @@ var searchScreen = [];
 var textColorDynamic = Colors.black.obs;
 var brightness = ThemeData.estimateBrightnessForColor(themeColors[colorSliderIdx.value]);
 var statusBarChanged = false;
+var textUnderline = [].obs;
+var hideFloatingBtn = false.obs;
+var refreshChapter = false;
 
 var globalTextColors = const [
   Colors.white,
@@ -108,8 +109,6 @@ void main() async {
   themeMode.value = box.get('themeMode',defaultValue:false);
   bibleVersions = box.get('bibleVersions',defaultValue: 'kjv');
   bookSelected = box.get('bookSelected',defaultValue: 'Genesis');
-  bookIdxSel = box.get('bookIdxSel',defaultValue: 0);
-  bookOldNew = box.get('bookOldNew',defaultValue: 'O');
   selectedChapter = box.get('selectedChapter',defaultValue: 1);
   colorSliderIdx.value = box.get('colorSliderIdx',defaultValue: 8);
   textColorIdx.value = box.get('textColorIdx',defaultValue: 1);
@@ -120,7 +119,7 @@ void main() async {
   brightness = ThemeData.estimateBrightnessForColor(themeColors[colorSliderIdx.value]);
   textColorDynamic.value = brightness == Brightness.light ? Colors.black : Colors.white;
 
-  pages = [BooksLocalPage(bibleVersions, bookSelected, selectedChapter, 0)];
+  pages.value = [BooksLocalPage(bibleVersions, bookSelected, selectedChapter, 0)];
 
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
@@ -193,16 +192,19 @@ class _MyHomePageState extends State<MyHomePage> {
     return Obx(() => Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(35.0), // here the desired height
-        child: AppBar(
+        child: Obx(() => AppBar(
             centerTitle: true,
             backgroundColor: themeColors[colorSliderIdx.value],
             // leading: globalIndex.value == 0 ? Center(child: Text('Old (39)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w300, color: textColorDynamic.value,))) : null,
             title: Text(barTitle.value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300, color: textColorDynamic.value,),),
             // actions: globalIndex.value == 0 ? [Center(child: Text('New (27)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w300, color: textColorDynamic.value,),)),] : null
           )
+        )
       ),
       key: _key,
       body: SafeArea(child: pages[0]),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: globalIndex == 2 && !hideFloatingBtn.value && textUnderline.value.isEmpty ? floatingNextPage() : null,
       bottomNavigationBar: NavigationBarTheme(
         data: NavigationBarThemeData(
           indicatorColor: themeColorShades[colorSliderIdx.value],
@@ -278,4 +280,44 @@ class _MyHomePageState extends State<MyHomePage> {
     )
     );
   }
+}
+
+Widget floatingNextPage(){
+  return Stack(
+    fit: StackFit.expand,
+    children: [
+      Positioned(
+        left: 30,
+        bottom: 20,
+        width: 40,
+        height: 40,
+        child: FloatingActionButton(
+          backgroundColor:  selectedChapter == 1 ? Colors.black12 : themeColors[colorSliderIdx.value],
+          // themeColorShades[colorSliderIdx.value],
+          heroTag: 'back',
+          onPressed: () {
+            selectedChapter =  selectedChapter > 1 ? selectedChapter - 1 : 1;
+            pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter,0);
+          },
+          child: Icon(Icons.navigate_before_rounded, size: 40, color:  selectedChapter == 1 ? Colors.white : textColorDynamic.value,),
+        ),
+      ),
+      Positioned(
+        right: 30,
+        bottom: 20,
+        width: 40,
+        height: 40,
+        child: FloatingActionButton(
+          backgroundColor: selectedChapter == lastChapter ? Colors.black12 :  themeColors[colorSliderIdx.value],
+          // themeColorShades[colorSliderIdx.value],
+          heroTag: 'next',
+          onPressed: () {
+            selectedChapter =  selectedChapter < lastChapter ? selectedChapter + 1 : lastChapter;
+            pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter,0);
+          },
+          child: Icon(Icons.navigate_next_rounded, size: 40, color:  selectedChapter == lastChapter ? Colors.white : textColorDynamic.value,),
+        ),
+      ),
+    ],
+  );
 }

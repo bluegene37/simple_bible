@@ -12,7 +12,7 @@ class ChapterSelectionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     body: FutureBuilder<List<Book>>(
-      future: bookSelectedHist != bookSelected || selectedChapterHist != selectedChapter || chaptersScreen.isEmpty ? BooksChapterApi.getBooksLocally(context, bibleVersions, bookSelected) : null,
+      future: bookSelectedHist != bookSelected || selectedChapterHist != selectedChapter || chaptersScreen.isEmpty || refreshChapter ? BooksChapterApi.getBooksLocally(context, bibleVersions, bookSelected) : null,
       builder: (context, snapshot) {
 
         final book = bookSelectedHist != bookSelected || selectedChapterHist != selectedChapter || chaptersScreen.isEmpty ?  snapshot.data : chaptersScreen;
