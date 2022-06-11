@@ -21,8 +21,9 @@ class SearchLocalPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FocusScope.of(context).requestFocus(FocusNode());
     if(searchQueryMain.value.isNotEmpty){
-      FocusScope.of(context).requestFocus(FocusNode());
+      // FocusScope.of(context).requestFocus(FocusNode());
     }else{
       // FocusScope.of(context).unfocus();
     }

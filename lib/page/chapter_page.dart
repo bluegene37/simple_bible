@@ -40,7 +40,9 @@ class ChapterSelectionPage extends StatelessWidget {
     itemCount: chapters.length,
     itemBuilder: (context, index) {
       final chapterList = chapters[index];
-
+      if(selectedChapter > chapters.length){
+        selectedChapter = 1;
+      }
       return GridTile(
         child: InkWell(
           child: Container(

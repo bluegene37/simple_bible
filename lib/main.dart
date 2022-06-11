@@ -112,7 +112,7 @@ void main() async {
   selectedChapter = box.get('selectedChapter',defaultValue: 1);
   colorSliderIdx.value = box.get('colorSliderIdx',defaultValue: 8);
   textColorIdx.value = box.get('textColorIdx',defaultValue: 1);
-  globalFont.value = box.get('globalFont',defaultValue:'Roboto');
+  globalFont.value = box.get('globalFont',defaultValue:'Raleway');
   globalFontIdx = box.get('globalFontIdx',defaultValue: 9);
   fontSize.value = box.get('fontSize',defaultValue: 2.0);
 
@@ -292,14 +292,15 @@ Widget floatingNextPage(){
         width: 40,
         height: 40,
         child: FloatingActionButton(
-          backgroundColor:  selectedChapter == 1 ? Colors.black12 : themeColors[colorSliderIdx.value],
-          // themeColorShades[colorSliderIdx.value],
+          backgroundColor:  themeColors[colorSliderIdx.value],
           heroTag: 'back',
           onPressed: () {
-            selectedChapter =  selectedChapter > 1 ? selectedChapter - 1 : 1;
-            pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter,0);
+            if( selectedChapter != 1){
+              selectedChapter =  selectedChapter > 1 ? selectedChapter - 1 : 1;
+              pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter,0);
+            }
           },
-          child: Icon(Icons.navigate_before_rounded, size: 40, color:  selectedChapter == 1 ? Colors.white : textColorDynamic.value,),
+          child: Icon(Icons.navigate_before_rounded, size: 40, color:  selectedChapter == 1 ? Colors.black12 : textColorDynamic.value,),
         ),
       ),
       Positioned(
@@ -308,14 +309,15 @@ Widget floatingNextPage(){
         width: 40,
         height: 40,
         child: FloatingActionButton(
-          backgroundColor: selectedChapter == lastChapter ? Colors.black12 :  themeColors[colorSliderIdx.value],
-          // themeColorShades[colorSliderIdx.value],
+          backgroundColor: themeColors[colorSliderIdx.value],
           heroTag: 'next',
           onPressed: () {
-            selectedChapter =  selectedChapter < lastChapter ? selectedChapter + 1 : lastChapter;
-            pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter,0);
+            if(selectedChapter != lastChapter){
+              selectedChapter =  selectedChapter < lastChapter ? selectedChapter + 1 : lastChapter;
+              pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter,0);
+            }
           },
-          child: Icon(Icons.navigate_next_rounded, size: 40, color:  selectedChapter == lastChapter ? Colors.white : textColorDynamic.value,),
+          child: Icon(Icons.navigate_next_rounded, size: 40, color:  selectedChapter == lastChapter ? Colors.black12 : textColorDynamic.value,),
         ),
       ),
     ],

@@ -55,10 +55,9 @@ class BooksLocalPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     body: FutureBuilder<List<Book>>(
-      future: selectedChapterHist != selectedChapter || bookSelectedHist != bookSelected ? BooksApi.getBooksLocally(context, jsonName, bookTitle, bookChapter) : null,
+      future: bibleScreen.isEmpty || bookSelectedHist != bookSelected || selectedChapterHist != selectedChapter || refreshChapter ? BooksApi.getBooksLocally(context, jsonName, bookTitle, bookChapter) : null,
       builder: (context, snapshot) {
-
-        final book = selectedChapterHist != selectedChapter || bookSelectedHist != bookSelected ? snapshot.data : bibleScreen;
+        final book = bibleScreen.isEmpty || bookSelectedHist != bookSelected || selectedChapterHist != selectedChapter || refreshChapter ? snapshot.data : bibleScreen;
         if(selectedChapterHist != selectedChapter){selectedChapterHist = selectedChapter;}
         if(bookSelectedHist != bookSelected){bookSelectedHist = bookSelected;}
 
