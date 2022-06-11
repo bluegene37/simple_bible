@@ -49,6 +49,7 @@ class BooksSelectionPage extends StatelessWidget {
           return Column(
             children: <Widget>[
               Card(
+                margin: EdgeInsets.zero,
                 child: SizedBox(
                   height: 35,
                   child: GridView.count(
