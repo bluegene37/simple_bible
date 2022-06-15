@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:settings_ui/settings_ui.dart';
 import '../main.dart';
+import 'login_page.dart';
 
 final ItemScrollController itemScrollController = ItemScrollController();
 
@@ -32,9 +33,31 @@ class _SettingsLocalPageState extends State<SettingsLocalPage> {
         body: Center(
           child: Obx( () => SettingsList(
               sections: [
+                CustomSettingsSection(
+                  child: Container(
+                    padding: const EdgeInsets.all(10.0),
+                    // height: 45,
+                    child: Card(
+                      child: ListTile(
+                        leading:  const CircleAvatar(
+                          backgroundImage: AssetImage('assets/defaultUserIMG.png'),
+                        ),
+                        title:  const Text('Sign In or Sign Up'),
+                        // Text('Gene Ray Medel') ,
+                        // subtitle: Text('See your profile'),
+                        trailing: const Icon(Icons.arrow_forward_ios_sharp),
+                        onTap: (){
+                          // pages[0] = const LoginScreen();
+                          Get.to(const LoginScreen());
+                        },
+                      ),
+                    ),
+                  ),
+                ),
                 SettingsSection(
-                  // title: const Text('Common'),
+                  // title: const Text('Setting', style: TextStyle(color: Colors.black,)),
                   tiles: <SettingsTile>[
+
                     // SettingsTile.switchTile(
                     //   activeSwitchColor: themeColors[colorSliderIdx.value],
                     //   onToggle: (value) {
@@ -86,11 +109,6 @@ class _SettingsLocalPageState extends State<SettingsLocalPage> {
                     // title: Text('Font: '+globalFont.value, style: GoogleFonts.getFont(globalFont.value , fontSize: 20)) ,
                     // title: Text('Font: ${box.get('globalFont')}' + globalFont.value ),
                     title: const Text('Font:'),
-                    // trailing: SizedBox(
-                    //   width: 250,
-                    //   height: 60,
-                    //   child: fontPicker(),
-                    // ),
                   ),
                 ),
                 CustomSettingsSection(
@@ -102,11 +120,6 @@ class _SettingsLocalPageState extends State<SettingsLocalPage> {
                 CustomSettingsSection(
                   child: SettingsTile(
                     title: const Text('Color Theme:'),
-                    // trailing: SizedBox(
-                    //   width: 150,
-                    //   height: 60,
-                    //   child: colorSlider(),
-                    // ),
                   ),
                 ),
                 CustomSettingsSection(

@@ -8,6 +8,7 @@ import 'package:simple_bible/page/books_page.dart';
 import 'package:simple_bible/page/chapter_page.dart';
 import 'package:simple_bible/page/bible_page.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 var box = Hive.box('settingsDB');
 var historyBox = Hive.box('searchHistoryDB');
@@ -113,7 +114,7 @@ void main() async {
   colorSliderIdx.value = box.get('colorSliderIdx',defaultValue: 8);
   textColorIdx.value = box.get('textColorIdx',defaultValue: 1);
   globalFont.value = box.get('globalFont',defaultValue:'Raleway');
-  globalFontIdx = box.get('globalFontIdx',defaultValue: 9);
+  globalFontIdx = box.get('globalFontIdx',defaultValue: 8);
   fontSize.value = box.get('fontSize',defaultValue: 2.0);
 
   brightness = ThemeData.estimateBrightnessForColor(themeColors[colorSliderIdx.value]);
@@ -123,7 +124,10 @@ void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
-      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]
+  );
+
+  await Firebase.initializeApp();
 
   runApp(const MyApp());
 }

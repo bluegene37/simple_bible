@@ -21,6 +21,9 @@ var bottomPadding = 0.0.obs;
 var copyTextClipboard = '';
 var copyTextByVerse = [];
 var scrollChecker = 0;
+var bibleRights = [
+    'Rights in the Authorized (King James) Version in the United Kingdom are vested in the Crown. Published by permission of the Crown’s patentee, Cambridge University Press'
+];
 
 var highLightColors = [
   Colors.red.shade100,
@@ -124,42 +127,43 @@ class BooksLocalPage extends StatelessWidget {
     itemCount: books.length,
     itemBuilder: (context, index) {
       final book = books[index];
-      return Obx(() => ListTile(
-        tileColor: colorIndex == index ? themeColorShades[colorSliderIdx.value] : null,
-        title: Text.rich(
-          TextSpan(
-            // text: 'Test',
-            // style: DefaultTextStyle.of(context).style,
-            children: <TextSpan>[
-              TextSpan(text: '${book.verse}. ',
+
+        return Obx(() => ListTile(
+          tileColor: colorIndex == index ? themeColorShades[colorSliderIdx.value] : null,
+          title: Text.rich(
+            TextSpan(
+              // text: 'Test',
+              // style: DefaultTextStyle.of(context).style,
+              children: <TextSpan>[
+                TextSpan(text: '${book.verse}. ',
                   style: GoogleFonts.getFont(globalFont.value, fontSize: 11+fontSize.value,
                       color: globalTextColors[textColorIdx.value] ,
                       fontWeight: FontWeight.w300, fontStyle: FontStyle.italic ),
                 ),
-              TextSpan(
+                TextSpan(
                   text: book.text ,
                   recognizer: TapGestureRecognizer()..onTap = () {
-                      if(textUnderline.contains(book.id+book.chapter.toString()+book.verse.toString())){
-                        textUnderline.remove(book.id+book.chapter.toString()+book.verse.toString());
-                        highlightSelected.remove(box.get(book.id+book.chapter.toString()+book.verse.toString()+'color'));
-                        highlightClear.remove(book.id+book.chapter.toString()+book.verse.toString()+box.get(book.id+book.chapter.toString()+book.verse.toString()+'color').toString());
-                        // copyTextClipboard = copyTextClipboard.replaceAll(book.text, "");
-                        copyTextByVerse.remove(book.verse);
-                      }else{
-                        textUnderline.add(book.id+book.chapter.toString()+book.verse.toString());
-                        highlightSelected.add(box.get(book.id+book.chapter.toString()+book.verse.toString()+'color'));
-                        highlightClear.add(book.id+book.chapter.toString()+book.verse.toString()+box.get(book.id+book.chapter.toString()+book.verse.toString()+'color').toString());
-                        // copyTextClipboard = '$copyTextClipboard '+book.text;
-                        copyTextByVerse.add(book.verse);
-                      }
+                    if(textUnderline.contains(book.id+book.chapter.toString()+book.verse.toString())){
+                      textUnderline.remove(book.id+book.chapter.toString()+book.verse.toString());
+                      highlightSelected.remove(box.get(book.id+book.chapter.toString()+book.verse.toString()+'color'));
+                      highlightClear.remove(book.id+book.chapter.toString()+book.verse.toString()+box.get(book.id+book.chapter.toString()+book.verse.toString()+'color').toString());
+                      // copyTextClipboard = copyTextClipboard.replaceAll(book.text, "");
+                      copyTextByVerse.remove(book.verse);
+                    }else{
+                      textUnderline.add(book.id+book.chapter.toString()+book.verse.toString());
+                      highlightSelected.add(box.get(book.id+book.chapter.toString()+book.verse.toString()+'color'));
+                      highlightClear.add(book.id+book.chapter.toString()+book.verse.toString()+box.get(book.id+book.chapter.toString()+book.verse.toString()+'color').toString());
+                      // copyTextClipboard = '$copyTextClipboard '+book.text;
+                      copyTextByVerse.add(book.verse);
+                    }
 
                     if(textUnderline.isNotEmpty){
                       bottomPadding.value = 120.0;
                       final PersistentBottomSheetController bottomSheetController = Scaffold.of(context).showBottomSheet<void>(
-                        (BuildContext context) {
+                            (BuildContext context) {
                           return  Padding(
                             padding: const EdgeInsets.only(
-                                // bottom: MediaQuery.of(context).viewInsets.bottom
+                              // bottom: MediaQuery.of(context).viewInsets.bottom
                                 left: 10.0, right: 10.0
                             ),
                             child: SizedBox(
@@ -173,8 +177,8 @@ class BooksLocalPage extends StatelessWidget {
                                         height: 10,
                                         width: 70,
                                         child: Divider(
-                                          thickness: 3,
-                                          color: Colors.grey
+                                            thickness: 3,
+                                            color: Colors.grey
                                         ),
                                       ),
                                       const SizedBox(height: 5),
@@ -206,25 +210,29 @@ class BooksLocalPage extends StatelessWidget {
                     }
                   },
                   style: GoogleFonts.getFont(globalFont.value, fontSize: 15+fontSize.value,
-                      color: !box.containsKey(book.id+book.chapter.toString()+book.verse.toString()+'color') && brightness == Brightness.dark ?  globalTextColors[textColorIdx.value] : Colors.black ,
-                      decoration: textUnderline.value.contains(book.id+book.chapter.toString()+book.verse.toString()) ? TextDecoration.underline : null,
-                      decorationStyle: textUnderline.value.contains(book.id+book.chapter.toString()+book.verse.toString()) ? TextDecorationStyle.dashed : null,
-                      backgroundColor: !box.containsKey(book.id+book.chapter.toString()+book.verse.toString()+'color')
-                          ? null
-                          : highLightColors[box.get(book.id+book.chapter.toString()+book.verse.toString()+'color',defaultValue: 0)],
+                    color: !box.containsKey(book.id+book.chapter.toString()+book.verse.toString()+'color') && brightness == Brightness.dark ?  globalTextColors[textColorIdx.value] : Colors.black ,
+                    decoration: textUnderline.value.contains(book.id+book.chapter.toString()+book.verse.toString()) ? TextDecoration.underline : null,
+                    decorationStyle: textUnderline.value.contains(book.id+book.chapter.toString()+book.verse.toString()) ? TextDecorationStyle.dashed : null,
+                    backgroundColor: !box.containsKey(book.id+book.chapter.toString()+book.verse.toString()+'color')
+                        ? null
+                        : highLightColors[box.get(book.id+book.chapter.toString()+book.verse.toString()+'color',defaultValue: 0)],
                   ),
                 ),
-            ],
+              ],
+            ),
           ),
+          subtitle: index+1 == books.length ?  Padding(
+              padding: const EdgeInsets.all(20),
+              child: Text( bibleRights[0] , style: const TextStyle(fontStyle: FontStyle.italic, fontSize: 11), textAlign: TextAlign.center, ),
+          ) : null ,
+          onTap: (){
+
+          },
+          onLongPress: (){
+
+          },
         ),
-        onTap: (){
-
-        },
-        onLongPress: (){
-
-        },
-      )
-    );
+      );
   },
   itemScrollController: itemScrollController,
   itemPositionsListener: itemPositionsListener,
