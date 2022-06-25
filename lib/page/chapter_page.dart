@@ -33,6 +33,7 @@ class ChapterSelectionPage extends StatelessWidget {
   );
 
   Widget buildList(chapters) => GridView.builder(
+    // key: const PageStorageKey<String>('chapter'),
     shrinkWrap: true,
     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
       crossAxisCount: 6,

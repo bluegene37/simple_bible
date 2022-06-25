@@ -11,7 +11,10 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 var box = Hive.box('settingsDB');
+var hiLightBox = Hive.box('hiLightDB');
 var historyBox = Hive.box('searchHistoryDB');
+var notesBox = Hive.box('notesBoxDB');
+// var textsBox = Hive.box('textsBoxDB');
 
 var pages = [].obs;
 var mainBooks = '';
@@ -44,6 +47,14 @@ var statusBarChanged = false;
 var textUnderline = [].obs;
 var hideFloatingBtn = false.obs;
 var refreshChapter = false;
+var loginpage = false.obs;
+var loggedIn = false;
+var userName = '';
+var accessToken = '';
+var profileIMG = '';
+var users = {
+  'test@gmail.com': '12345',
+};
 
 var globalTextColors = const [
   Colors.white,
@@ -102,10 +113,16 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   await Hive.openBox("settingsDB");
+  await Hive.openBox("hiLightDB");
   await Hive.openBox("searchHistoryDB");
+  await Hive.openBox("notesBoxDB");
+  // await Hive.openBox("textsBoxDB");
 
   // box.clear();
+  // hiLightBox.clear();
   // historyBox.clear();
+  // notesBox.clear();
+  // textsBox.clear();
 
   themeMode.value = box.get('themeMode',defaultValue:false);
   bibleVersions = box.get('bibleVersions',defaultValue: 'kjv');
@@ -116,6 +133,10 @@ void main() async {
   globalFont.value = box.get('globalFont',defaultValue:'Raleway');
   globalFontIdx = box.get('globalFontIdx',defaultValue: 8);
   fontSize.value = box.get('fontSize',defaultValue: 2.0);
+  loggedIn = box.get('loggedIn',defaultValue: false);
+  userName = box.get('userName',defaultValue: 'John Doe');
+  profileIMG = box.get('profileIMG',defaultValue: 'https://picsum.photos/200/300');
+
 
   brightness = ThemeData.estimateBrightnessForColor(themeColors[colorSliderIdx.value]);
   textColorDynamic.value = brightness == Brightness.light ? Colors.black : Colors.white;
@@ -188,6 +209,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void onTabTapped(index) {
     setState(() {
       globalIndex.value = index;
+      loginpage.value = false;
     });
   }
 
@@ -195,10 +217,19 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Obx(() => Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(35.0), // here the desired height
+        preferredSize: const Size.fromHeight(35.0),
         child: Obx(() => AppBar(
             centerTitle: true,
-            backgroundColor: themeColors[colorSliderIdx.value],
+            leading: loginpage.value == true ? GestureDetector(
+            child: Icon( Icons.arrow_back_ios, color: textColorDynamic.value,  ),
+            onTap: () {
+              barTitle.value = 'Settings';
+              pages[0] = const SettingsLocalPage();
+              loginpage.value = false;
+              // Navigator.pop(context);
+            } ,
+          ) : null ,
+          backgroundColor: themeColors[colorSliderIdx.value],
             // leading: globalIndex.value == 0 ? Center(child: Text('Old (39)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w300, color: textColorDynamic.value,))) : null,
             title: Text(barTitle.value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300, color: textColorDynamic.value,),),
             // actions: globalIndex.value == 0 ? [Center(child: Text('New (27)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w300, color: textColorDynamic.value,),)),] : null
@@ -302,6 +333,7 @@ Widget floatingNextPage(){
             if( selectedChapter != 1){
               selectedChapter =  selectedChapter > 1 ? selectedChapter - 1 : 1;
               pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter,0);
+              colorIndex = 999;
             }
           },
           child: Icon(Icons.navigate_before_rounded, size: 40, color:  selectedChapter == 1 ? Colors.black12 : textColorDynamic.value,),
@@ -319,6 +351,7 @@ Widget floatingNextPage(){
             if(selectedChapter != lastChapter){
               selectedChapter =  selectedChapter < lastChapter ? selectedChapter + 1 : lastChapter;
               pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter,0);
+              colorIndex = 999;
             }
           },
           child: Icon(Icons.navigate_next_rounded, size: 40, color:  selectedChapter == lastChapter ? Colors.black12 : textColorDynamic.value,),

@@ -206,6 +206,7 @@ class HistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
+    // key: const PageStorageKey<String>('page'),
     body: FutureBuilder(
       future: null,
       builder: (context, snapshot) {

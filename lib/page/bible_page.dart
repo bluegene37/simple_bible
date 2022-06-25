@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:simple_bible/api/books_api.dart';
 import 'package:simple_bible/model/books.dart';
@@ -12,6 +12,7 @@ import 'package:simple_bible/main.dart';
 
 final ItemScrollController itemScrollController = ItemScrollController();
 final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
+var notesController = TextEditingController();
 
 var shadeIdx = 8;
 var colorFade = const Color(0xfffbc02d).obs;
@@ -21,6 +22,10 @@ var bottomPadding = 0.0.obs;
 var copyTextClipboard = '';
 var copyTextByVerse = [];
 var scrollChecker = 0;
+var sheetHeight = 0.0.obs;
+var btnHeight = 30.0;
+var hilighterHeight = 70.0;
+var btnClose = 0.0;
 var bibleRights = [
     'Rights in the Authorized (King James) Version in the United Kingdom are vested in the Crown. Published by permission of the Crown’s patentee, Cambridge University Press'
 ];
@@ -58,12 +63,13 @@ class BooksLocalPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     body: FutureBuilder<List<Book>>(
+      // key: jumpTo > 0 ? null :  const PageStorageKey('page'),
       future: bibleScreen.isEmpty || bookSelectedHist != bookSelected || selectedChapterHist != selectedChapter || refreshChapter ? BooksApi.getBooksLocally(context, jsonName, bookTitle, bookChapter) : null,
       builder: (context, snapshot) {
         final book = bibleScreen.isEmpty || bookSelectedHist != bookSelected || selectedChapterHist != selectedChapter || refreshChapter ? snapshot.data : bibleScreen;
         if(selectedChapterHist != selectedChapter){selectedChapterHist = selectedChapter;}
         if(bookSelectedHist != bookSelected){bookSelectedHist = bookSelected;}
-
+        SystemChannels.textInput.invokeMethod('TextInput.hide');
         // WidgetsBinding.instance?.addPostFrameCallback((_) => Future.delayed(Duration.zero, () => jumpToFunc() ) );
         Future.delayed(Duration.zero, () => {
               jumpToFunc(),
@@ -127,9 +133,11 @@ class BooksLocalPage extends StatelessWidget {
     itemCount: books.length,
     itemBuilder: (context, index) {
       final book = books[index];
-
+      var globalKey = book.book+':'+book.chapter.toString()+':'+book.verse.toString();
+      // print( notesBox.get(globalKey, defaultValue: '').isEmpty );
         return Obx(() => ListTile(
           tileColor: colorIndex == index ? themeColorShades[colorSliderIdx.value] : null,
+          trailing: notesBox.get(globalKey, defaultValue: '').isEmpty ? null : const Icon(Icons.more_vert),
           title: Text.rich(
             TextSpan(
               // text: 'Test',
@@ -143,16 +151,15 @@ class BooksLocalPage extends StatelessWidget {
                 TextSpan(
                   text: book.text ,
                   recognizer: TapGestureRecognizer()..onTap = () {
-                    if(textUnderline.contains(book.id+book.chapter.toString()+book.verse.toString())){
-                      textUnderline.remove(book.id+book.chapter.toString()+book.verse.toString());
-                      highlightSelected.remove(box.get(book.id+book.chapter.toString()+book.verse.toString()+'color'));
-                      highlightClear.remove(book.id+book.chapter.toString()+book.verse.toString()+box.get(book.id+book.chapter.toString()+book.verse.toString()+'color').toString());
-                      // copyTextClipboard = copyTextClipboard.replaceAll(book.text, "");
+                    if(textUnderline.contains(globalKey)){
+                      textUnderline.remove(globalKey);
+                      highlightSelected.remove(hiLightBox.get(globalKey));
+                      highlightClear.remove(globalKey+hiLightBox.get(globalKey).toString());
                       copyTextByVerse.remove(book.verse);
                     }else{
-                      textUnderline.add(book.id+book.chapter.toString()+book.verse.toString());
-                      highlightSelected.add(box.get(book.id+book.chapter.toString()+book.verse.toString()+'color'));
-                      highlightClear.add(book.id+book.chapter.toString()+book.verse.toString()+box.get(book.id+book.chapter.toString()+book.verse.toString()+'color').toString());
+                      textUnderline.add(globalKey);
+                      highlightSelected.add(hiLightBox.get(globalKey));
+                      highlightClear.add(globalKey+hiLightBox.get(globalKey).toString());
                       // copyTextClipboard = '$copyTextClipboard '+book.text;
                       copyTextByVerse.add(book.verse);
                     }
@@ -166,33 +173,121 @@ class BooksLocalPage extends StatelessWidget {
                               // bottom: MediaQuery.of(context).viewInsets.bottom
                                 left: 10.0, right: 10.0
                             ),
-                            child: SizedBox(
-                                height: 120,
+                            child: Obx(()=> SizedBox(
+                                height: 120 + sheetHeight.value,
                                 child: Center(
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     mainAxisSize: MainAxisSize.min,
                                     children: <Widget>[
-                                      const SizedBox(
-                                        height: 10,
-                                        width: 70,
-                                        child: Divider(
-                                            thickness: 3,
-                                            color: Colors.grey
+                                        SizedBox(
+                                          height: sheetHeight.value,
+                                          child: TextFormField(
+                                            controller: notesController,
+                                            textAlignVertical: TextAlignVertical.top,
+                                            keyboardType: TextInputType.multiline,
+                                            maxLines: null,
+                                            expands: true,
+                                            decoration: InputDecoration(
+                                              labelText: "Enter Notes",
+                                              fillColor: Colors.white,
+                                              labelStyle: TextStyle(
+                                                  color: themeColorShades[colorSliderIdx.value],
+                                              ),
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(25.0),
+                                                borderSide: const BorderSide(),
+                                              ),
+                                            ),
+                                          ),
                                         ),
+                                      // const SizedBox(
+                                      //   height: 10,
+                                      //   width: 70,
+                                      //   child: Divider(
+                                      //       thickness: 3,
+                                      //       color: Colors.grey
+                                      //   ),
+                                      // ),
+                                      SizedBox(
+                                        height: btnClose,
+                                        child: const Text(''),
                                       ),
+                                      Row(
+                                        children: [
+                                          SizedBox(
+                                            height: btnClose,
+                                            child: ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  primary: themeColors[colorSliderIdx.value],
+                                                ),
+                                                child: Text('Save' , style: TextStyle( color: textColorDynamic.value),),
+                                                onPressed: () {
+                                                  var datetime = DateFormat.yMMMMEEEEd().add_jms().format(DateTime.now());
+                                                  var resBody = {};
+                                                  resBody["book"] = textUnderline.value.toString();
+                                                  resBody["stamp"] = datetime;
+                                                  resBody["notes"] = notesController.text;
+                                                  notesBox.put(globalKey,resBody);
+                                                  if(sheetHeight.value == 300.0){
+                                                    sheetHeight.value = 0.0;
+                                                    btnHeight = 30.0;
+                                                    hilighterHeight = 70.0;
+                                                    btnClose = 0.0;
+                                                    notesController.clear();
+                                                    SystemChannels.textInput.invokeMethod('TextInput.hide');
+                                                    FocusScope.of(context).unfocus();
+                                                  }else{
+                                                    sheetHeight.value = 300.0;
+                                                    btnHeight = 0.0;
+                                                    hilighterHeight = 0.0;
+                                                    btnClose = 30.0;
+                                                  }
+                                                }
+                                            ),
+                                          ),
+                                          const Spacer(),
+                                          SizedBox(
+                                            height: btnClose,
+                                            child: ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  primary: themeColors[colorSliderIdx.value],
+                                                ),
+                                                child: Text('Close' , style: TextStyle( color: textColorDynamic.value),),
+                                                onPressed: () {
+                                                  if(sheetHeight.value == 300.0){
+                                                    sheetHeight.value = 0.0;
+                                                    btnHeight = 30.0;
+                                                    hilighterHeight = 70.0;
+                                                    btnClose = 0.0;
+                                                    notesController.clear();
+                                                    SystemChannels.textInput.invokeMethod('TextInput.hide');
+                                                    FocusScope.of(context).unfocus();
+                                                  }else{
+                                                    sheetHeight.value = 300.0;
+                                                    btnHeight = 0.0;
+                                                    hilighterHeight = 0.0;
+                                                    btnClose = 30.0;
+                                                  }
+                                                }
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+
                                       const SizedBox(height: 5),
                                       SizedBox(
-                                        height: 30,
+                                        height: btnHeight,
                                         child: copyBtn(),
                                       ),
                                       SizedBox(
-                                        height: 70,
+                                        height: hilighterHeight,
                                         child: highLighter(),
                                       )
                                     ],
                                   ),
                                 )
+                              )
                             ),
                           );
                         },
@@ -203,19 +298,27 @@ class BooksLocalPage extends StatelessWidget {
                         highlightSelected = [];
                         highlightClear = [];
                         copyTextClipboard = '';
+                        sheetHeight.value = 0.0;
+                        btnHeight = 30.0;
+                        hilighterHeight = 70.0;
+                        btnClose = 0.0;
                       });
                     }else{
+                      sheetHeight.value = 0.0;
+                      btnHeight = 30.0;
+                      hilighterHeight = 70.0;
+                      btnClose = 0.0;
                       bottomPadding.value = 0.0;
                       Navigator.pop(context);
                     }
                   },
                   style: GoogleFonts.getFont(globalFont.value, fontSize: 15+fontSize.value,
-                    color: !box.containsKey(book.id+book.chapter.toString()+book.verse.toString()+'color') && brightness == Brightness.dark ?  globalTextColors[textColorIdx.value] : Colors.black ,
-                    decoration: textUnderline.value.contains(book.id+book.chapter.toString()+book.verse.toString()) ? TextDecoration.underline : null,
-                    decorationStyle: textUnderline.value.contains(book.id+book.chapter.toString()+book.verse.toString()) ? TextDecorationStyle.dashed : null,
-                    backgroundColor: !box.containsKey(book.id+book.chapter.toString()+book.verse.toString()+'color')
+                    color: !hiLightBox.containsKey(globalKey) && brightness == Brightness.dark ?  globalTextColors[textColorIdx.value] : Colors.black ,
+                    decoration: textUnderline.value.contains(globalKey) ? TextDecoration.underline : null,
+                    decorationStyle: textUnderline.value.contains(globalKey) ? TextDecorationStyle.dashed : null,
+                    backgroundColor: !hiLightBox.containsKey(globalKey)
                         ? null
-                        : highLightColors[box.get(book.id+book.chapter.toString()+book.verse.toString()+'color',defaultValue: 0)],
+                        : highLightColors[hiLightBox.get(globalKey,defaultValue: 0)],
                   ),
                 ),
               ],
@@ -280,6 +383,26 @@ Widget copyBtn(){
             );
           }),
       const Spacer(),
+      ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: themeColors[colorSliderIdx.value],
+          ),
+          child: Text(sheetHeight.value == 300 ? 'Close' : 'Notes' , style: TextStyle( color: textColorDynamic.value),),
+          onPressed: () {
+            if(sheetHeight.value == 300.0){
+              sheetHeight.value = 0.0;
+              btnHeight = 30.0;
+              hilighterHeight = 70.0;
+              btnClose = 0.0;
+            }else{
+              sheetHeight.value = 300.0;
+              btnHeight = 0.0;
+              hilighterHeight = 0.0;
+              btnClose = 30.0;
+            }
+          }
+        ),
+      const Spacer(),
     ],
   );
 }
@@ -304,10 +427,11 @@ Widget highLighter(){
                 Navigator.pop(context);
                 for (var uniqueKey in textUnderline) {
                   if(highlightClear.contains(uniqueKey+index.toString())){
-                    box.delete(uniqueKey+'color');
+                    hiLightBox.delete(uniqueKey);
                   }
                   if(!highlightSelected.contains(index)){
-                    box.put(uniqueKey+'color', index);
+                    hiLightBox.put(uniqueKey, index);
+                    // textsBox.put(uniqueKey, );
                   }
                 }
                 textUnderline.value = [];

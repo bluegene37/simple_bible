@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:simple_bible/page/profile_page.dart';
 import '../main.dart';
 import 'login_page.dart';
 
@@ -21,13 +22,6 @@ class SettingsLocalPage extends StatefulWidget {
 class _SettingsLocalPageState extends State<SettingsLocalPage> {
   bool status = false;
 
-  // @override
-  // void dispose() {
-  //   // Hive.box('settings').close();
-  //   Hive.close();
-  //   super.dispose();
-  // }
-
   @override
   Widget build(BuildContext context) => Scaffold(
         body: Center(
@@ -39,16 +33,18 @@ class _SettingsLocalPageState extends State<SettingsLocalPage> {
                     // height: 45,
                     child: Card(
                       child: ListTile(
-                        leading:  const CircleAvatar(
-                          backgroundImage: AssetImage('assets/defaultUserIMG.png'),
+                        leading: CircleAvatar(
+                          backgroundColor: themeColorShades[colorSliderIdx.value],
+                          backgroundImage: loggedIn && profileIMG.isNotEmpty ? NetworkImage(profileIMG) :  const AssetImage('assets/defaultUserIMG.png') as ImageProvider ,
                         ),
-                        title:  const Text('Sign In or Sign Up'),
-                        // Text('Gene Ray Medel') ,
-                        // subtitle: Text('See your profile'),
+                        title: loggedIn ? Text(userName)  : const Text('Sign In or Sign Up'),
+                        subtitle: loggedIn ? null : const Text('See your profile'),
                         trailing: const Icon(Icons.arrow_forward_ios_sharp),
                         onTap: (){
-                          // pages[0] = const LoginScreen();
-                          Get.to(const LoginScreen());
+                          pages[0] = loggedIn ? const ProfileScreen() : const LoginScreen();
+                          // barTitle.value = loggedIn ? 'Profile' : 'Log In';
+                          loginpage.value = true;
+                          // Get.to(const LoginScreen());
                         },
                       ),
                     ),

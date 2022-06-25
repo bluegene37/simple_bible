@@ -1,22 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:simple_bible/page/settings_page.dart';
+import 'package:simple_bible/page/profile_page.dart';
 
 import '../main.dart';
-
-const users = {
-  'dribbble@gmail.com': '12345',
-  'hunter@gmail.com': 'hunter',
-};
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
-  Duration get loginTime => const Duration(milliseconds: 2250);
+  Duration get loginTime => const Duration(milliseconds: 1000);
 
   Future<String> _authUser(LoginData data) {
-    print('Name: ${data.name}, Password: ${data.password}');
     return Future.delayed(loginTime).then((_) {
       if (!users.containsKey(data.name)) {
         return 'User not exists';
@@ -24,7 +17,14 @@ class LoginScreen extends StatelessWidget {
       if (users[data.name] != data.password) {
         return 'Password does not match';
       }
-      return 'Success';
+      return '';
+    });
+  }
+
+  Future<String?> _signupUser(SignupData data) {
+    debugPrint('Signup Name: ${data.name}, Password: ${data.password}');
+    return Future.delayed(loginTime).then((_) {
+      return null;
     });
   }
 
@@ -34,56 +34,60 @@ class LoginScreen extends StatelessWidget {
       if (!users.containsKey(name)) {
         return 'User not exists';
       }
-      return 'Success';
+      return '';
     });
   }
 
   @override
   Widget build(BuildContext context) {
+
+    Future.delayed(Duration.zero, () => {
+      barTitle.value = 'Log In',
+    });
+
     return FlutterLogin(
-      // title: 'Simple Bible',
-      // logo: 'assets/images/ecorp-lightblue.png',
+      // scrollable: true,
+      // logo: const AssetImage('assets/app_logo.png'),
       onLogin: _authUser,
-      // onSignup: _authUser,
+      onSignup: _signupUser,
+      onRecoverPassword: _recoverPassword,
+      messages: LoginMessages(
+          recoverPasswordDescription: 'We will send your recovery link to this email account.'
+      ),
+      // loginProviders: <LoginProvider>[
+      //   LoginProvider(
+      //     icon: FontAwesomeIcons.google,
+      //     label: 'Google',
+      //     callback: () async {
+      //       await Future.delayed(loginTime);
+      //       return null;
+      //     },
+      //   ),
+      //   LoginProvider(
+      //     icon: FontAwesomeIcons.facebookF,
+      //     label: 'Facebook',
+      //     callback: () async {
+      //       await Future.delayed(loginTime);
+      //       return null;
+      //     },
+      //   ),
+      // ],
+      onSubmitAnimationCompleted: () {
+        pages[0] = const ProfileScreen();
+        barTitle.value = "Settings";
+        box.put('loggedIn', true);
+        loggedIn = true;
+        // Navigator.of(context).pushReplacement(MaterialPageRoute(
+        //   builder: (context) => const SettingsLocalPage(),
+        // ));
+      },
       theme: LoginTheme(
           primaryColor: themeColors[colorSliderIdx.value],
           accentColor: themeColorShades[colorSliderIdx.value],
           errorColor: Colors.red,
-          titleStyle: const TextStyle(
-            color: Colors.greenAccent,
-            fontFamily: 'Raleway',
-            letterSpacing: 4,
-          )
+          pageColorLight: Colors.white,
+          pageColorDark: themeColorShades[colorSliderIdx.value],
       ),
-
-      loginProviders: <LoginProvider>[
-        LoginProvider(
-          icon: FontAwesomeIcons.google,
-          label: 'Google',
-          callback: () async {
-            print('start google sign in');
-            await Future.delayed(loginTime);
-            print('stop google sign in');
-            return null;
-          },
-        ),
-        LoginProvider(
-          icon: FontAwesomeIcons.facebookF,
-          label: 'Facebook',
-          callback: () async {
-            print('start facebook sign in');
-            await Future.delayed(loginTime);
-            print('stop facebook sign in');
-            return null;
-          },
-        ),
-      ],
-      onSubmitAnimationCompleted: () {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => const SettingsLocalPage(),
-        ));
-      },
-      onRecoverPassword: _recoverPassword,
     );
   }
 }

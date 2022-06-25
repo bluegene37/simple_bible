@@ -1,0 +1,216 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../main.dart';
+import 'bible_page.dart';
+
+var hiLightText = hiLightBox.values.toList();
+var hiLightKeys = hiLightBox.keys.toList();
+var notesText = notesBox.values.toList();
+var notesKeys = notesBox.keys.toList();
+var notesHiLights = 1.obs;
+
+class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+
+    Future.delayed(Duration.zero, () => {
+      barTitle.value = 'Profile',
+    });
+
+    return Column(
+      children: [
+        Container(
+          height: 230,
+          decoration: BoxDecoration(
+            color: themeColorShades[colorSliderIdx.value],
+          ),
+          // ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  CircleAvatar(
+                    backgroundColor: Colors.white70,
+                    minRadius: 60.0,
+                    child: CircleAvatar(
+                      radius: 50.0,
+                      backgroundImage:
+                      NetworkImage(profileIMG),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                userName,
+                style: TextStyle(
+                  fontSize: 35,
+                  fontWeight: FontWeight.bold,
+                  color: textColorDynamic.value,
+                ),
+              ),
+              Row(
+                // alignment: WrapAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly ,
+                children: <Widget>[
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: themeColors[colorSliderIdx.value],
+                      onPrimary: textColorDynamic.value,
+                      textStyle: const TextStyle(fontSize: 20,),
+                    ),
+                    onPressed: () {
+                      notesHiLights.value = 1;
+                    },
+                    child: const Text('Highlights'),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: themeColors[colorSliderIdx.value],
+                      onPrimary: textColorDynamic.value,
+                      textStyle: const TextStyle(fontSize: 20,),
+                    ),
+                    onPressed: () {
+                      notesHiLights.value = 2;
+                    },
+                    child: const Text('Notes'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        Obx(() => Expanded(
+            child: notesHiLights.value == 1 ? const HiLightPage() : const NotesPage()
+          )
+        )
+      ],
+    );
+  }
+}
+
+
+class HiLightPage extends StatelessWidget {
+  const HiLightPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    // key: const PageStorageKey<String>('page'),
+    body: FutureBuilder(
+        future: null,
+        builder: (context, snapshot) {
+          hiLightText = hiLightBox.values.toList();
+          hiLightKeys = hiLightBox.keys.toList();
+
+          return Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: hiLightKeys.length,
+                  itemBuilder: (context, index) {
+                    // final bookKeys = hiLightKeys[hiLightKeys.length - 1 -index].split(':');
+                    return Card(
+                      child: ListTile(
+                        // title: Text(),
+                        subtitle: Text(hiLightKeys[hiLightKeys.length - 1 -index]),
+                        tileColor: highLightColors[hiLightText[hiLightText.length - 1 -index]],
+                        onTap: (){
+                          final bookTitle = hiLightKeys[hiLightKeys.length - 1 -index].split(':')[0];
+                          final bookChapter = int.parse(hiLightKeys[hiLightKeys.length - 1 -index].split(':')[1]);
+                          final bookVerse = int.parse(hiLightKeys[hiLightKeys.length - 1 -index].split(':')[2]);
+
+                          bookSelected = bookTitle;
+                          box.put('bookSelected', bookTitle);
+                          selectedChapter = bookChapter;
+                          if(bookSelected != bookSelectedHist){
+                            refreshChapter = true;
+                          }
+                          globalIndex.value = 2;
+                          pages[0] = BooksLocalPage(bibleVersions, bookTitle ,bookChapter, bookVerse - 1);
+                          barTitle.value = bookTitle +' '+bookChapter.toString();
+                          // colorIndex = bookVerse - 1;
+                          // searchIdxSel.value = index;
+                        },
+                      ),
+                    );
+                  },
+                ),
+              )
+            ],
+          );
+        }
+    ),
+  );
+}
+
+class NotesPage extends StatelessWidget {
+  const NotesPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    // key: const PageStorageKey<String>('page'),
+    body: FutureBuilder(
+        future: null,
+        builder: (context, snapshot) {
+          notesText = notesBox.values.toList();
+          // notesBox.clear();
+          return Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  physics: const BouncingScrollPhysics(),
+                  itemCount:notesText.length,
+                  itemBuilder: (context, index) {
+                    var vNotesJson = notesText[notesText.length - 1 -index];
+                    return Card(
+                      child: ListTile(
+                        // leading: Text(vNotesJson['book']),
+                        title: Text.rich(
+                        TextSpan(
+                          // text: vNotesJson['book'],
+                          // style: const TextStyle(color: Colors.black54, fontStyle: FontStyle.italic),
+                            children: <TextSpan>[
+                              TextSpan(text: vNotesJson['book'], style: const TextStyle(color: Colors.black54, fontSize: 13, fontStyle: FontStyle.italic)),
+                              const TextSpan(text: '\n\n'),
+                              TextSpan(text: vNotesJson['notes']),
+                              const TextSpan(text: '\n\n'),
+                              TextSpan(text: vNotesJson['stamp'], style: const TextStyle(color: Colors.black54, fontSize: 13, fontStyle: FontStyle.italic)),
+                            ]
+                          )
+                        ),
+                        onTap: (){
+                          // final bookTitle = notesKeys[notesKeys.length - 1 -index].split(':')[0];
+                          // final bookChapter = int.parse(notesKeys[notesKeys.length - 1 -index].split(':')[1]);
+                          // final bookVerse = int.parse(notesKeys[notesKeys.length - 1 -index].split(':')[2]);
+                          //
+                          // bookSelected = bookTitle;
+                          // box.put('bookSelected', bookTitle);
+                          // selectedChapter = bookChapter;
+                          // if(bookSelected != bookSelectedHist){
+                          //   refreshChapter = true;
+                          // }
+                          // globalIndex.value = 2;
+                          // pages[0] = BooksLocalPage(bibleVersions, bookTitle ,bookChapter, bookVerse - 1);
+                          // barTitle.value = bookTitle +' '+bookChapter.toString();
+                        },
+                      ),
+                    );
+                  },
+                ),
+              )
+            ],
+          );
+        }
+    ),
+  );
+}
