@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:outline_search_bar/outline_search_bar.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -64,7 +65,9 @@ class SearchLocalPage extends StatelessWidget {
                 searchQueryMain.value = '',
                 searchIdxSel.value = 99999999,
                 barTitle.value = "Search",
-                hideHistory.value = false
+                hideHistory.value = false,
+                SystemChannels.textInput.invokeMethod('TextInput.hide'),
+                FocusScope.of(context).unfocus(),
               },
               onKeywordChanged: (query) => {
                 if(query.isEmpty){

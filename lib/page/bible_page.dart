@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -137,7 +138,7 @@ class BooksLocalPage extends StatelessWidget {
       // print( notesBox.get(globalKey, defaultValue: '').isEmpty );
         return Obx(() => ListTile(
           tileColor: colorIndex == index ? themeColorShades[colorSliderIdx.value] : null,
-          trailing: notesBox.get(globalKey, defaultValue: '').isEmpty ? null : const Icon(Icons.more_vert),
+          trailing: notesBox.get(globalKey, defaultValue: '').isEmpty ? null : FaIcon(FontAwesomeIcons.noteSticky, color: themeColors[colorSliderIdx.value],),
           title: Text.rich(
             TextSpan(
               // text: 'Test',
