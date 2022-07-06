@@ -30,7 +30,6 @@ class _SettingsLocalPageState extends State<SettingsLocalPage> {
                 CustomSettingsSection(
                   child: Container(
                     padding: const EdgeInsets.all(10.0),
-                    // height: 45,
                     child: Card(
                       child: ListTile(
                         leading: CircleAvatar(
@@ -42,9 +41,7 @@ class _SettingsLocalPageState extends State<SettingsLocalPage> {
                         trailing: const Icon(Icons.arrow_forward_ios_sharp),
                         onTap: (){
                           pages[0] = loggedIn ? const ProfileScreen() : const LoginScreen();
-                          // barTitle.value = loggedIn ? 'Profile' : 'Log In';
                           loginpage.value = true;
-                          // Get.to(const LoginScreen());
                         },
                       ),
                     ),
@@ -53,7 +50,12 @@ class _SettingsLocalPageState extends State<SettingsLocalPage> {
                 SettingsSection(
                   // title: const Text('Setting', style: TextStyle(color: Colors.black,)),
                   tiles: <SettingsTile>[
-
+                    SettingsTile.navigation(
+                      // leading: const Icon(Icons.language),
+                      title: const Text('Version:'),
+                      value: Text(bibleVersions),
+                      // trailing: const Text('KJV'),
+                    ),
                     // SettingsTile.switchTile(
                     //   activeSwitchColor: themeColors[colorSliderIdx.value],
                     //   onToggle: (value) {

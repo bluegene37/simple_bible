@@ -216,6 +216,7 @@ class BooksLocalPage extends StatelessWidget {
                                       ),
                                       Row(
                                         children: [
+                                          const Spacer(),
                                           SizedBox(
                                             height: btnClose,
                                             child: ElevatedButton(
@@ -273,6 +274,7 @@ class BooksLocalPage extends StatelessWidget {
                                                 }
                                             ),
                                           ),
+                                          const Spacer(),
                                         ],
                                       ),
 
@@ -357,7 +359,7 @@ Widget copyBtn(){
             for (var i in bibleScreen) {
               if(copyTextByVerse.contains(i.verse) ){
                 copyTextClipboard = '$copyTextClipboard ${i.text}';
-                // Get.snackbar('', 'Copied!');
+
               }
             }
 
@@ -388,7 +390,7 @@ Widget copyBtn(){
           style: ElevatedButton.styleFrom(
             primary: themeColors[colorSliderIdx.value],
           ),
-          child: Text(sheetHeight.value == 300 ? 'Close' : 'Notes' , style: TextStyle( color: textColorDynamic.value),),
+          child: Text('Notes' , style: TextStyle( color: textColorDynamic.value),),
           onPressed: () {
             if(sheetHeight.value == 300.0){
               sheetHeight.value = 0.0;
@@ -426,15 +428,26 @@ Widget highLighter(){
               ),
               onTap: (){
                 Navigator.pop(context);
+
+                var hlTexts = bibleScreen.toList();
+                var hlDateTime = DateFormat.yMMMMEEEEd().add_jms().format(DateTime.now());
+                var hlBody = {};
+
                 for (var uniqueKey in textUnderline) {
                   if(highlightClear.contains(uniqueKey+index.toString())){
                     hiLightBox.delete(uniqueKey);
+                    textsBox.delete(uniqueKey);
                   }
                   if(!highlightSelected.contains(index)){
                     hiLightBox.put(uniqueKey, index);
-                    // textsBox.put(uniqueKey, );
+                    hlBody["datetime"] = hlDateTime;
+                    hlBody["text"] = hlTexts[int.parse(uniqueKey.split(':')[2])-1].text;
+                    hlBody['version'] = bibleVersions;
+                    hlBody['color'] = index;
+                    textsBox.put(uniqueKey,hlBody);
                   }
                 }
+
                 textUnderline.value = [];
                 highlightSelected = [];
                 highlightClear = [];

@@ -5,8 +5,11 @@ import 'bible_page.dart';
 
 var hiLightText = hiLightBox.values.toList();
 var hiLightKeys = hiLightBox.keys.toList();
+var jsonTexts = textsBox.values.toList();
+var jsonKeys = textsBox.keys.toList();
 var notesText = notesBox.values.toList();
 var notesKeys = notesBox.keys.toList();
+var hiLightVerses = textsBox.values.toList();
 var notesHiLights = 1.obs;
 
 class ProfileScreen extends StatelessWidget {
@@ -108,6 +111,8 @@ class HiLightPage extends StatelessWidget {
         builder: (context, snapshot) {
           hiLightText = hiLightBox.values.toList();
           hiLightKeys = hiLightBox.keys.toList();
+          jsonTexts = textsBox.values.toList();
+          jsonKeys = textsBox.keys.toList();
 
           return Column(
             children: [
@@ -117,16 +122,24 @@ class HiLightPage extends StatelessWidget {
                   physics: const BouncingScrollPhysics(),
                   itemCount: hiLightKeys.length,
                   itemBuilder: (context, index) {
-                    // final bookKeys = hiLightKeys[hiLightKeys.length - 1 -index].split(':');
                     return Card(
                       child: ListTile(
-                        // title: Text(),
-                        subtitle: Text(hiLightKeys[hiLightKeys.length - 1 -index]),
-                        tileColor: highLightColors[hiLightText[hiLightText.length - 1 -index]],
+                        title: Text.rich(
+                            TextSpan(
+                                children: <TextSpan>[
+                                  TextSpan(text:  " ${jsonKeys[index]} - ${jsonTexts[index]['version']} ", style: const TextStyle(color: Colors.black54, fontSize: 13, fontStyle: FontStyle.italic)),
+                                  const TextSpan(text: '\n'),
+                                  TextSpan(text: jsonTexts[index]['text']),
+                                  const TextSpan(text: '\n' ),
+                                  TextSpan(text: jsonTexts[index]['datetime'], style: const TextStyle(color: Colors.black54, fontSize: 13, fontStyle: FontStyle.italic)),
+                                ]
+                            )
+                        ),
+                        tileColor: highLightColors[jsonTexts[index]['color']],
                         onTap: (){
-                          final bookTitle = hiLightKeys[hiLightKeys.length - 1 -index].split(':')[0];
-                          final bookChapter = int.parse(hiLightKeys[hiLightKeys.length - 1 -index].split(':')[1]);
-                          final bookVerse = int.parse(hiLightKeys[hiLightKeys.length - 1 -index].split(':')[2]);
+                          final bookTitle = jsonKeys[index].split(':')[0];
+                          final bookChapter = int.parse(jsonKeys[index].split(':')[1]);
+                          final bookVerse = int.parse(jsonKeys[index].split(':')[2]);
 
                           bookSelected = bookTitle;
                           box.put('bookSelected', bookTitle);
@@ -182,7 +195,7 @@ class NotesPage extends StatelessWidget {
                             children: <TextSpan>[
                               TextSpan(text: vNotesJson['book'], style: const TextStyle(color: Colors.black54, fontSize: 13, fontStyle: FontStyle.italic)),
                               const TextSpan(text: '\n\n'),
-                              TextSpan(text: vNotesJson['notes']),
+                              TextSpan(text: "  ${vNotesJson['notes']}"),
                               const TextSpan(text: '\n\n'),
                               TextSpan(text: vNotesJson['stamp'], style: const TextStyle(color: Colors.black54, fontSize: 13, fontStyle: FontStyle.italic)),
                             ]

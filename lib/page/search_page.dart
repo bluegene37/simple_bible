@@ -47,17 +47,17 @@ class SearchLocalPage extends StatelessWidget {
               hintText: 'Search here...',
               onSearchButtonPressed: (query) => {
                 searchQueryMain.value = query,
-                hideHistory.value = true,
                 if(query.isNotEmpty){
+                  hideHistory.value = true,
                   if(historyBox.values.contains(query)){
                       historyBox.toMap().forEach((key, value){
                           if(value == query) {
                             historyBox.delete(key);
                           }
                       }),
-                    historyBox.put(DateFormat("yyyy-MM-dd HH:mm:ss").format(DateTime.now()), query),
+                    historyBox.put(DateFormat.yMMMMEEEEd().add_jms().format(DateTime.now()), query),
                   }else{
-                    historyBox.put(DateFormat("yyyy-MM-dd HH:mm:ss").format(DateTime.now()), query),
+                    historyBox.put(DateFormat.yMMMMEEEEd().add_jms().format(DateTime.now()), query),
                   }
                 }
               },

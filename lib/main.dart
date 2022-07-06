@@ -14,7 +14,7 @@ var box = Hive.box('settingsDB');
 var hiLightBox = Hive.box('hiLightDB');
 var historyBox = Hive.box('searchHistoryDB');
 var notesBox = Hive.box('notesBoxDB');
-// var textsBox = Hive.box('textsBoxDB');
+var textsBox = Hive.box('textsBoxDB');
 
 var pages = [].obs;
 var mainBooks = '';
@@ -116,7 +116,7 @@ void main() async {
   await Hive.openBox("hiLightDB");
   await Hive.openBox("searchHistoryDB");
   await Hive.openBox("notesBoxDB");
-  // await Hive.openBox("textsBoxDB");
+  await Hive.openBox("textsBoxDB");
 
   // box.clear();
   // hiLightBox.clear();
