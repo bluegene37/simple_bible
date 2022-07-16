@@ -2,6 +2,7 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:simple_bible/page/notes_hl_page.dart';
 import 'package:simple_bible/page/search_page.dart';
 import 'package:simple_bible/page/settings_page.dart';
 import 'package:simple_bible/page/books_page.dart';
@@ -220,20 +221,34 @@ class _MyHomePageState extends State<MyHomePage> {
         preferredSize: const Size.fromHeight(35.0),
         child: Obx(() => AppBar(
             centerTitle: true,
-            leading: loginpage.value == true ? GestureDetector(
-            child: Icon( Icons.arrow_back_ios, color: textColorDynamic.value,  ),
-            onTap: () {
-              barTitle.value = 'Settings';
-              pages[0] = const SettingsLocalPage();
-              loginpage.value = false;
-              // Navigator.pop(context);
-            } ,
-          ) : null ,
+          // actions: <Widget>[
+          //     IconButton(
+          //       icon: const Icon(Icons.settings_outlined,),
+          //       onPressed: () {
+          //         globalIndex.value = 4;
+          //         barTitle.value = "Settings";
+          //         statusBarChanged = false;
+          //         if(pages.toString().contains('SettingsLocalPage')){
+          //           }else {
+          //             pages[0] = const SettingsLocalPage();
+          //           }
+          //       },
+          //     )
+          //   ],
+          //   leading: loginpage.value == true ? GestureDetector(
+          //   child: Icon( Icons.arrow_back_ios, color: textColorDynamic.value,  ),
+          //   onTap: () {
+          //     barTitle.value = 'Settings';
+          //     pages[0] = const SettingsLocalPage();
+          //     loginpage.value = false;
+          //     // Navigator.pop(context);
+          //   } ,
+          // ) : null ,
           backgroundColor: themeColors[colorSliderIdx.value],
             // leading: globalIndex.value == 0 ? Center(child: Text('Old (39)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w300, color: textColorDynamic.value,))) : null,
             title: Text(barTitle.value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300, color: textColorDynamic.value,),),
             // actions: globalIndex.value == 0 ? [Center(child: Text('New (27)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w300, color: textColorDynamic.value,),)),] : null
-          )
+        )
         )
       ),
       key: _key,
@@ -278,12 +293,19 @@ class _MyHomePageState extends State<MyHomePage> {
                     pages[0] = const SearchLocalPage()
                   }
               } else if (globalIndex == 4) {
+
+                barTitle.value = "Notes | Highlights",
+                if(pages.toString().contains('NotesHLScreen')){
+                }else {
+                  pages[0] = const NotesHLScreen()
+                }
+              } else if (globalIndex == 5) {
                 barTitle.value = "Settings",
                 statusBarChanged = false,
                 if(pages.toString().contains('SettingsLocalPage')){
-                  }else {
-                    pages[0] = const SettingsLocalPage()
-                  }
+                }else {
+                  pages[0] = const SettingsLocalPage()
+                }
               } else {
                 pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter,0),
               },
@@ -304,6 +326,10 @@ class _MyHomePageState extends State<MyHomePage> {
             NavigationDestination(
                 icon: Icon(Icons.search),
                 label: 'Search'
+            ),
+            NavigationDestination(
+                icon: Icon(Icons.edit_note_sharp),
+                label: 'Notes'
             ),
             NavigationDestination(
                 icon: Icon(Icons.settings_outlined),

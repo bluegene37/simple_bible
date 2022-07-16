@@ -13,20 +13,20 @@ var notesKeys = notesBox.keys.toList();
 var hiLightVerses = textsBox.values.toList();
 var notesHiLights = 1.obs;
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+class NotesHLScreen extends StatelessWidget {
+  const NotesHLScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
 
     Future.delayed(Duration.zero, () => {
-      barTitle.value = 'Profile',
+      barTitle.value = 'Notes | Highlights',
     });
 
     return Column(
       children: [
         Container(
-          height: 230,
+          height: 50,
           decoration: BoxDecoration(
             color: themeColorShades[colorSliderIdx.value],
           ),
@@ -35,49 +35,13 @@ class ProfileScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  CircleAvatar(
-                    backgroundColor: Colors.white70,
-                    minRadius: 60.0,
-                    child: CircleAvatar(
-                      radius: 50.0,
-                      backgroundImage:
-                      NetworkImage(profileIMG),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Text(
-                userName,
-                style: TextStyle(
-                  fontSize: 35,
-                  fontWeight: FontWeight.bold,
-                  color: textColorDynamic.value,
-                ),
-              ),
-              Row(
+              Obx(() => Row(
                 // alignment: WrapAlignment.spaceAround,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly ,
                 children: <Widget>[
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: themeColors[colorSliderIdx.value],
-                      onPrimary: textColorDynamic.value,
-                      textStyle: const TextStyle(fontSize: 20,),
-                    ),
-                    onPressed: () {
-                      notesHiLights.value = 1;
-                    },
-                    child: const Text('Highlights'),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: themeColors[colorSliderIdx.value],
+                      primary: notesHiLights.value == 2 ? themeColors[colorSliderIdx.value] : themeColorShades[colorSliderIdx.value] ,
                       onPrimary: textColorDynamic.value,
                       textStyle: const TextStyle(fontSize: 20,),
                     ),
@@ -86,14 +50,26 @@ class ProfileScreen extends StatelessWidget {
                     },
                     child: const Text('Notes'),
                   ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: notesHiLights.value == 1 ? themeColors[colorSliderIdx.value] : themeColorShades[colorSliderIdx.value] ,
+                      onPrimary: textColorDynamic.value,
+                      textStyle: const TextStyle(fontSize: 20,),
+                    ),
+                    onPressed: () {
+                      notesHiLights.value = 1;
+                    },
+                    child: const Text('Highlights'),
+                  ),
                 ],
+                ),
               ),
             ],
           ),
         ),
         Obx(() => Expanded(
             child: notesHiLights.value == 1 ? const HiLightPage() : const NotesPage()
-          )
+        )
         )
       ],
     );
@@ -130,7 +106,7 @@ class HiLightPage extends StatelessWidget {
                                 children: <TextSpan>[
                                   TextSpan(text:  " ${jsonKeys[index]} - ${jsonTexts[index]['version']} ", style: const TextStyle(color: Colors.black54, fontSize: 13, fontStyle: FontStyle.italic)),
                                   const TextSpan(text: '\n'),
-                                  TextSpan(text: jsonTexts[index]['text']),
+                                  TextSpan(text: jsonTexts[index]['text'], style: TextStyle(color: brightness == Brightness.dark ?  Colors.black54 : Colors.black)),
                                   const TextSpan(text: '\n' ),
                                   TextSpan(text: jsonTexts[index]['datetime'], style: const TextStyle(color: Colors.black54, fontSize: 13, fontStyle: FontStyle.italic)),
                                 ]
@@ -186,24 +162,32 @@ class NotesPage extends StatelessWidget {
                   physics: const BouncingScrollPhysics(),
                   itemCount:notesText.length,
                   itemBuilder: (context, index) {
-                    var vNotesJson = notesText[index];
+                  var vNotesJson = notesText[index];
+                  var finalText = vNotesJson['book'].replaceAll('[','').replaceAll(']','').split(",");
+                  var finalVerse = '';
+                  var removeTexts = [];
+                  finalText.asMap().forEach((index, verse) => {
+                    removeTexts = verse.split(':'),
+                    finalVerse = index == 0 ? finalText[0] : '$finalVerse, ${removeTexts.last}' ,
+                  });
+
                     return Card(
                       child: ListTile(
                         // leading: Text(vNotesJson['book']),
                         // tileColor: Colors.grey.shade100,
                         trailing: FaIcon(FontAwesomeIcons.ellipsisVertical, color: themeColors[colorSliderIdx.value]),
                         title: Text.rich(
-                        TextSpan(
-                          // text: vNotesJson['book'],
-                          // style: const TextStyle(color: Colors.black54, fontStyle: FontStyle.italic),
-                            children: <TextSpan>[
-                              TextSpan(text: vNotesJson['book'], style: const TextStyle(color: Colors.black54, fontSize: 13, fontStyle: FontStyle.italic)),
-                              const TextSpan(text: '\n\n'),
-                              TextSpan(text: "  ${vNotesJson['notes']}"),
-                              const TextSpan(text: '\n\n'),
-                              TextSpan(text: vNotesJson['stamp'], style: const TextStyle(color: Colors.black54, fontSize: 13, fontStyle: FontStyle.italic)),
-                            ]
-                          )
+                            TextSpan(
+                              // text: vNotesJson['book'],
+                              // style: const TextStyle(color: Colors.black54, fontStyle: FontStyle.italic),
+                                children: <TextSpan>[
+                                  TextSpan(text: '$finalVerse - $bibleVersions', style: TextStyle(color: globalTextColors[textColorIdx.value], fontSize: 13, fontStyle: FontStyle.italic)),
+                                  const TextSpan(text: '\n\n'),
+                                  TextSpan(text: "  ${vNotesJson['notes']}", style: TextStyle(color: globalTextColors[textColorIdx.value])),
+                                  const TextSpan(text: '\n\n'),
+                                  TextSpan(text: vNotesJson['stamp'], style: TextStyle(color: globalTextColors[textColorIdx.value], fontSize: 13, fontStyle: FontStyle.italic)),
+                                ]
+                            )
                         ),
                         onTap: (){
                           final bookTitle = notesKeys[index].split(':')[0];

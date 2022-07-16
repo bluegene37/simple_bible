@@ -6,9 +6,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:settings_ui/settings_ui.dart';
-import 'package:simple_bible/page/profile_page.dart';
 import '../main.dart';
-import 'login_page.dart';
 
 final ItemScrollController itemScrollController = ItemScrollController();
 
@@ -27,26 +25,26 @@ class _SettingsLocalPageState extends State<SettingsLocalPage> {
         body: Center(
           child: Obx( () => SettingsList(
               sections: [
-                CustomSettingsSection(
-                  child: Container(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Card(
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: themeColorShades[colorSliderIdx.value],
-                          backgroundImage: loggedIn && profileIMG.isNotEmpty ? NetworkImage(profileIMG) :  const AssetImage('assets/defaultUserIMG.png') as ImageProvider ,
-                        ),
-                        title: loggedIn ? Text(userName)  : const Text('Sign In or Sign Up'),
-                        subtitle: loggedIn ? null : const Text('See your profile'),
-                        trailing: const Icon(Icons.arrow_forward_ios_sharp),
-                        onTap: (){
-                          pages[0] = loggedIn ? const ProfileScreen() : const LoginScreen();
-                          loginpage.value = true;
-                        },
-                      ),
-                    ),
-                  ),
-                ),
+                // CustomSettingsSection(
+                //   child: Container(
+                //     padding: const EdgeInsets.all(10.0),
+                //     child: Card(
+                //       child: ListTile(
+                //         leading: CircleAvatar(
+                //           backgroundColor: themeColorShades[colorSliderIdx.value],
+                //           backgroundImage: loggedIn && profileIMG.isNotEmpty ? NetworkImage(profileIMG) :  const AssetImage('assets/defaultUserIMG.png') as ImageProvider ,
+                //         ),
+                //         title: loggedIn ? Text(userName)  : const Text('Sign In or Sign Up'),
+                //         subtitle: loggedIn ? null : const Text('See your profile'),
+                //         trailing: const Icon(Icons.arrow_forward_ios_sharp),
+                //         onTap: (){
+                //           pages[0] = loggedIn ? const ProfileScreen() : const LoginScreen();
+                //           loginpage.value = true;
+                //         },
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 SettingsSection(
                   // title: const Text('Setting', style: TextStyle(color: Colors.black,)),
                   tiles: <SettingsTile>[

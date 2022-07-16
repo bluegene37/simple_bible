@@ -107,6 +107,7 @@ class BooksSelectionPage extends StatelessWidget {
                                 onTap: () => {
                                   bookSelected = bookTitle.key,
                                   box.put('bookSelected', bookTitle.key),
+                                  box.put('selectedChapter',1),
                                   selectedChapter = 1,
                                   globalIndex.value = 1,
                                   pages[0] = const ChapterSelectionPage(),
