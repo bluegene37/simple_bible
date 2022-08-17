@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+// import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../main.dart';
 import 'bible_page.dart';
 
@@ -12,6 +14,7 @@ var notesText = notesBox.values.toList();
 var notesKeys = notesBox.keys.toList();
 var hiLightVerses = textsBox.values.toList();
 var notesHiLights = 1.obs;
+var notesController = TextEditingController();
 
 class NotesHLScreen extends StatelessWidget {
   const NotesHLScreen({Key? key}) : super(key: key);
@@ -68,7 +71,7 @@ class NotesHLScreen extends StatelessWidget {
           ),
         ),
         Obx(() => Expanded(
-            child: notesHiLights.value == 1 ? const HiLightPage() : const NotesPage()
+            child: notesHiLights.value == 0 ? const RefreshPage() : (notesHiLights.value == 1 ? const HiLightPage() : const NotesPage())
         )
         )
       ],
@@ -76,6 +79,13 @@ class NotesHLScreen extends StatelessWidget {
   }
 }
 
+class RefreshPage extends StatelessWidget{
+  const RefreshPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(child: CircularProgressIndicator());
+  }}
 
 class HiLightPage extends StatelessWidget {
   const HiLightPage({Key? key}) : super(key: key);
@@ -114,22 +124,69 @@ class HiLightPage extends StatelessWidget {
                         ),
                         tileColor: highLightColors[jsonTexts[index]['color']],
                         onTap: (){
-                          final bookTitle = jsonKeys[index].split(':')[0];
-                          final bookChapter = int.parse(jsonKeys[index].split(':')[1]);
-                          final bookVerse = int.parse(jsonKeys[index].split(':')[2]);
 
-                          bookSelected = bookTitle;
-                          box.put('bookSelected', bookTitle);
-                          selectedChapter = bookChapter;
-                          if(bookSelected != bookSelectedHist){
-                            refreshChapter = true;
-                          }
-                          globalIndex.value = 2;
-                          pages[0] = BooksLocalPage(bibleVersions, bookTitle ,bookChapter, bookVerse - 1);
-                          barTitle.value = bookTitle +' '+bookChapter.toString();
-                          // colorIndex = bookVerse - 1;
-                          // searchIdxSel.value = index;
                         },
+                        trailing: PopupMenuButton(
+                          itemBuilder: (context){
+                            return [
+                              const PopupMenuItem(
+                                  value: 'gotoVerse',
+                                  child: Text('Go to verse')
+                              ),
+                              const PopupMenuItem(
+                                  value: 'edit',
+                                  child: Text('Edit')
+                              ),
+                              const PopupMenuItem(
+                                  value: 'delete',
+                                  child: Text('Delete')
+                              )
+                            ];
+                          },
+                          onSelected: (String value){
+                            if(value == 'gotoVerse'){
+                              final bookTitle = jsonKeys[index].split(':')[0];
+                              final bookChapter = int.parse(jsonKeys[index].split(':')[1]);
+                              final bookVerse = int.parse(jsonKeys[index].split(':')[2]);
+
+                              bookSelected = bookTitle;
+                              box.put('bookSelected', bookTitle);
+                              selectedChapter = bookChapter;
+                              if(bookSelected != bookSelectedHist){
+                                refreshChapter = true;
+                              }
+                              globalIndex.value = 2;
+                              pages[0] = BooksLocalPage(bibleVersions, bookTitle ,bookChapter, bookVerse - 1);
+                              barTitle.value = bookTitle +' '+bookChapter.toString();
+                            }else if(value == 'delete'){
+                              showDialog<String>(
+                                context: context,
+                                builder: (BuildContext context) => CupertinoAlertDialog(
+                                  title: const Text('Delete?'),
+                                  content: const Text('This will delete the High Light'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context, 'Cancel'),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => {
+                                        notesHiLights.value = 0,
+                                        hiLightBox.delete(hiLightKeys[index]),
+                                        textsBox.delete(jsonKeys[index]),
+                                        Navigator.pop(context, 'OK'),
+                                        Future.delayed(const Duration(milliseconds: 100), () {
+                                          notesHiLights.value = 1;
+                                        })
+                                      },
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                          }
+                        )
                       ),
                     );
                   },
@@ -175,10 +232,10 @@ class NotesPage extends StatelessWidget {
                       child: ListTile(
                         // leading: Text(vNotesJson['book']),
                         // tileColor: Colors.grey.shade100,
-                        trailing: FaIcon(FontAwesomeIcons.ellipsisVertical, color: themeColors[colorSliderIdx.value]),
+                        // subtitle: Text(forRefresh.value),
                         title: Text.rich(
                             TextSpan(
-                              // text: vNotesJson['book'],
+                              // text: forRefresh.value.toString(),
                               // style: const TextStyle(color: Colors.black54, fontStyle: FontStyle.italic),
                                 children: <TextSpan>[
                                   TextSpan(text: '$finalVerse - $bibleVersions', style: TextStyle(color: globalTextColors[textColorIdx.value], fontSize: 13, fontStyle: FontStyle.italic)),
@@ -189,29 +246,129 @@ class NotesPage extends StatelessWidget {
                                 ]
                             )
                         ),
-                        onTap: (){
-                          final bookTitle = notesKeys[index].split(':')[0];
-                          final bookChapter = int.parse(notesKeys[index].split(':')[1]);
-                          final bookVerse = int.parse(notesKeys[index].split(':')[2]);
+                        trailing: PopupMenuButton(
+                          itemBuilder: (context){
+                            return [
+                              const PopupMenuItem(
+                                  value: 'gotoVerse',
+                                  child: Text('Go to verse')
+                              ),
+                              const PopupMenuItem(
+                                  value: 'edit',
+                                  child: Text('Edit')
+                              ),
+                              const PopupMenuItem(
+                                  value: 'delete',
+                                  child: Text('Delete')
+                              )
+                            ];
+                          },
+                          onSelected: (String value){
+                            if(value == 'gotoVerse'){
+                              final bookTitle = notesKeys[index].split(':')[0];
+                              final bookChapter = int.parse(notesKeys[index].split(':')[1]);
+                              final bookVerse = int.parse(notesKeys[index].split(':')[2]);
 
-                          bookSelected = bookTitle;
-                          box.put('bookSelected', bookTitle);
-                          selectedChapter = bookChapter;
-                          if(bookSelected != bookSelectedHist){
-                            refreshChapter = true;
-                          }
-                          globalIndex.value = 2;
-                          pages[0] = BooksLocalPage(bibleVersions, bookTitle ,bookChapter, bookVerse - 1);
-                          barTitle.value = bookTitle +' '+bookChapter.toString();
-                        },
+                              bookSelected = bookTitle;
+                              box.put('bookSelected', bookTitle);
+                              selectedChapter = bookChapter;
+                              if(bookSelected != bookSelectedHist){
+                                refreshChapter = true;
+                              }
+                              globalIndex.value = 2;
+                              pages[0] = BooksLocalPage(bibleVersions, bookTitle ,bookChapter, bookVerse - 1);
+                              barTitle.value = bookTitle +' '+bookChapter.toString();
+                            }else if(value == 'delete'){
+                              showDialog<String>(
+                                context: context,
+                                builder: (BuildContext context) => CupertinoAlertDialog(
+                                  title: const Text('Delete?'),
+                                  content: const Text('This will delete note'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context, 'Cancel'),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => {
+                                        notesHiLights.value = 0,
+                                        notesBox.delete(notesKeys[index]),
+                                        Navigator.pop(context, 'OK'),
+                                        Future.delayed(const Duration(milliseconds: 100), () {
+                                          notesHiLights.value = 2;
+                                        })
+                                      },
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                            ),
+                              );
+                            }else if(value == 'edit'){
+                              notesController.text = vNotesJson['notes'] ;
+                              var resBody = {};
+                              showDialog(
+                                  context: context,
+                                  builder: (_) => AlertDialog(
+                                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all( Radius.circular(5.0))),
+                                    content: Builder(
+                                      builder: (context) {
+                                        var height = MediaQuery.of(context).size.height;
+                                        var width = MediaQuery.of(context).size.width;
+                                        return TextFormField(
+                                            controller: notesController,
+                                            textAlignVertical: TextAlignVertical.top,
+                                            keyboardType: TextInputType.multiline,
+                                            maxLines: null,
+                                            expands: true,
+                                            decoration: InputDecoration(
+                                              labelText: "Enter Notes",
+                                              fillColor: Colors.white,
+                                              labelStyle: TextStyle(
+                                                color: themeColorShades[colorSliderIdx.value],
+                                              ),
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(5.0),
+                                                borderSide: const BorderSide(),
+                                              ),
+                                            ),
+                                        );
+                                      },
+                                    ),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context, 'Cancel'),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () => {
+                                          notesHiLights.value = 0,
+                                          resBody["book"] = vNotesJson['book'].toString(),
+                                          resBody["stamp"] =  DateFormat.yMMMMEEEEd().add_jms().format(DateTime.now()),
+                                          resBody["notes"] = notesController.text,
+                                          notesBox.put(notesKeys[index],resBody),
+                                          Navigator.pop(context, 'Save'),
+                                          Future.delayed(const Duration(milliseconds: 100), () {
+                                            notesHiLights.value = 2;
+                                          })
+                                        },
+                                        child: const Text('Save'),
+                                      ),
+                                    ],
+                                  ),
+                                barrierDismissible: false,
+                              );
+                            }
+                          },
+                        ),
                       ),
                     );
                   },
                 ),
-              )
+              ),
             ],
           );
         }
-    ),
+      ),
   );
 }
+

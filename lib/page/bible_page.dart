@@ -64,14 +64,12 @@ class BooksLocalPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     body: FutureBuilder<List<Book>>(
-      // key: jumpTo > 0 ? null :  const PageStorageKey('page'),
       future: bibleScreen.isEmpty || bookSelectedHist != bookSelected || selectedChapterHist != selectedChapter || refreshChapter ? BooksApi.getBooksLocally(context, jsonName, bookTitle, bookChapter) : null,
       builder: (context, snapshot) {
         final book = bibleScreen.isEmpty || bookSelectedHist != bookSelected || selectedChapterHist != selectedChapter || refreshChapter ? snapshot.data : bibleScreen;
         if(selectedChapterHist != selectedChapter){selectedChapterHist = selectedChapter;}
         if(bookSelectedHist != bookSelected){bookSelectedHist = bookSelected;}
         SystemChannels.textInput.invokeMethod('TextInput.hide');
-        // WidgetsBinding.instance?.addPostFrameCallback((_) => Future.delayed(Duration.zero, () => jumpToFunc() ) );
         Future.delayed(Duration.zero, () => {
               jumpToFunc(),
               Navigator.of(context).maybePop(),
@@ -88,19 +86,6 @@ class BooksLocalPage extends StatelessWidget {
                 },
                 scrollChecker = itemPositionsListener.itemPositions.value.first.index
               }),
-
-            //   if(colorIndex < 999){
-            //       shadeIdx = 8,
-            //       colorFade.value = Color(shadesList[8]),
-            //   Timer.periodic(const Duration(seconds: 2), (timer) =>
-            //   {
-            //     if(shadeIdx > 0){shadeIdx--},
-            //     colorFade.value = Color(shadesList[shadeIdx]),
-            //     if(shadeIdx < 1 || shadeIdx == 0){
-            //       timer.cancel(),
-            //     },
-            //   }),
-            // }
           }
         );
 
@@ -135,10 +120,63 @@ class BooksLocalPage extends StatelessWidget {
     itemBuilder: (context, index) {
       final book = books[index];
       var globalKey = book.book+':'+book.chapter.toString()+':'+book.verse.toString();
-      // print( notesBox.get(globalKey, defaultValue: '').isEmpty );
         return Obx(() => ListTile(
           tileColor: colorIndex == index ? themeColorShades[colorSliderIdx.value] : null,
-          trailing: notesBox.get(globalKey, defaultValue: '').isEmpty ? null : FaIcon(FontAwesomeIcons.noteSticky, color: themeColors[colorSliderIdx.value],),
+          trailing: notesBox.get(globalKey, defaultValue: '').isEmpty ? null : IconButton(
+              onPressed: (){
+                notesController.text = notesBox.get(globalKey)['notes'] ;
+                var resBody = {};
+                showDialog(
+                  context: context,
+                  builder: (_) => AlertDialog(
+                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all( Radius.circular(5.0))),
+                    content: Builder(
+                      builder: (context) {
+                        return TextFormField(
+                          controller: notesController,
+                          textAlignVertical: TextAlignVertical.top,
+                          keyboardType: TextInputType.multiline,
+                          maxLines: null,
+                          expands: true,
+                          decoration: InputDecoration(
+                            labelText: "Enter Notes",
+                            fillColor: Colors.white,
+                            labelStyle: TextStyle(
+                              color: themeColorShades[colorSliderIdx.value],
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                              borderSide: const BorderSide(),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () => {
+                          notesController.text,
+                          Navigator.pop(context, 'Cancel'),
+                      },
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () => {
+                          resBody["book"] = notesBox.get(globalKey)['book'].toString(),
+                          resBody["stamp"] =  DateFormat.yMMMMEEEEd().add_jms().format(DateTime.now()),
+                          resBody["notes"] = notesController.text,
+                          notesBox.put(globalKey,resBody),
+                          Navigator.pop(context, 'Save'),
+                          notesController.text = '',
+                        },
+                        child: const Text('Save'),
+                      ),
+                    ],
+                  ),
+                  barrierDismissible: false,
+                );
+              },
+              icon: FaIcon(FontAwesomeIcons.noteSticky, color: themeColors[colorSliderIdx.value],)) ,
           title: Text.rich(
             TextSpan(
               // text: 'Test',
@@ -161,7 +199,6 @@ class BooksLocalPage extends StatelessWidget {
                       textUnderline.add(globalKey);
                       highlightSelected.add(hiLightBox.get(globalKey));
                       highlightClear.add(globalKey+hiLightBox.get(globalKey).toString());
-                      // copyTextClipboard = '$copyTextClipboard '+book.text;
                       copyTextByVerse.add(book.verse);
                     }
 
@@ -202,14 +239,6 @@ class BooksLocalPage extends StatelessWidget {
                                             ),
                                           ),
                                         ),
-                                      // const SizedBox(
-                                      //   height: 10,
-                                      //   width: 70,
-                                      //   child: Divider(
-                                      //       thickness: 3,
-                                      //       color: Colors.grey
-                                      //   ),
-                                      // ),
                                       SizedBox(
                                         height: btnClose,
                                         child: const Text(''),
@@ -245,7 +274,8 @@ class BooksLocalPage extends StatelessWidget {
                                                     hilighterHeight = 0.0;
                                                     btnClose = 30.0;
                                                   }
-                                                }
+
+                                                },
                                             ),
                                           ),
                                           const Spacer(),
@@ -353,7 +383,7 @@ Widget copyBtn(){
           style: ElevatedButton.styleFrom(
             primary: themeColors[colorSliderIdx.value],
           ),
-          child: Text('Copy selected texts' , style: TextStyle( color: textColorDynamic.value),),
+          child: Text('Copy texts' , style: TextStyle( color: textColorDynamic.value),),
           onPressed: () {
             copyTextClipboard = '';
             for (var i in bibleScreen) {
@@ -372,7 +402,7 @@ Widget copyBtn(){
           style: ElevatedButton.styleFrom(
             primary: themeColors[colorSliderIdx.value],
           ),
-          child: Text('Copy w/ verse(s)' , style: TextStyle( color: textColorDynamic.value),),
+          child: Text('Copy w/ verse no.' , style: TextStyle( color: textColorDynamic.value),),
           onPressed: () {
             copyTextClipboard = '';
             for (var i in bibleScreen) {
@@ -392,6 +422,7 @@ Widget copyBtn(){
           ),
           child: Text('Notes' , style: TextStyle( color: textColorDynamic.value),),
           onPressed: () {
+            // notesController.text = notesBox.get(globalKey)['notes'] ;
             if(sheetHeight.value == 300.0){
               sheetHeight.value = 0.0;
               btnHeight = 30.0;
