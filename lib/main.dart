@@ -9,7 +9,6 @@ import 'package:simple_bible/page/books_page.dart';
 import 'package:simple_bible/page/chapter_page.dart';
 import 'package:simple_bible/page/bible_page.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 var box = Hive.box('settingsDB');
 var hiLightBox = Hive.box('hiLightDB');
@@ -148,8 +147,6 @@ void main() async {
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]
   );
-
-  await Firebase.initializeApp();
 
   runApp(const MyApp());
 }

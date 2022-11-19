@@ -14,10 +14,10 @@ class SettingsLocalPage extends StatefulWidget {
   const SettingsLocalPage({Key? key}) : super(key: key);
 
   @override
-  _SettingsLocalPageState createState() => _SettingsLocalPageState();
+  SettingsLocalPageState createState() => SettingsLocalPageState();
 }
 
-class _SettingsLocalPageState extends State<SettingsLocalPage> {
+class SettingsLocalPageState extends State<SettingsLocalPage> {
   bool status = false;
 
   @override
@@ -25,26 +25,6 @@ class _SettingsLocalPageState extends State<SettingsLocalPage> {
         body: Center(
           child: Obx( () => SettingsList(
               sections: [
-                // CustomSettingsSection(
-                //   child: Container(
-                //     padding: const EdgeInsets.all(10.0),
-                //     child: Card(
-                //       child: ListTile(
-                //         leading: CircleAvatar(
-                //           backgroundColor: themeColorShades[colorSliderIdx.value],
-                //           backgroundImage: loggedIn && profileIMG.isNotEmpty ? NetworkImage(profileIMG) :  const AssetImage('assets/defaultUserIMG.png') as ImageProvider ,
-                //         ),
-                //         title: loggedIn ? Text(userName)  : const Text('Sign In or Sign Up'),
-                //         subtitle: loggedIn ? null : const Text('See your profile'),
-                //         trailing: const Icon(Icons.arrow_forward_ios_sharp),
-                //         onTap: (){
-                //           pages[0] = loggedIn ? const ProfileScreen() : const LoginScreen();
-                //           loginpage.value = true;
-                //         },
-                //       ),
-                //     ),
-                //   ),
-                // ),
                 SettingsSection(
                   // title: const Text('Setting', style: TextStyle(color: Colors.black,)),
                   tiles: <SettingsTile>[
@@ -54,69 +34,70 @@ class _SettingsLocalPageState extends State<SettingsLocalPage> {
                       value: Text(bibleVersions),
                       // trailing: const Text('KJV'),
                     ),
-                    // SettingsTile.switchTile(
-                    //   activeSwitchColor: themeColors[colorSliderIdx.value],
-                    //   onToggle: (value) {
-                    //     themeMode.value = value;
-                    //     box.put('themeMode', value);
-                    //     if (value) {
-                    //       textColorIdx.value = 0;
-                    //       box.put('textColorIdx', 0);
-                    //       AdaptiveTheme.of(context).setDark();
-                    //     } else {
-                    //       textColorIdx.value = 1;
-                    //       box.put('textColorIdx', 1);
-                    //       AdaptiveTheme.of(context).setLight();
-                    //     }
-                    //   },
-                    //   initialValue: themeMode.value,
-                    //   // leading: const Icon(Icons.format_paint),
-                    //   title: const Text('Theme: Light/Dark'),
-                    // ),
                     SettingsTile(
                       title: const Text('Text Preview:'),
-                      value: Text(
-                          'In the beginning God created the heaven and the earth. ',
-                          style: GoogleFonts.getFont(globalFont.value,
-                              fontSize: 15 + fontSize.value)),
-                    ),
+                      value: Expanded(
+                        child: Text(
+                            'In the beginning God created the heaven and the earth. ',
+                            style: GoogleFonts.getFont(globalFont.value,
+                            fontSize: 15 + fontSize.value)
+                          ),
+                        ),
+                      ),
                     SettingsTile(
                       title: Text('Font Size: ${(fontSize.value + 15).toStringAsFixed(2)}'),
+                      value: CupertinoSlider(
+                          min: 0.0,
+                          max: 15.0,
+                          value: fontSize.value,
+                          onChanged: (double newFontSize) {
+                            fontSize.value = newFontSize;
+                            box.put('fontSize', newFontSize);
+                          },
+                          // divisions: 10,
+                        ),
+                    ),
+                    SettingsTile(
+                      title: const Text('Font:'),
                     ),
                   ],
                 ),
-                CustomSettingsSection(
-                  child: Container(
-                    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                    child: CupertinoSlider(
-                      min: 0.0,
-                      max: 15.0,
-                      value: fontSize.value,
-                      onChanged: (double newFontSize) {
-                        fontSize.value = newFontSize;
-                        box.put('fontSize', newFontSize);
-                      },
-                      // divisions: 10,
-                    ),
-                  ),
-                ),
-                CustomSettingsSection(
-                  child: SettingsTile(
-                    // title: Text('Font: '+globalFont.value, style: GoogleFonts.getFont(globalFont.value , fontSize: 20)) ,
-                    // title: Text('Font: ${box.get('globalFont')}' + globalFont.value ),
-                    title: const Text('Font:'),
-                  ),
-                ),
+                // CustomSettingsSection(
+                //   child: Container(
+                //     padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                //     child: CupertinoSlider(
+                //       min: 0.0,
+                //       max: 15.0,
+                //       value: fontSize.value,
+                //       onChanged: (double newFontSize) {
+                //         fontSize.value = newFontSize;
+                //         box.put('fontSize', newFontSize);
+                //       },
+                //       // divisions: 10,
+                //     ),
+                //   ),
+                // ),
+                // SettingsSection(
+                //   tiles: <SettingsTile>[
+                //     SettingsTile(
+                //       // title: Text('Font: '+globalFont.value, style: GoogleFonts.getFont(globalFont.value , fontSize: 20)) ,
+                //       // title: Text('Font: ${box.get('globalFont')}' + globalFont.value ),
+                //       title: const Text('Font:'),
+                //     ),
+                //   ],
+                // ),
                 CustomSettingsSection(
                   child: Container(
                     padding: const EdgeInsets.only(left: 50.0, right: 50.0),
                     child: fontPicker(),
                   ),
                 ),
-                CustomSettingsSection(
-                  child: SettingsTile(
-                    title: const Text('Color Theme:'),
-                  ),
+                SettingsSection(
+                  tiles: <SettingsTile>[
+                    SettingsTile(
+                      title: const Text('Color Theme:'),
+                    ),
+                  ]
                 ),
                 CustomSettingsSection(
                   child: Container(
