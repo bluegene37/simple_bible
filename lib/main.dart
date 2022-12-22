@@ -2,6 +2,7 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:simple_bible/page/notes_hl_page.dart';
 import 'package:simple_bible/page/search_page.dart';
 import 'package:simple_bible/page/settings_page.dart';
@@ -55,6 +56,10 @@ var profileIMG = '';
 var users = {
   'test@gmail.com': '12345',
 };
+String appName = '';
+String packageName = '';
+String version = '';
+String buildNumber = '';
 
 var globalTextColors = const [
   Colors.white,
@@ -147,6 +152,12 @@ void main() async {
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]
   );
+
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    appName = packageInfo.appName;
+    packageName = packageInfo.packageName;
+    version = packageInfo.version;
+    buildNumber = packageInfo.buildNumber;
 
   runApp(const MyApp());
 }

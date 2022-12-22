@@ -59,7 +59,7 @@ class BooksLocalPage extends StatelessWidget {
 
   const BooksLocalPage(this.jsonName,this.bookTitle, this.bookChapter, this.jumpTo );
 
-  void jumpToFunc() =>  itemScrollController.jumpTo(index: jumpTo);
+  void jumpToFunc() =>  itemScrollController.jumpTo(index: jumpTo > 0 ? jumpTo : 0);
 
   @override
   Widget build(BuildContext context) => Scaffold(

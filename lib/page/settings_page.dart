@@ -26,13 +26,29 @@ class SettingsLocalPageState extends State<SettingsLocalPage> {
           child: Obx( () => SettingsList(
               sections: [
                 SettingsSection(
-                  // title: const Text('Setting', style: TextStyle(color: Colors.black,)),
                   tiles: <SettingsTile>[
-                    SettingsTile.navigation(
-                      // leading: const Icon(Icons.language),
-                      title: const Text('Version:'),
-                      value: Text(bibleVersions),
-                      // trailing: const Text('KJV'),
+                  SettingsTile.navigation(
+                  // leading: const Icon(Icons.language),
+                  title: const Text('Version: (more to come.)'),
+                    value: Text(bibleVersions),
+                    // trailing: const Text('KJV'),
+                  ),
+                  ]
+                ),
+                SettingsSection(
+                  tiles: <SettingsTile>[
+                    SettingsTile(
+                      title: Text('Font Size: ${(fontSize.value + 15).toStringAsFixed(2)}'),
+                      value: CupertinoSlider(
+                        min: 0.0,
+                        max: 15.0,
+                        value: fontSize.value,
+                        onChanged: (double newFontSize) {
+                          fontSize.value = newFontSize;
+                          box.put('fontSize', newFontSize);
+                        },
+                        // divisions: 10,
+                      ),
                     ),
                     SettingsTile(
                       title: const Text('Text Preview:'),
@@ -44,51 +60,28 @@ class SettingsLocalPageState extends State<SettingsLocalPage> {
                           ),
                         ),
                       ),
-                    SettingsTile(
-                      title: Text('Font Size: ${(fontSize.value + 15).toStringAsFixed(2)}'),
-                      value: CupertinoSlider(
-                          min: 0.0,
-                          max: 15.0,
-                          value: fontSize.value,
-                          onChanged: (double newFontSize) {
-                            fontSize.value = newFontSize;
-                            box.put('fontSize', newFontSize);
-                          },
-                          // divisions: 10,
-                        ),
-                    ),
-                    SettingsTile(
-                      title: const Text('Font:'),
-                    ),
+                    // SettingsTile(
+                    //   title: const Text('Font:'),
+                    // ),
                   ],
                 ),
-                // CustomSettingsSection(
-                //   child: Container(
-                //     padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                //     child: CupertinoSlider(
-                //       min: 0.0,
-                //       max: 15.0,
-                //       value: fontSize.value,
-                //       onChanged: (double newFontSize) {
-                //         fontSize.value = newFontSize;
-                //         box.put('fontSize', newFontSize);
-                //       },
-                //       // divisions: 10,
-                //     ),
-                //   ),
-                // ),
-                // SettingsSection(
-                //   tiles: <SettingsTile>[
-                //     SettingsTile(
-                //       // title: Text('Font: '+globalFont.value, style: GoogleFonts.getFont(globalFont.value , fontSize: 20)) ,
-                //       // title: Text('Font: ${box.get('globalFont')}' + globalFont.value ),
-                //       title: const Text('Font:'),
-                //     ),
-                //   ],
-                // ),
+                SettingsSection(
+                    tiles: <SettingsTile>[
+                      SettingsTile(
+                        title: const Text('Font:'),
+                        // value: Expanded(
+                        //   child: Container(
+                        //     padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
+                        //     child: fontPicker(),
+                        //   ),
+                        // ),
+                      ),
+                    ]
+                ),
                 CustomSettingsSection(
                   child: Container(
-                    padding: const EdgeInsets.only(left: 50.0, right: 50.0),
+                    padding: const EdgeInsets.only(left: 25.0, right: 25.0),
+                    // height: 45,
                     child: fontPicker(),
                   ),
                 ),
@@ -105,6 +98,14 @@ class SettingsLocalPageState extends State<SettingsLocalPage> {
                     height: 45,
                     child: colorSlider(),
                   ),
+                ),
+                SettingsSection(
+                    tiles: <SettingsTile>[
+                      SettingsTile(
+                        title: const Text('Build:'),
+                        value: Text('Version $version.$buildNumber'),
+                      ),
+                    ]
                 ),
               ],
             ),
@@ -133,7 +134,9 @@ Widget fontPicker(){
             width: MediaQuery.of(context).size.width,
             margin: const EdgeInsets.symmetric(horizontal: 1.0),
             child: Obx(()=> Card(
-              color: globalFont.value == i ? themeColorShades[colorSliderIdx.value] : null,
+              elevation:5,
+              // margin: const EdgeInsets.fromLTRB(0.0, 1.0, 0.0, 1.0),
+              color: globalFont.value == i ? themeColorShades[colorSliderIdx.value] : Colors.white,
               child: InkWell(
                 onTap: () {
                   globalFont.value = i;
@@ -167,7 +170,6 @@ var fontLists = [
   'Roboto',
   'Slabo 27px',
 ];
-
 
 Widget colorSlider(){
   return  ScrollablePositionedList.separated(
