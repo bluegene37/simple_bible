@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_quill/flutter_quill.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:outline_search_bar/outline_search_bar.dart';
 import '../main.dart';
+import '../methods/methods.dart';
 import 'bible_page.dart';
 
 var hiLightText = hiLightBox.values.toList();
@@ -15,15 +17,22 @@ var notesKeys = notesBox.keys.toList();
 var hiLightVerses = textsBox.values.toList();
 var notesHiLights = 1.obs;
 var notesController = TextEditingController();
+var searchTexts = TextEditingController();
 
 class NotesHLScreen extends StatelessWidget {
-  const NotesHLScreen({Key? key}) : super(key: key);
+  final String bookTextVerse;
+  const NotesHLScreen(this.bookTextVerse, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
 
     Future.delayed(Duration.zero, () => {
       barTitle.value = 'Notes | Highlights',
+        searchTexts.text = bookTextVerse,
+      if(bookTextVerse.isNotEmpty){
+        notesHiLights.value = 2
+      }
+      // notesGroupings()
     });
 
     return Column(
@@ -44,8 +53,8 @@ class NotesHLScreen extends StatelessWidget {
                 children: <Widget>[
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: notesHiLights.value == 2 ? themeColors[colorSliderIdx.value] : themeColorShades[colorSliderIdx.value] ,
-                      onPrimary: textColorDynamic.value,
+                      foregroundColor: textColorDynamic.value,
+                      backgroundColor: notesHiLights.value == 2 ? themeColors[colorSliderIdx.value] : themeColorShades[colorSliderIdx.value],
                       textStyle: const TextStyle(fontSize: 20,),
                     ),
                     onPressed: () {
@@ -55,8 +64,8 @@ class NotesHLScreen extends StatelessWidget {
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: notesHiLights.value == 1 ? themeColors[colorSliderIdx.value] : themeColorShades[colorSliderIdx.value] ,
-                      onPrimary: textColorDynamic.value,
+                      foregroundColor: textColorDynamic.value,
+                      backgroundColor: notesHiLights.value == 1 ? themeColors[colorSliderIdx.value] : themeColorShades[colorSliderIdx.value],
                       textStyle: const TextStyle(fontSize: 20,),
                     ),
                     onPressed: () {
@@ -71,21 +80,13 @@ class NotesHLScreen extends StatelessWidget {
           ),
         ),
         Obx(() => Expanded(
-            child: notesHiLights.value == 0 ? const RefreshPage() : (notesHiLights.value == 1 ? const HiLightPage() : const NotesPage())
+            child: notesHiLights.value == 0 ? const RefreshPage() : (notesHiLights.value == 1 ? const HiLightPage() : NotesPage(bookTextVerse))
         )
         )
       ],
     );
   }
 }
-
-class RefreshPage extends StatelessWidget{
-  const RefreshPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(child: CircularProgressIndicator());
-  }}
 
 class HiLightPage extends StatelessWidget {
   const HiLightPage({Key? key}) : super(key: key);
@@ -163,7 +164,7 @@ class HiLightPage extends StatelessWidget {
                                 context: context,
                                 builder: (BuildContext context) => CupertinoAlertDialog(
                                   title: const Text('Delete?'),
-                                  content: const Text('This will delete the High Light'),
+                                  content: const Text('This will delete the Highlight'),
                                   actions: <Widget>[
                                     TextButton(
                                       onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -200,175 +201,220 @@ class HiLightPage extends StatelessWidget {
 }
 
 class NotesPage extends StatelessWidget {
-  const NotesPage({Key? key}) : super(key: key);
+  final String bookTextVerse;
+  const NotesPage(this.bookTextVerse,{Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) => Scaffold(
     // key: const PageStorageKey<String>('page'),
     body: FutureBuilder(
-        future: null,
+        future: filterNotes(bookTextVerse),
+        // getNotes(),
         builder: (context, snapshot) {
-          notesText = notesBox.values.toList();
+          final notesText = snapshot.data;
           notesKeys = notesBox.keys.toList();
-          // notesBox.clear();
-          return Column(
-            children: [
-              Expanded(
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  physics: const BouncingScrollPhysics(),
-                  itemCount:notesText.length,
-                  itemBuilder: (context, index) {
-                  var vNotesJson = notesText[index];
-                  var finalText = vNotesJson['book'].replaceAll('[','').replaceAll(']','').split(",");
-                  var finalVerse = '';
-                  var removeTexts = [];
-                  finalText.asMap().forEach((index, verse) => {
-                    removeTexts = verse.split(':'),
-                    finalVerse = index == 0 ? finalText[0] : '$finalVerse, ${removeTexts.last}' ,
-                  });
-
-                    return Card(
-                      child: ListTile(
-                        // leading: Text(vNotesJson['book']),
-                        // tileColor: Colors.grey.shade100,
-                        // subtitle: Text(forRefresh.value),
-                        title: Text.rich(
-                            TextSpan(
-                              // text: forRefresh.value.toString(),
-                              // style: const TextStyle(color: Colors.black54, fontStyle: FontStyle.italic),
-                                children: <TextSpan>[
-                                  TextSpan(text: '$finalVerse - $bibleVersions', style: TextStyle(color: globalTextColors[textColorIdx.value], fontSize: 13, fontStyle: FontStyle.italic)),
-                                  const TextSpan(text: '\n\n'),
-                                  TextSpan(text: "  ${vNotesJson['notes']}", style: TextStyle(color: globalTextColors[textColorIdx.value])),
-                                  const TextSpan(text: '\n\n'),
-                                  TextSpan(text: vNotesJson['stamp'], style: TextStyle(color: globalTextColors[textColorIdx.value], fontSize: 13, fontStyle: FontStyle.italic)),
-                                ]
-                            )
-                        ),
-                        trailing: PopupMenuButton(
-                          itemBuilder: (context){
-                            return [
-                              const PopupMenuItem(
-                                  value: 'gotoVerse',
-                                  child: Text('Go to verse')
-                              ),
-                              const PopupMenuItem(
-                                  value: 'edit',
-                                  child: Text('Edit')
-                              ),
-                              const PopupMenuItem(
-                                  value: 'delete',
-                                  child: Text('Delete')
-                              )
-                            ];
-                          },
-                          onSelected: (String value){
-                            if(value == 'gotoVerse'){
-                              final bookTitle = notesKeys[index].split(':')[0];
-                              final bookChapter = int.parse(notesKeys[index].split(':')[1]);
-                              final bookVerse = int.parse(notesKeys[index].split(':')[2]);
-
-                              bookSelected = bookTitle;
-                              box.put('bookSelected', bookTitle);
-                              selectedChapter = bookChapter;
-                              if(bookSelected != bookSelectedHist){
-                                refreshChapter = true;
-                              }
-                              globalIndex.value = 2;
-                              pages[0] = BooksLocalPage(bibleVersions, bookTitle ,bookChapter, bookVerse - 1);
-                              barTitle.value = bookTitle +' '+bookChapter.toString();
-                            }else if(value == 'delete'){
-                              showDialog<String>(
-                                context: context,
-                                builder: (BuildContext context) => CupertinoAlertDialog(
-                                  title: const Text('Delete?'),
-                                  content: const Text('This will delete note'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context, 'Cancel'),
-                                      child: const Text('Cancel'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () => {
-                                        notesHiLights.value = 0,
-                                        notesBox.delete(notesKeys[index]),
-                                        Navigator.pop(context, 'OK'),
-                                        Future.delayed(const Duration(milliseconds: 100), () {
-                                          notesHiLights.value = 2;
-                                        })
-                                      },
-                                      child: const Text('OK'),
-                                    ),
-                                  ],
-                            ),
-                              );
-                            }else if(value == 'edit'){
-                              notesController.text = vNotesJson['notes'] ;
-                              var resBody = {};
-                              showDialog(
-                                  context: context,
-                                  builder: (_) => AlertDialog(
-                                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all( Radius.circular(5.0))),
-                                    content: Builder(
-                                      builder: (context) {
-                                        var height = MediaQuery.of(context).size.height;
-                                        var width = MediaQuery.of(context).size.width;
-                                        return TextFormField(
-                                            controller: notesController,
-                                            textAlignVertical: TextAlignVertical.top,
-                                            keyboardType: TextInputType.multiline,
-                                            maxLines: null,
-                                            expands: true,
-                                            decoration: InputDecoration(
-                                              labelText: "Enter Notes",
-                                              fillColor: Colors.white,
-                                              labelStyle: TextStyle(
-                                                color: themeColorShades[colorSliderIdx.value],
-                                              ),
-                                              border: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(5.0),
-                                                borderSide: const BorderSide(),
-                                              ),
-                                            ),
-                                        );
-                                      },
-                                    ),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context, 'Cancel'),
-                                        child: const Text('Cancel'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () => {
-                                          notesHiLights.value = 0,
-                                          resBody["book"] = vNotesJson['book'].toString(),
-                                          resBody["stamp"] =  DateFormat.yMMMMEEEEd().add_jms().format(DateTime.now()),
-                                          resBody["notes"] = notesController.text,
-                                          notesBox.put(notesKeys[index],resBody),
-                                          Navigator.pop(context, 'Save'),
-                                          Future.delayed(const Duration(milliseconds: 100), () {
-                                            notesHiLights.value = 2;
-                                          })
-                                        },
-                                        child: const Text('Save'),
-                                      ),
-                                    ],
-                                  ),
-                                barrierDismissible: false,
-                              );
-                            }
-                          },
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          );
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              return const Center(child: CircularProgressIndicator());
+            default:
+              if(snapshot.hasError) {
+                return const Center(child: Text('Some error occurred!'));
+              } else {
+                return buildNotes(notesText,notesKeys,context,bookTextVerse);
+              }
+          }
         }
       ),
   );
 }
+
+Widget buildNotes(pNotesJson,notesKeys,context,pBookTextVerse){
+  return Column(
+    children: [
+      OutlineSearchBar(
+        focusNode: FocusNode() ,
+        clearButtonColor: colorSliderIdx.value == 0 ? globalTextColors[textColorIdx.value] : themeColors[colorSliderIdx.value],
+        cursorColor: colorSliderIdx.value == 0 || colorSliderIdx.value == 1 ? globalTextColors[textColorIdx.value] : themeColors[colorSliderIdx.value],
+        searchButtonIconColor: colorSliderIdx.value == 0 || colorSliderIdx.value == 1 ? globalTextColors[textColorIdx.value] : themeColors[colorSliderIdx.value],
+        borderColor: colorSliderIdx.value == 0 || colorSliderIdx.value == 1 ? globalTextColors[textColorIdx.value] : themeColors[colorSliderIdx.value],
+        margin: const EdgeInsets.all(8.0),
+        textEditingController: searchTexts,
+        initText: searchTexts.text,
+        hintText: 'Search here...',
+        onSearchButtonPressed: (query) => {
+            // print(query)
+          // notesKeys =
+          //   notesText = notesBox.values.toList(),
+          //   notesKeys = notesBox.keys.toList(),
+          filterNotes(query),
+        },
+        onClearButtonPressed: (query) => {
+          SystemChannels.textInput.invokeMethod('TextInput.hide'),
+          FocusScope.of(context).unfocus(),
+        },
+        onKeywordChanged: (query) => {
+
+        },
+      ),
+      Expanded(
+        child: ListView.builder(
+          shrinkWrap: true,
+          physics: const BouncingScrollPhysics(),
+          itemCount: notesKeys.length,
+          itemBuilder: (context, index) {
+            var vNotesJson = pNotesJson[index];
+
+              var finalText = vNotesJson['book'].replaceAll('[','').replaceAll(']','').split(",");
+              var finalVerse = '';
+              var removeTexts = [];
+              finalText.asMap().forEach((index, verse) => {
+                removeTexts = verse.split(':'),
+                finalVerse = index == 0 ? finalText[0] : '$finalVerse, ${removeTexts.last}' ,
+              });
+
+            return Card(
+              child: ListTile(
+                title: Text.rich(
+                    TextSpan(
+                        children: <TextSpan>[
+                          // TextSpan(text: '${notesKeys[index]} - $bibleVersions', style: TextStyle(color: globalTextColors[textColorIdx.value], fontSize: 13, fontStyle: FontStyle.italic)),
+                          // TextSpan(text: '${vNotesJson['book']} - $bibleVersions', style: TextStyle(color: globalTextColors[textColorIdx.value], fontSize: 13, fontStyle: FontStyle.italic)),
+                          TextSpan(text: '$finalVerse - $bibleVersions', style: TextStyle(color: globalTextColors[textColorIdx.value], fontSize: 13, fontStyle: FontStyle.italic)),
+                          const TextSpan(text: '\n\n'),
+                          TextSpan(text: "  ${vNotesJson['notes']}", style: TextStyle(color: globalTextColors[textColorIdx.value])),
+                          const TextSpan(text: '\n\n'),
+                          TextSpan(text: vNotesJson['stamp'], style: TextStyle(color: globalTextColors[textColorIdx.value], fontSize: 13, fontStyle: FontStyle.italic)),
+                        ]
+                    )
+                ),
+                trailing: PopupMenuButton(
+                  itemBuilder: (context){
+                    return [
+                      // const PopupMenuItem(
+                      //     value: 'gotoVerse',
+                      //     child: Text('Go to verse')
+                      // ),
+                      const PopupMenuItem(
+                          value: 'edit',
+                          child: Text('Edit')
+                      ),
+                      const PopupMenuItem(
+                          value: 'delete',
+                          child: Text('Delete')
+                      )
+                    ];
+                  },
+                  onSelected: (String value){
+                    if(value == 'gotoVerse'){
+                      final bookTitle = notesKeys[index].split(':')[0];
+                      final bookChapter = int.parse(notesKeys[index].split(':')[1]);
+                      final bookVerse = int.parse(notesKeys[index].split(':')[2]);
+
+                      bookSelected = bookTitle;
+                      box.put('bookSelected', bookTitle);
+                      selectedChapter = bookChapter;
+                      if(bookSelected != bookSelectedHist){
+                        refreshChapter = true;
+                      }
+                      globalIndex.value = 2;
+                      pages[0] = BooksLocalPage(bibleVersions, bookTitle ,bookChapter, bookVerse - 1);
+                      barTitle.value = bookTitle +' '+bookChapter.toString();
+                    }else if(value == 'delete'){
+                      showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => CupertinoAlertDialog(
+                          title: const Text('Delete?'),
+                          content: const Text('This will delete note'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, 'Cancel'),
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () => {
+                                notesHiLights.value = 0,
+                                notesBox.delete(notesKeys[index]),
+                                Navigator.pop(context, 'OK'),
+                                Future.delayed(const Duration(milliseconds: 100), () {
+                                  notesHiLights.value = 2;
+                                })
+                              },
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        ),
+                      );
+                    }else if(value == 'edit'){
+                      notesController.text = vNotesJson['notes'] ;
+                      var resBody = {};
+                      showDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all( Radius.circular(5.0))),
+                          content: Builder(
+                            builder: (context) {
+                              var height = MediaQuery.of(context).size.height;
+                              var width = MediaQuery.of(context).size.width;
+                              return TextFormField(
+                                controller: notesController,
+                                textAlignVertical: TextAlignVertical.top,
+                                keyboardType: TextInputType.multiline,
+                                maxLines: null,
+                                expands: true,
+                                decoration: InputDecoration(
+                                  labelText: "Enter Notes",
+                                  fillColor: Colors.white,
+                                  labelStyle: TextStyle(
+                                    color: themeColorShades[colorSliderIdx.value],
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(5.0),
+                                    borderSide: const BorderSide(),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, 'Cancel'),
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () => {
+                                notesHiLights.value = 0,
+                                resBody["book"] = vNotesJson['book'].toString(),
+                                resBody["stamp"] =  DateFormat.yMMMMEEEEd().add_jms().format(DateTime.now()),
+                                resBody["notes"] = notesController.text,
+                                notesBox.put(notesKeys[index],resBody),
+                                Navigator.pop(context, 'Save'),
+                                Future.delayed(const Duration(milliseconds: 100), () {
+                                  notesHiLights.value = 2;
+                                })
+                              },
+                              child: const Text('Save'),
+                            ),
+                          ],
+                        ),
+                        barrierDismissible: false,
+                      );
+                    }
+                  },
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    ],
+  );
+}
+
+class RefreshPage extends StatelessWidget{
+  const RefreshPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(child: CircularProgressIndicator());
+  }}
 

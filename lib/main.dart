@@ -305,7 +305,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 barTitle.value = "Notes | Highlights",
                 if(pages.toString().contains('NotesHLScreen')){
                 }else {
-                  pages[0] = const NotesHLScreen()
+                  pages[0] = const NotesHLScreen('')
                 }
               } else if (globalIndex == 5) {
                 barTitle.value = "Settings",

@@ -11,6 +11,9 @@ import 'package:simple_bible/api/books_api.dart';
 import 'package:simple_bible/model/books.dart';
 import 'package:simple_bible/main.dart';
 
+import '../methods/methods.dart';
+import 'notes_hl_page.dart';
+
 final ItemScrollController itemScrollController = ItemScrollController();
 final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
 var notesController = TextEditingController();
@@ -30,6 +33,9 @@ var btnClose = 0.0;
 var bibleRights = [
     'Rights in the Authorized (King James) Version in the United Kingdom are vested in the Crown. Published by permission of the Crown’s patentee, Cambridge University Press'
 ];
+
+var notesValues = [].obs;
+var vID = '';
 
 var highLightColors = [
   Colors.red.shade100,
@@ -120,63 +126,75 @@ class BooksLocalPage extends StatelessWidget {
     itemBuilder: (context, index) {
       final book = books[index];
       var globalKey = book.book+':'+book.chapter.toString()+':'+book.verse.toString();
+      Future.delayed(Duration.zero, () async => {
+
+      });
+
         return Obx(() => ListTile(
           tileColor: colorIndex == index ? themeColorShades[colorSliderIdx.value] : null,
-          trailing: notesBox.get(globalKey, defaultValue: '').isEmpty ? null : IconButton(
+          trailing: Obx(() => Visibility(
+            visible: notesJson().contains(globalKey),
+            child: IconButton(
               onPressed: (){
-                notesController.text = notesBox.get(globalKey)['notes'] ;
-                var resBody = {};
-                showDialog(
-                  context: context,
-                  builder: (_) => AlertDialog(
-                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all( Radius.circular(5.0))),
-                    content: Builder(
-                      builder: (context) {
-                        return TextFormField(
-                          controller: notesController,
-                          textAlignVertical: TextAlignVertical.top,
-                          keyboardType: TextInputType.multiline,
-                          maxLines: null,
-                          expands: true,
-                          decoration: InputDecoration(
-                            labelText: "Enter Notes",
-                            fillColor: Colors.white,
-                            labelStyle: TextStyle(
-                              color: themeColorShades[colorSliderIdx.value],
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              borderSide: const BorderSide(),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () => {
-                          notesController.text,
-                          Navigator.pop(context, 'Cancel'),
-                      },
-                        child: const Text('Cancel'),
-                      ),
-                      TextButton(
-                        onPressed: () => {
-                          resBody["book"] = notesBox.get(globalKey)['book'].toString(),
-                          resBody["stamp"] =  DateFormat.yMMMMEEEEd().add_jms().format(DateTime.now()),
-                          resBody["notes"] = notesController.text,
-                          notesBox.put(globalKey,resBody),
-                          Navigator.pop(context, 'Save'),
-                          notesController.text = '',
-                        },
-                        child: const Text('Save'),
-                      ),
-                    ],
-                  ),
-                  barrierDismissible: false,
-                );
+                globalIndex.value = 4;
+                barTitle.value = "Notes | Highlights";
+                pages[0] = NotesHLScreen(globalKey);
+                // notesController.text = notesBox.get(globalKey)['notes'] ;
+                // var resBody = {};
+                // showDialog(
+                //   context: context,
+                //   builder: (_) => AlertDialog(
+                //     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all( Radius.circular(5.0))),
+                //     content: Builder(
+                //       builder: (context) {
+                //         return TextFormField(
+                //           controller: notesController,
+                //           textAlignVertical: TextAlignVertical.top,
+                //           keyboardType: TextInputType.multiline,
+                //           maxLines: null,
+                //           expands: true,
+                //           decoration: InputDecoration(
+                //             labelText: "Enter Notes",
+                //             fillColor: Colors.white,
+                //             labelStyle: TextStyle(
+                //               color: themeColorShades[colorSliderIdx.value],
+                //             ),
+                //             border: OutlineInputBorder(
+                //               borderRadius: BorderRadius.circular(5.0),
+                //               borderSide: const BorderSide(),
+                //             ),
+                //           ),
+                //         );
+                //       },
+                //     ),
+                //     actions: <Widget>[
+                //       TextButton(
+                //         onPressed: () => {
+                //           notesController.text,
+                //           Navigator.pop(context, 'Cancel'),
+                //       },
+                //         child: const Text('Cancel'),
+                //       ),
+                //       TextButton(
+                //         onPressed: () => {
+                //           resBody["book"] = notesBox.get(globalKey)['book'].toString(),
+                //           resBody["stamp"] =  DateFormat.yMMMMEEEEd().add_jms().format(DateTime.now()),
+                //           resBody["notes"] = notesController.text,
+                //           notesBox.put(globalKey,resBody),
+                //           Navigator.pop(context, 'Save'),
+                //           notesController.text = '',
+                //         },
+                //         child: const Text('Save'),
+                //       ),
+                //     ],
+                //   ),
+                //   barrierDismissible: false,
+                // );
               },
-              icon: FaIcon(FontAwesomeIcons.noteSticky, color: themeColors[colorSliderIdx.value],)) ,
+              icon: FaIcon(FontAwesomeIcons.noteSticky, color: themeColors[colorSliderIdx.value],)
+            )
+            )
+          ),
           title: Text.rich(
             TextSpan(
               // text: 'Test',
@@ -250,16 +268,20 @@ class BooksLocalPage extends StatelessWidget {
                                             height: btnClose,
                                             child: ElevatedButton(
                                                 style: ElevatedButton.styleFrom(
-                                                  primary: themeColors[colorSliderIdx.value],
+                                                  backgroundColor: themeColors[colorSliderIdx.value],
                                                 ),
                                                 child: Text('Save' , style: TextStyle( color: textColorDynamic.value),),
-                                                onPressed: () {
+                                                onPressed: () async {
                                                   var datetime = DateFormat.yMMMMEEEEd().add_jms().format(DateTime.now());
                                                   var resBody = {};
+                                                  vID = getUniqueID().toString();
                                                   resBody["book"] = textUnderline.value.toString();
                                                   resBody["stamp"] = datetime;
                                                   resBody["notes"] = notesController.text;
-                                                  notesBox.put(globalKey,resBody);
+                                                  notesBox.put(vID,resBody);
+                                                  // for(var i = 0; i < textUnderline.length; i++){
+                                                  //   notesBox.put(textUnderline[i],resBody);
+                                                  // }
                                                   if(sheetHeight.value == 300.0){
                                                     sheetHeight.value = 0.0;
                                                     btnHeight = 30.0;
@@ -283,7 +305,7 @@ class BooksLocalPage extends StatelessWidget {
                                             height: btnClose,
                                             child: ElevatedButton(
                                                 style: ElevatedButton.styleFrom(
-                                                  primary: themeColors[colorSliderIdx.value],
+                                                  backgroundColor: themeColors[colorSliderIdx.value],
                                                 ),
                                                 child: Text('Close' , style: TextStyle( color: textColorDynamic.value),),
                                                 onPressed: () {
@@ -381,7 +403,7 @@ Widget copyBtn(){
       const Spacer(),
       ElevatedButton(
           style: ElevatedButton.styleFrom(
-            primary: themeColors[colorSliderIdx.value],
+            backgroundColor: themeColors[colorSliderIdx.value],
           ),
           child: Text('Copy texts' , style: TextStyle( color: textColorDynamic.value),),
           onPressed: () {
@@ -400,7 +422,7 @@ Widget copyBtn(){
       const Spacer(),
       ElevatedButton(
           style: ElevatedButton.styleFrom(
-            primary: themeColors[colorSliderIdx.value],
+            backgroundColor: themeColors[colorSliderIdx.value],
           ),
           child: Text('Copy w/ verse no.' , style: TextStyle( color: textColorDynamic.value),),
           onPressed: () {
@@ -408,7 +430,6 @@ Widget copyBtn(){
             for (var i in bibleScreen) {
               if(copyTextByVerse.contains(i.verse) ){
                 copyTextClipboard = '$copyTextClipboard ${i.verse}${'.'} ${i.text}';
-                // Get.snackbar('', 'Copied');
               }
             }
             Clipboard.setData(
@@ -418,11 +439,11 @@ Widget copyBtn(){
       const Spacer(),
       ElevatedButton(
           style: ElevatedButton.styleFrom(
-            primary: themeColors[colorSliderIdx.value],
+            backgroundColor: themeColors[colorSliderIdx.value],
           ),
           child: Text('Notes' , style: TextStyle( color: textColorDynamic.value),),
           onPressed: () {
-            // notesController.text = notesBox.get(globalKey)['notes'] ;
+            notesController.text = '';
             if(sheetHeight.value == 300.0){
               sheetHeight.value = 0.0;
               btnHeight = 30.0;
