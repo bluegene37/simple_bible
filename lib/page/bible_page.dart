@@ -138,7 +138,8 @@ class BooksLocalPage extends StatelessWidget {
               onPressed: (){
                 globalIndex.value = 4;
                 barTitle.value = "Notes | Highlights";
-                pages[0] = NotesHLScreen(globalKey);
+                searchTexts.text = globalKey;
+                pages[0] = const NotesHLScreen();
                 // notesController.text = notesBox.get(globalKey)['notes'] ;
                 // var resBody = {};
                 // showDialog(

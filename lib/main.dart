@@ -56,6 +56,7 @@ var profileIMG = '';
 var users = {
   'test@gmail.com': '12345',
 };
+var searchTexts = TextEditingController();
 String appName = '';
 String packageName = '';
 String version = '';
@@ -305,7 +306,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 barTitle.value = "Notes | Highlights",
                 if(pages.toString().contains('NotesHLScreen')){
                 }else {
-                  pages[0] = const NotesHLScreen('')
+                  searchTexts.text = '',
+                  pages[0] = const NotesHLScreen()
                 }
               } else if (globalIndex == 5) {
                 barTitle.value = "Settings",

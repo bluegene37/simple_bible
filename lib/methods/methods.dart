@@ -32,7 +32,7 @@ String notesJson(){
 Future<List> filterNotes(pQuery) async{
     final noteValues = notesBox.values.toList();
     final listWhere = noteValues.where((e) => e['notes'].contains(pQuery) || e['book'].replaceAll('[','').replaceAll(']','').contains(pQuery)).toList();
-    return pQuery > '' ? listWhere : noteValues ;
+    return pQuery.isNotEmpty ? listWhere : noteValues ;
 }
 
 // Future<String> getVersesNotes(vNotesJson) async{
@@ -45,3 +45,4 @@ Future<List> filterNotes(pQuery) async{
 //   });
 //   return finalVerse;
 // }
+

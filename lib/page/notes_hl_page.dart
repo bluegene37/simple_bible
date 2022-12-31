@@ -12,27 +12,23 @@ var hiLightText = hiLightBox.values.toList();
 var hiLightKeys = hiLightBox.keys.toList();
 var jsonTexts = textsBox.values.toList();
 var jsonKeys = textsBox.keys.toList();
-var notesText = notesBox.values.toList();
-var notesKeys = notesBox.keys.toList();
+var notesText = [].obs;
+var queryText = ''.obs;
 var hiLightVerses = textsBox.values.toList();
 var notesHiLights = 1.obs;
 var notesController = TextEditingController();
-var searchTexts = TextEditingController();
 
 class NotesHLScreen extends StatelessWidget {
-  final String bookTextVerse;
-  const NotesHLScreen(this.bookTextVerse, {Key? key}) : super(key: key);
+  const NotesHLScreen( {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
 
     Future.delayed(Duration.zero, () => {
       barTitle.value = 'Notes | Highlights',
-        searchTexts.text = bookTextVerse,
-      if(bookTextVerse.isNotEmpty){
+      if(searchTexts.text.isNotEmpty){
         notesHiLights.value = 2
       }
-      // notesGroupings()
     });
 
     return Column(
@@ -80,7 +76,7 @@ class NotesHLScreen extends StatelessWidget {
           ),
         ),
         Obx(() => Expanded(
-            child: notesHiLights.value == 0 ? const RefreshPage() : (notesHiLights.value == 1 ? const HiLightPage() : NotesPage(bookTextVerse))
+            child: notesHiLights.value == 0 ? const RefreshPage() : (notesHiLights.value == 1 ? const HiLightPage() : const NotesPage())
         )
         )
       ],
@@ -201,18 +197,19 @@ class HiLightPage extends StatelessWidget {
 }
 
 class NotesPage extends StatelessWidget {
-  final String bookTextVerse;
-  const NotesPage(this.bookTextVerse,{Key? key}) : super(key: key);
+  const NotesPage({Key? key}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) => Scaffold(
     // key: const PageStorageKey<String>('page'),
     body: FutureBuilder(
-        future: filterNotes(bookTextVerse),
-        // getNotes(),
+        future: filterNotes(searchTexts.text),
         builder: (context, snapshot) {
-          final notesText = snapshot.data;
-          notesKeys = notesBox.keys.toList();
+          Future.delayed(Duration.zero, () async => {
+            notesText.value = await filterNotes(searchTexts.text)
+          });
+
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
               return const Center(child: CircularProgressIndicator());
@@ -220,7 +217,7 @@ class NotesPage extends StatelessWidget {
               if(snapshot.hasError) {
                 return const Center(child: Text('Some error occurred!'));
               } else {
-                return buildNotes(notesText,notesKeys,context,bookTextVerse);
+                return buildNotes(notesText,context);
               }
           }
         }
@@ -228,7 +225,7 @@ class NotesPage extends StatelessWidget {
   );
 }
 
-Widget buildNotes(pNotesJson,notesKeys,context,pBookTextVerse){
+Widget buildNotes(pNotesJson,context){
   return Column(
     children: [
       OutlineSearchBar(
@@ -241,14 +238,12 @@ Widget buildNotes(pNotesJson,notesKeys,context,pBookTextVerse){
         textEditingController: searchTexts,
         initText: searchTexts.text,
         hintText: 'Search here...',
-        onSearchButtonPressed: (query) => {
-            // print(query)
-          // notesKeys =
-          //   notesText = notesBox.values.toList(),
-          //   notesKeys = notesBox.keys.toList(),
-          filterNotes(query),
+        onSearchButtonPressed: (query) async => {
+          notesText.value = await filterNotes(query),
         },
-        onClearButtonPressed: (query) => {
+        onClearButtonPressed: (query) async => {
+          searchTexts.text = '',
+          notesText.value = await filterNotes(''),
           SystemChannels.textInput.invokeMethod('TextInput.hide'),
           FocusScope.of(context).unfocus(),
         },
@@ -256,11 +251,11 @@ Widget buildNotes(pNotesJson,notesKeys,context,pBookTextVerse){
 
         },
       ),
-      Expanded(
+      Obx(() => Expanded(
         child: ListView.builder(
           shrinkWrap: true,
           physics: const BouncingScrollPhysics(),
-          itemCount: notesKeys.length,
+          itemCount: pNotesJson.length,
           itemBuilder: (context, index) {
             var vNotesJson = pNotesJson[index];
 
@@ -277,8 +272,6 @@ Widget buildNotes(pNotesJson,notesKeys,context,pBookTextVerse){
                 title: Text.rich(
                     TextSpan(
                         children: <TextSpan>[
-                          // TextSpan(text: '${notesKeys[index]} - $bibleVersions', style: TextStyle(color: globalTextColors[textColorIdx.value], fontSize: 13, fontStyle: FontStyle.italic)),
-                          // TextSpan(text: '${vNotesJson['book']} - $bibleVersions', style: TextStyle(color: globalTextColors[textColorIdx.value], fontSize: 13, fontStyle: FontStyle.italic)),
                           TextSpan(text: '$finalVerse - $bibleVersions', style: TextStyle(color: globalTextColors[textColorIdx.value], fontSize: 13, fontStyle: FontStyle.italic)),
                           const TextSpan(text: '\n\n'),
                           TextSpan(text: "  ${vNotesJson['notes']}", style: TextStyle(color: globalTextColors[textColorIdx.value])),
@@ -306,19 +299,19 @@ Widget buildNotes(pNotesJson,notesKeys,context,pBookTextVerse){
                   },
                   onSelected: (String value){
                     if(value == 'gotoVerse'){
-                      final bookTitle = notesKeys[index].split(':')[0];
-                      final bookChapter = int.parse(notesKeys[index].split(':')[1]);
-                      final bookVerse = int.parse(notesKeys[index].split(':')[2]);
+                      // final bookTitle = notesKeys[index].split(':')[0];
+                      // final bookChapter = int.parse(notesKeys[index].split(':')[1]);
+                      // final bookVerse = int.parse(notesKeys[index].split(':')[2]);
 
-                      bookSelected = bookTitle;
-                      box.put('bookSelected', bookTitle);
-                      selectedChapter = bookChapter;
-                      if(bookSelected != bookSelectedHist){
-                        refreshChapter = true;
-                      }
-                      globalIndex.value = 2;
-                      pages[0] = BooksLocalPage(bibleVersions, bookTitle ,bookChapter, bookVerse - 1);
-                      barTitle.value = bookTitle +' '+bookChapter.toString();
+                      // bookSelected = bookTitle;
+                      // box.put('bookSelected', bookTitle);
+                      // selectedChapter = bookChapter;
+                      // if(bookSelected != bookSelectedHist){
+                      //   refreshChapter = true;
+                      // }
+                      // globalIndex.value = 2;
+                      // pages[0] = BooksLocalPage(bibleVersions, bookTitle ,bookChapter, bookVerse - 1);
+                      // barTitle.value = bookTitle +' '+bookChapter.toString();
                     }else if(value == 'delete'){
                       showDialog<String>(
                         context: context,
@@ -333,7 +326,7 @@ Widget buildNotes(pNotesJson,notesKeys,context,pBookTextVerse){
                             TextButton(
                               onPressed: () => {
                                 notesHiLights.value = 0,
-                                notesBox.delete(notesKeys[index]),
+                                notesBox.delete(vNotesJson[index]),
                                 Navigator.pop(context, 'OK'),
                                 Future.delayed(const Duration(milliseconds: 100), () {
                                   notesHiLights.value = 2;
@@ -386,7 +379,7 @@ Widget buildNotes(pNotesJson,notesKeys,context,pBookTextVerse){
                                 resBody["book"] = vNotesJson['book'].toString(),
                                 resBody["stamp"] =  DateFormat.yMMMMEEEEd().add_jms().format(DateTime.now()),
                                 resBody["notes"] = notesController.text,
-                                notesBox.put(notesKeys[index],resBody),
+                                notesBox.put(vNotesJson[index],resBody),
                                 Navigator.pop(context, 'Save'),
                                 Future.delayed(const Duration(milliseconds: 100), () {
                                   notesHiLights.value = 2;
@@ -405,6 +398,7 @@ Widget buildNotes(pNotesJson,notesKeys,context,pBookTextVerse){
             );
           },
         ),
+      ),
       ),
     ],
   );
