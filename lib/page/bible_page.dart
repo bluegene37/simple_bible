@@ -63,7 +63,7 @@ class BooksLocalPage extends StatelessWidget {
   final int bookChapter;
   final int jumpTo;
 
-  const BooksLocalPage(this.jsonName,this.bookTitle, this.bookChapter, this.jumpTo );
+  const BooksLocalPage(this.jsonName,this.bookTitle, this.bookChapter, this.jumpTo, {Key? key} ) : super(key: key);
 
   void jumpToFunc() =>  itemScrollController.jumpTo(index: jumpTo > 0 ? jumpTo : 0);
 
@@ -77,7 +77,6 @@ class BooksLocalPage extends StatelessWidget {
         if(bookSelectedHist != bookSelected){bookSelectedHist = bookSelected;}
         SystemChannels.textInput.invokeMethod('TextInput.hide');
         Future.delayed(Duration.zero, () => {
-              jumpToFunc(),
               Navigator.of(context).maybePop(),
               barTitle.value = '$bookTitle $bookChapter',
               textUnderline.value = [],
@@ -92,6 +91,7 @@ class BooksLocalPage extends StatelessWidget {
                 },
                 scrollChecker = itemPositionsListener.itemPositions.value.first.index
               }),
+              jumpToFunc(),
           }
         );
 
@@ -127,7 +127,7 @@ class BooksLocalPage extends StatelessWidget {
       final book = books[index];
       var globalKey = book.book+':'+book.chapter.toString()+':'+book.verse.toString();
       Future.delayed(Duration.zero, () async => {
-
+        // jumpToFunc(),
       });
 
         return Obx(() => ListTile(

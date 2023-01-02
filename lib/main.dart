@@ -2,6 +2,7 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:simple_bible/page/notes_hl_page.dart';
 import 'package:simple_bible/page/search_page.dart';
@@ -10,6 +11,8 @@ import 'package:simple_bible/page/books_page.dart';
 import 'package:simple_bible/page/chapter_page.dart';
 import 'package:simple_bible/page/bible_page.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:simple_bible/service/ad_mob_service.dart';
+import 'dart:io' show Platform;
 
 var box = Hive.box('settingsDB');
 var hiLightBox = Hive.box('hiLightDB');
@@ -143,7 +146,6 @@ void main() async {
   userName = box.get('userName',defaultValue: 'John Doe');
   profileIMG = box.get('profileIMG',defaultValue: 'https://picsum.photos/200/300');
 
-
   brightness = ThemeData.estimateBrightnessForColor(themeColors[colorSliderIdx.value]);
   textColorDynamic.value = brightness == Brightness.light ? Colors.black : Colors.white;
 
@@ -159,6 +161,9 @@ void main() async {
     packageName = packageInfo.packageName;
     version = packageInfo.version;
     buildNumber = packageInfo.buildNumber;
+
+    WidgetsFlutterBinding.ensureInitialized();
+    MobileAds.instance.initialize();
 
   runApp(const MyApp());
 }
@@ -203,13 +208,23 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // int _currentIndex = 2;
   final GlobalKey<ScaffoldState> _key = GlobalKey();
+  BannerAd? _bannerAd;
 
   @override
   void initState(){
     super.initState();
+    _createBannerAd();
     init();
+  }
+
+  void _createBannerAd(){
+    _bannerAd = BannerAd(
+        size: AdSize.fullBanner,
+        adUnitId: AdmobService.bannerAddUnitID!,
+        listener: AdmobService.bannerAdListener,
+        request: const AdRequest()
+    )..load();
   }
 
   Future init() async {
@@ -229,126 +244,124 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(35.0),
         child: Obx(() => AppBar(
-            centerTitle: true,
-          // actions: <Widget>[
-          //     IconButton(
-          //       icon: const Icon(Icons.settings_outlined,),
-          //       onPressed: () {
-          //         globalIndex.value = 4;
-          //         barTitle.value = "Settings";
-          //         statusBarChanged = false;
-          //         if(pages.toString().contains('SettingsLocalPage')){
-          //           }else {
-          //             pages[0] = const SettingsLocalPage();
-          //           }
-          //       },
-          //     )
-          //   ],
-          //   leading: loginpage.value == true ? GestureDetector(
-          //   child: Icon( Icons.arrow_back_ios, color: textColorDynamic.value,  ),
-          //   onTap: () {
-          //     barTitle.value = 'Settings';
-          //     pages[0] = const SettingsLocalPage();
-          //     loginpage.value = false;
-          //     // Navigator.pop(context);
-          //   } ,
-          // ) : null ,
-          backgroundColor: themeColors[colorSliderIdx.value],
-            // leading: globalIndex.value == 0 ? Center(child: Text('Old (39)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w300, color: textColorDynamic.value,))) : null,
-            title: Text(barTitle.value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300, color: textColorDynamic.value,),),
-            // actions: globalIndex.value == 0 ? [Center(child: Text('New (27)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w300, color: textColorDynamic.value,),)),] : null
-        )
+              centerTitle: true,
+              backgroundColor: themeColors[colorSliderIdx.value],
+              title: Text(barTitle.value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300, color: textColorDynamic.value,),),
+          )
         )
       ),
       key: _key,
       body: SafeArea(child: pages[0]),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: globalIndex == 2 && !hideFloatingBtn.value && textUnderline.value.isEmpty ? floatingNextPage() : null,
-      bottomNavigationBar: NavigationBarTheme(
-        data: NavigationBarThemeData(
+      floatingActionButton: globalIndex.value == 2 && !hideFloatingBtn.value && textUnderline.value.isEmpty ? floatingNextPage() : null,
+      bottomNavigationBar:
+      // navigationBar(),
+        SizedBox(
+          height: _bannerAd != null ? Platform.isAndroid ? 120 : 160 : 100,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              // navigationBar(),
+              Visibility(
+                visible: _bannerAd != null,
+                  child:  SizedBox(
+                    height: 60,
+                    child: _bannerAd != null ? AdWidget(ad: _bannerAd!) : const Text('No Ads'),
+                  ),
+              ),
+              navigationBar(),
+            ],
+          )
+        )
+      )
+    );
+  }
+
+  Widget navigationBar(){
+    return NavigationBarTheme(
+      data: NavigationBarThemeData(
           indicatorColor: themeColorShades[colorSliderIdx.value],
           labelTextStyle: MaterialStateProperty.all(
             const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
           )
-        ),
-        child: NavigationBar(
-          height: 60,
-          selectedIndex: globalIndex.value,
-          onDestinationSelected: (globalIndex) => {
-              onTabTapped(globalIndex),
-              if (globalIndex == 0) {
-                barTitle.value = "Books (66)",
-                if(pages.toString().contains('BooksSelectionPage')){
-                  }else {
-                    pages[0] = const BooksSelectionPage()
-                  }
-              } else if (globalIndex == 1) {
-                barTitle.value = "Chapters",
-                if(pages.toString().contains('ChapterSelectionPage')){
-                  }else {
-                    pages[0] = const ChapterSelectionPage()
-                  }
-              } else if (globalIndex == 2) {
-                if(pages.toString().contains('BooksLocalPage')){
-                  }else{
-                    pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter, 0),
-                  },
-                barTitle.value = '$bookSelected $selectedChapter',
-                colorIndex = 999
-              } else if (globalIndex == 3) {
-                barTitle.value = "Search",
-                if(pages.toString().contains('SearchLocalPage')){
-                  }else {
-                    pages[0] = const SearchLocalPage()
-                  }
-              } else if (globalIndex == 4) {
+      ),
+      child: NavigationBar(
+        height: 60,
+        selectedIndex: globalIndex.value,
+        onDestinationSelected: (globalIndex) => {
+          onTabTapped(globalIndex),
+          if (globalIndex == 0) {
+            barTitle.value = "Books (66)",
+            if(pages.toString().contains('BooksSelectionPage')){
+            }else {
+              pages[0] = const BooksSelectionPage()
+            },
+          } else if (globalIndex == 1) {
+            barTitle.value = "Chapters",
+            if(pages.toString().contains('ChapterSelectionPage')){
+            }else {
+              pages[0] = const ChapterSelectionPage()
+            }
+          } else if (globalIndex == 2) {
+            if(pages.toString().contains('BooksLocalPage')){
+            }else{
+              pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter, 0),
+            },
+            barTitle.value = '$bookSelected $selectedChapter',
+            colorIndex = 999
+          } else if (globalIndex == 3) {
+            barTitle.value = "Search",
+            if(pages.toString().contains('SearchLocalPage')){
+            }else {
+              pages[0] = const SearchLocalPage()
+            }
+          } else if (globalIndex == 4) {
 
-                barTitle.value = "Notes | Highlights",
-                if(pages.toString().contains('NotesHLScreen')){
-                }else {
-                  searchTexts.text = '',
-                  pages[0] = const NotesHLScreen()
-                }
-              } else if (globalIndex == 5) {
-                barTitle.value = "Settings",
-                statusBarChanged = false,
-                if(pages.toString().contains('SettingsLocalPage')){
-                }else {
-                  pages[0] = const SettingsLocalPage()
-                }
-              } else {
-                pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter,0),
-              },
+            barTitle.value = "Notes | Highlights",
+            if(pages.toString().contains('NotesHLScreen')){
+            }else {
+              searchTexts.text = '',
+              pages[0] = const NotesHLScreen()
+            }
+          } else if (globalIndex == 5) {
+            barTitle.value = "Settings",
+            statusBarChanged = false,
+            if(pages.toString().contains('SettingsLocalPage')){
+            }else {
+              pages[0] = const SettingsLocalPage()
+            }
+          } else {
+            pages[0] = BooksLocalPage(bibleVersions, bookSelected, selectedChapter,0),
           },
-          destinations: const [
-            NavigationDestination(
-                icon: Icon(Icons.menu_book_outlined),
-                label: 'Books'
-            ),
-            NavigationDestination(
-                icon: Icon(Icons.library_books_outlined),
-                label: 'Chapters'
-            ),
-            NavigationDestination(
-                icon: Icon(Icons.auto_stories_outlined),
-                label: 'Bible'
-            ),
-            NavigationDestination(
-                icon: Icon(Icons.search),
-                label: 'Search'
-            ),
-            NavigationDestination(
-                icon: Icon(Icons.edit_note_sharp),
-                label: 'Notes'
-            ),
-            NavigationDestination(
-                icon: Icon(Icons.settings_outlined),
-                label: 'Settings'
-            ),
-          ],
-        ),
-      )
-    )
+        },
+        destinations: const [
+          NavigationDestination(
+              icon: Icon(Icons.menu_book_outlined),
+              label: 'Books'
+          ),
+          NavigationDestination(
+              icon: Icon(Icons.library_books_outlined),
+              label: 'Chapters'
+          ),
+          NavigationDestination(
+              icon: Icon(Icons.auto_stories_outlined),
+              label: 'Bible'
+          ),
+          NavigationDestination(
+              icon: Icon(Icons.search),
+              label: 'Search'
+          ),
+          NavigationDestination(
+              icon: Icon(Icons.edit_note_sharp),
+              label: 'Notes'
+          ),
+          NavigationDestination(
+              icon: Icon(Icons.settings_outlined),
+              label: 'Settings'
+          ),
+        ],
+      ),
     );
   }
 }
