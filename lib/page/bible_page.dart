@@ -80,16 +80,16 @@ class BooksLocalPage extends StatelessWidget {
               Navigator.of(context).maybePop(),
               barTitle.value = '$bookTitle $bookChapter',
               textUnderline.value = [],
-              itemPositionsListener.itemPositions.addListener(() => {
+              itemPositionsListener.itemPositions.addListener(() {
                 if(itemPositionsListener.itemPositions.value.first.index > scrollChecker){
                   // print('Up')
                   hideFloatingBtn.value = true
-                },
+                }
                 if(itemPositionsListener.itemPositions.value.first.index < scrollChecker){
                   // print('Down')
                   hideFloatingBtn.value = false
-                },
-                scrollChecker = itemPositionsListener.itemPositions.value.first.index
+                }
+                scrollChecker = itemPositionsListener.itemPositions.value.first.index;
               }),
               jumpToFunc(),
           }

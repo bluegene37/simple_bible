@@ -85,7 +85,7 @@ class SearchLocalPage extends StatelessWidget {
 
 class SearchResultPage extends StatelessWidget {
   final String searchQuery;
-  const SearchResultPage(this.searchQuery);
+  const SearchResultPage(this.searchQuery, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) => Scaffold(

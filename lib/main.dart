@@ -282,7 +282,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return NavigationBarTheme(
       data: NavigationBarThemeData(
           indicatorColor: themeColorShades[colorSliderIdx.value],
-          labelTextStyle: MaterialStateProperty.all(
+          labelTextStyle: WidgetStateProperty.all(
             const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
           )
       ),
